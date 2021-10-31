@@ -23,7 +23,7 @@ interface AppPage {
 
 const appPages: AppPage[] = [
   {
-    title: 'Inbox',
+    title: 'Profile',
     url: '/page/Inbox',
     iosIcon: mailOutline,
     mdIcon: mailSharp
