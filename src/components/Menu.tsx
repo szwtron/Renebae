@@ -41,7 +41,7 @@ const appPages: AppPage[] = [
     mdIcon: heartSharp
   },
   {
-    title: 'Archived',
+    title: 'Cart',
     url: '/page/Archived',
     iosIcon: archiveOutline,
     mdIcon: archiveSharp
