@@ -42,13 +42,13 @@ const appPages: AppPage[] = [
   },
   {
     title: 'Wishlist',
-    url: '/page/Favorites',
+    url: '/page/Wishlist',
     iosIcon: heartOutline,
     mdIcon: heartSharp
   },
   {
     title: 'Cart',
-    url: '/page/Archived',
+    url: '/page/Cart',
     iosIcon: cartOutline,
     mdIcon: cartSharp
   },
@@ -60,7 +60,7 @@ const appPages: AppPage[] = [
   }
 ];
 
-const labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
+const labels = ['NVidia', 'AMD Radeon', 'GeForce', 'Vega', 'MX Series', 'RX Series'];
 
 const Menu: React.FC = () => {
   const location = useLocation();
