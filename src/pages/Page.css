@@ -10,8 +10,8 @@
 }
 
 .cardImages {
-    width: 250px;
-    height: 250px;
+    width: 200px;
+    height: 115px;
 }
 
 .avatarImage {
@@ -27,4 +27,24 @@
 
 .categoryTitle{
     margin-bottom: 15px;
+}
+
+.filter{
+    top: 50px;
+    padding-left: 10px;
+    height: 275px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 1;
+}
+
+.filter::-webkit-scrollbar{
+    display: none;
+}
+
+.filter-options{
+    flex: 0 0 auto;
 }
