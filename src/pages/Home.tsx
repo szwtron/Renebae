@@ -110,77 +110,28 @@ const Home: React.FC = () => {
             </div>
             <br/>
 
-            <div className='categoryContent'>
-              <IonSlides pager={false} options={slideOpts}>
+            <IonGrid className="ion-no-padding content">
+              <IonRow>
+                <div className="filter">
                 {product.map(product => (
-                  <IonSlide key={product.id}>
-                    <IonCard className='categoryCard'>
-                      <img src={product.image} />
-                      <IonCardContent>
-                        <IonText className="ion-margin">{product.name}</IonText> <br/>
+                  <IonCard className='categoryCard filter-options'>
+                    <img className='cardImages' src={product.image} />
+                    <IonCardContent>
+                      <IonText className="ion-margin">{product.name}</IonText> <br/>
 
-                        {product.price == 0 ?
-                          <IonText className="ion-margin"></IonText>
-                        :
-                          <IonText className="ion-margin">{product.price}</IonText>
-                        }
-                        <br/>
-                        <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
-                      </IonCardContent>
-                    </IonCard>
-                  </IonSlide>
+                      {product.price == 0 ?
+                        <IonText className="ion-margin"></IonText>
+                      :
+                        <IonText className="ion-margin">{product.price}</IonText>
+                      }
+                      <br/>
+                      <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
+                    </IonCardContent>
+                  </IonCard>
                 ))}
-              </IonSlides>
-
-              {/* <IonSlides pager={false} options={slideOpts}>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-              </IonSlides> */}
-
-            </div>
+                </div>
+              </IonRow>
+            </IonGrid>
           </IonCardContent>
         </IonCard>
 
@@ -220,55 +171,28 @@ const Home: React.FC = () => {
               </div>
             </div>
             <br/>
-            <div className='categoryContent'>
-              <IonSlides pager={false} options={slideOpts}>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
+            <IonGrid className="ion-no-padding content">
+              <IonRow>
+                <div className="filter">
+                {product.map(product => (
+                  <IonCard className='categoryCard filter-options'>
+                    <img className='cardImages' src={product.image} />
                     <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
+                      <IonText className="ion-margin">{product.name}</IonText> <br/>
+
+                      {product.price == 0 ?
+                        <IonText className="ion-margin"></IonText>
+                      :
+                        <IonText className="ion-margin">{product.price}</IonText>
+                      }
+                      <br/>
+                      <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
                     </IonCardContent>
                   </IonCard>
-                </IonSlide>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-                <IonSlide>
-                  <IonCard className='categoryCard'>
-                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                    <IonCardContent>
-                      <IonText>Test price</IonText><br/>
-                      <IonButton><IonIcon slot='icon-only' icon={cartOutline} /> Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                </IonSlide>
-              </IonSlides>
-            </div>
+                ))}
+                </div>
+              </IonRow>
+            </IonGrid>
           </IonCardContent>
         </IonCard>
       </IonContent>
