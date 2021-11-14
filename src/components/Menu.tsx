@@ -36,25 +36,25 @@ const appPages: AppPage[] = [
   },
   {
     title: 'Category',
-    url: '/page/Outbox',
+    url: '/page/Categories',
     iosIcon: paperPlaneOutline,
     mdIcon: paperPlaneSharp
   },
   {
     title: 'Wishlist',
-    url: '/page/Favorites',
+    url: '/page/Wishlist',
     iosIcon: heartOutline,
     mdIcon: heartSharp
   },
   {
     title: 'Cart',
-    url: '/page/Archived',
+    url: '/page/Cart',
     iosIcon: cartOutline,
     mdIcon: cartSharp
   },
   {
     title: 'Logout',
-    url: '/page/Trash',
+    url: '/page/Logout',
     iosIcon: closeOutline,
     mdIcon: closeSharp
   }
