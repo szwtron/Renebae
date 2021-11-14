@@ -26,6 +26,7 @@ import Home from './pages/Home';
 import Checkout from './pages/Checkout'
 import Profile from './pages/Profile';
 import Categories from './pages/Categories';
+import Cart from './pages/Cart';
 
 const App: React.FC = () => {
   return (
@@ -45,6 +46,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/Home" exact={true}>
               <Home />
+            </Route>
+            <Route path="/page/Cart" exact={true}>
+              <Cart />
             </Route>
             <Route path="/Checkout" exact={true}>
               <Checkout />
