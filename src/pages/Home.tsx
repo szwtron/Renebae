@@ -56,6 +56,7 @@ const Home: React.FC = () => {
         name: "RTX 2060",
         image: "https://firebasestorage.googleapis.com/v0/b/renebae-test.appspot.com/o/rtx2060.png?alt=media&token=5fa85bd8-07c3-4daf-b0e8-805f5654428c",
         price: "5,524,130",
+        category: "gaming",
         release: "Q1 2019",
         effectiveSpeed: 88,
         lighting: 114,
@@ -113,7 +114,7 @@ const Home: React.FC = () => {
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                {product.map(product => (
+                {product.filter(product=>product.category === 'gaming').map(product => (
                   <IonCard className='categoryCard filter-options'>
                     <img className='cardImages' src={product.image} />
                     <IonCardContent>
@@ -122,7 +123,7 @@ const Home: React.FC = () => {
                       {product.price == 0 ?
                         <IonText className="ion-margin"></IonText>
                       :
-                        <IonText className="ion-margin">{product.price}</IonText>
+                        <IonText className="ion-margin">Rp {product.price}</IonText>
                       }
                       <br/>
                       <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
@@ -174,7 +175,7 @@ const Home: React.FC = () => {
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                {product.map(product => (
+                {product.filter(product=>product.category === 'electronic').map(product => (
                   <IonCard className='categoryCard filter-options'>
                     <img className='cardImages' src={product.image} />
                     <IonCardContent>
@@ -183,7 +184,7 @@ const Home: React.FC = () => {
                       {product.price == 0 ?
                         <IonText className="ion-margin"></IonText>
                       :
-                        <IonText className="ion-margin">{product.price}</IonText>
+                        <IonText className="ion-margin">Rp {product.price}</IonText>
                       }
                       <br/>
                       <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
