@@ -1,0 +1,11 @@
+.coupon {
+    --background: rgba(226, 226, 226, 0.178);
+}
+
+.moveToBtn {
+    font-size: 10px;
+}
+
+.removeBtn {
+    font-size: 10px;
+}
