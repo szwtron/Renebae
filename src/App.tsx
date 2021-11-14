@@ -22,6 +22,7 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import Profile from './pages/Profile';
 
 const App: React.FC = () => {
   return (
@@ -33,7 +34,10 @@ const App: React.FC = () => {
             <Route path="/" exact={true}>
               <Redirect to="/page/Inbox" />
             </Route>
-            <Route path="/page/:name" exact={true}>
+            <Route path="/page/Profile" exact={true}>
+              <Profile />
+            </Route>
+            <Route path="/page/test" exact={true}>
               <Page />
             </Route>
           </IonRouterOutlet>

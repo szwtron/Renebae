@@ -24,7 +24,7 @@ interface AppPage {
 const appPages: AppPage[] = [
   {
     title: 'Profile',
-    url: '/page/Inbox',
+    url: '/page/Profile',
     iosIcon: personOutline,
     mdIcon: personSharp
   },
