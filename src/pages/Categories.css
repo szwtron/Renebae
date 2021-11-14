@@ -1,0 +1,13 @@
+.img-item{
+    width: max-content;
+    height: max-content;
+}
+
+.center-txt{
+    text-align: center;
+}
+
+.font-size20{
+    font-size: 20px;
+    font-weight: bold;
+}

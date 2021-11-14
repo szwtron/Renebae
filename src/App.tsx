@@ -25,6 +25,7 @@ import './theme/variables.css';
 import Home from './pages/Home';
 import Checkout from './pages/Checkout'
 import Profile from './pages/Profile';
+import Categories from './pages/Categories';
 
 const App: React.FC = () => {
   return (
@@ -47,6 +48,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/Checkout" exact={true}>
               <Checkout />
+            </Route>
+            <Route path="/page/Categories" exact={true}>
+              <Categories />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>
