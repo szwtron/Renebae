@@ -1,8 +1,30 @@
 import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
-import { cartOutline } from 'ionicons/icons';
+import { cartOutline, closeCircleOutline } from 'ionicons/icons';
+import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import firebaseInit from "../firebase_config";
 import './Categories.css';
+import { useState, useEffect } from 'react';
 
 const Categories: React.FC = () => {
+    const db = getFirestore(firebaseInit);
+    const storage = getStorage(firebaseInit);
+    const [product, setProduct] = useState<Array<any>>([]);
+
+    //Read data
+    useEffect(() => {
+      async function getData() {
+        const querySnapshot = await getDocs(collection(db, "product"));
+        console.log('querySnapshot', querySnapshot);
+        setProduct(querySnapshot.docs.map((doc) => ({...doc.data(), id:doc.id})));
+
+        querySnapshot.forEach((doc) => {
+          console.log(`${doc.id} => ${doc.data()}`);
+          console.log('doc:', doc);
+        });
+      }
+      getData();
+    }, []);
     return (
         <IonPage>
             <IonHeader>
@@ -30,94 +52,28 @@ const Categories: React.FC = () => {
                         <IonSelectOption value="technology">Technology</IonSelectOption>
                         <IonSelectOption value="outfit">Outfit</IonSelectOption>
                     </IonSelect>
-                
                     <IonRow>
-                        <IonCol>
-                            <IonCard>
-                                <img className="img-item" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                                <IonCardTitle className="center-txt">PS5</IonCardTitle>
-                                <IonCardContent className="center-txt font-size20">
-                                    Rp.90000-100000<br/>
-                                    <IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
-                        <IonCol>
-                            <IonCard>
-                                <img className="img-item" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                                <IonCardTitle className="center-txt">PS5</IonCardTitle>
-                                <IonCardContent className="center-txt font-size20">
-                                    Rp.90000-100000<br/>
-                                    <IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
-                    </IonRow>
-                    <IonRow>
-                        <IonCol>
-                            <IonCard>
-                                <img className="img-item" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                                <IonCardTitle className="center-txt">PS5</IonCardTitle>
-                                <IonCardContent className="center-txt font-size20">
-                                    Rp.90000-100000<br/>
-                                    <IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
-                        <IonCol>
-                            <IonCard>
-                                <img className="img-item" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                                <IonCardTitle className="center-txt">PS5</IonCardTitle>
-                                <IonCardContent className="center-txt font-size20">
-                                    Rp.90000-100000<br/>
-                                    <IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
-                    </IonRow>
-                    <IonRow>
-                        <IonCol>
-                            <IonCard>
-                                <img className="img-item" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                                <IonCardTitle className="center-txt">PS5</IonCardTitle>
-                                <IonCardContent className="center-txt font-size20">
-                                    Rp.90000-100000<br/>
-                                    <IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
-                        <IonCol>
-                            <IonCard>
-                                <img className="img-item" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                                <IonCardTitle className="center-txt">PS5</IonCardTitle>
-                                <IonCardContent className="center-txt font-size20">
-                                    Rp.90000-100000<br/>
-                                    <IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
-                    </IonRow>
-                    <IonRow>
-                        <IonCol>
-                            <IonCard>
-                                <img className="img-item" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                                <IonCardTitle className="center-txt">PS5</IonCardTitle>
-                                <IonCardContent className="center-txt font-size20">
-                                    Rp.90000-100000<br/>
-                                    <IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
-                        <IonCol>
-                            <IonCard>
-                                <img className="img-item" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-                                <IonCardTitle className="center-txt">PS5</IonCardTitle>
-                                <IonCardContent className="center-txt font-size20">
-                                    Rp.90000-100000<br/>
-                                    <IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                </IonCardContent>
-                            </IonCard>
-                        </IonCol>
+                        {product.map(product => (
+                            <IonCol size='6'>
+                                <IonCard>
+                                    <img className="img-item" src={product.image}/>
+                                    <IonCardTitle className="center-txt">{product.name}</IonCardTitle>
+                                    <IonCardContent className="center-txt font-size20">
+                                    {product.price == 0 ?
+                                        <div>
+                                            <IonText className="ion-margin"></IonText>
+                                            <br/><IonButton className="center-txt" color="danger"><IonIcon icon={closeCircleOutline}/>Out of Stock</IonButton>
+                                        </div>
+                                    :
+                                        <div>
+                                            <IonText className="ion-margin">Rp {product.price}</IonText>
+                                            <br/><IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
+                                        </div>
+                                    }
+                                    </IonCardContent>
+                                </IonCard>
+                            </IonCol>
+                        ))}
                     </IonRow>
                 </IonGrid>
             </IonContent>
