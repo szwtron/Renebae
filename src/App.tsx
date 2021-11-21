@@ -27,6 +27,7 @@ import Checkout from './pages/Checkout'
 import Profile from './pages/Profile';
 import Categories from './pages/Categories';
 import Cart from './pages/Cart';
+import Login from './pages/Login';
 
 const App: React.FC = () => {
   return (
@@ -55,6 +56,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Categories" exact={true}>
               <Categories />
+            </Route>
+            <Route path="/page/Login" exact={true}>
+              <Login />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>
