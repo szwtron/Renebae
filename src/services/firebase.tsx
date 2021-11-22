@@ -1,5 +1,5 @@
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { addDoc, collection, doc, getDocs, getFirestore, setDoc, updateDoc } from "firebase/firestore";
+import { getStorage, ref } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 
 export class firebaseFunction {
@@ -12,12 +12,11 @@ export class firebaseFunction {
         const querySnapshot = await getDocs(collection(this.db, collectionName));
         console.log('querySnapshot', querySnapshot);
         products = querySnapshot.docs.map((doc) => ({...doc.data(), id:doc.id}))
-        
-        querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
-        console.log('doc:', doc);  
-        console.log("banana" + products);
-        });
+        // querySnapshot.forEach((doc) => {
+        // console.log(`${doc.id} => ${doc.data()}`);
+        // console.log('doc:', doc);  
+        // console.log("banana" + products);
+        // });
         return products;
     }
 
@@ -30,5 +29,25 @@ export class firebaseFunction {
           } catch (e) {
             console.error("Error adding document: ", e);
           }
+    }
+
+    public async updateData(collectionName: string, data: any, fieldToBeUpdated: any){
+        // Create an initial document to update.
+        const docRef = doc(this.db, collectionName, data[0].id);
+        try {
+            await updateDoc(docRef, fieldToBeUpdated);
+            console.log("Document updated successfully, ", docRef.id);
+        } catch (e) {
+            console.error("Error updating document: ", e)
+        }
+        
+        
+
+
+        // To update age and favorite color:
+        // await updateDoc(docRef, {
+        //     "age": 13,
+        //     "favorites.color": "Red"
+        // });
     }
 }
