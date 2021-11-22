@@ -28,6 +28,7 @@ import Profile from './pages/Profile';
 import Categories from './pages/Categories';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 const App: React.FC = () => {
   return (
@@ -59,6 +60,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Login" exact={true}>
               <Login />
+            </Route>
+            <Route path="/page/Signup" exact={true}>
+              <Signup />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>
