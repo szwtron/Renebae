@@ -5,24 +5,39 @@ import './Page.css';
 import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useHistory } from 'react-router';
 
 const Home: React.FC = () => {
   const db = getFirestore(firebaseInit);
   const storage = getStorage(firebaseInit);
   const [product, setProduct] = useState<Array<any>>([]);
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
 
+  const history = useHistory();
+  const auth = getAuth(firebaseInit);
   //Read data
   useEffect(() => {
     async function getData() {
       const querySnapshot = await getDocs(collection(db, "product"));
       console.log('querySnapshot', querySnapshot);
-      setProduct(querySnapshot.docs.map((doc) => ({...doc.data(), id:doc.id})));
+      setProduct(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
 
       querySnapshot.forEach((doc) => {
         console.log(`${doc.id} => ${doc.data()}`);
         console.log('doc:', doc);
       });
-    }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsSignedIn(true);
+        const uid = user.uid;
+        console.log('uid:', uid);
+      } else {
+        setIsSignedIn(false);
+      }
+    });
     getData();
   }, []);
 
@@ -72,6 +87,14 @@ const Home: React.FC = () => {
     }
   }
 
+  const signedIn = () => {
+    console.log('signedIn');
+  }
+
+  const signedOut = () => {
+    history.push('/page/Login');
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -111,27 +134,27 @@ const Home: React.FC = () => {
                 <IonText>View All</IonText>
               </div>
             </div>
-            <br/>
+            <br />
 
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                {product.filter(product=>product.category === 'gaming').map(product => (
-                  <IonCard className='categoryCard filter-options'>
-                    <img className='cardImages' src={product.image} />
-                    <IonCardContent>
-                      <IonText className="ion-margin">{product.name}</IonText> <br/>
+                  {product.filter(product => product.category === 'gaming').map(product => (
+                    <IonCard className='categoryCard filter-options'>
+                      <img className='cardImages' src={product.image} />
+                      <IonCardContent>
+                        <IonText className="ion-margin">{product.name}</IonText> <br />
 
-                      {product.price == 0 ?
-                        <IonText className="ion-margin"></IonText>
-                      :
-                        <IonText className="ion-margin">Rp {product.price}</IonText>
-                      }
-                      <br/>
-                      <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                ))}
+                        {product.price == 0 ?
+                          <IonText className="ion-margin"></IonText>
+                          :
+                          <IonText className="ion-margin">Rp {product.price}</IonText>
+                        }
+                        <br />
+                        <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
+                      </IonCardContent>
+                    </IonCard>
+                  ))}
                 </div>
               </IonRow>
             </IonGrid>
@@ -173,26 +196,26 @@ const Home: React.FC = () => {
                 <IonText>View All</IonText>
               </div>
             </div>
-            <br/>
+            <br />
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                {product.filter(product=>product.category === 'electronic').map(product => (
-                  <IonCard className='categoryCard filter-options'>
-                    <img className='cardImages' src={product.image} />
-                    <IonCardContent>
-                      <IonText className="ion-margin">{product.name}</IonText> <br/>
+                  {product.filter(product => product.category === 'electronic').map(product => (
+                    <IonCard className='categoryCard filter-options'>
+                      <img className='cardImages' src={product.image} />
+                      <IonCardContent>
+                        <IonText className="ion-margin">{product.name}</IonText> <br />
 
-                      {product.price == 0 ?
-                        <IonText className="ion-margin"></IonText>
-                      :
-                        <IonText className="ion-margin">Rp {product.price}</IonText>
-                      }
-                      <br/>
-                      <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
-                    </IonCardContent>
-                  </IonCard>
-                ))}
+                        {product.price == 0 ?
+                          <IonText className="ion-margin"></IonText>
+                          :
+                          <IonText className="ion-margin">Rp {product.price}</IonText>
+                        }
+                        <br />
+                        <IonButton className="ion-margin" onClick={isSignedIn ? signedIn : signedOut}><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
+                      </IonCardContent>
+                    </IonCard>
+                  ))}
                 </div>
               </IonRow>
             </IonGrid>
