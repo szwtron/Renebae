@@ -29,7 +29,7 @@ const Home: React.FC = () => {
   //Dummy Data
   const dummyData = [{
     name: "RTX 2060",
-    image: "https://firebasestorage.googleapis.com/v0/b/renebae-test.appspot.com/o/rtx2060.png?alt=media&token=5fa85bd8-07c3-4daf-b0e8-805f5654428c",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/download.jpg?alt=media&token=e7f8f42f-0814-4a55-9599-470fe8527fa9",
     price: "5.524.130",
     category: "gaming",
     release: "Q1 2019",
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
     gravity: 100
   }, {
     name: "MX 230",
-    image: "https://firebasestorage.googleapis.com/v0/b/renebae-test.appspot.com/o/rtx2060.png?alt=media&token=5fa85bd8-07c3-4daf-b0e8-805f5654428c",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/nvidia_geforce_mx230_chip.jpg?alt=media&token=3b700a7d-69eb-414a-a9e8-053127020ef4",
     price: "1.000.000",
     category: "electronics",
     release: "Q1 2017",
@@ -51,7 +51,7 @@ const Home: React.FC = () => {
     gravity: 100
   }, {
     name: "Quadro RTX 4000",
-    image: "https://firebasestorage.googleapis.com/v0/b/renebae-test.appspot.com/o/rtx2060.png?alt=media&token=5fa85bd8-07c3-4daf-b0e8-805f5654428c",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/gigabyte_gigabyte-vga-nvidia-quadro-rtx-4000_full02.jpg?alt=media&token=f24dff28-dd45-4dd9-9ec2-ef35f81a7378",
     price: "5.000.000",
     category: "multimedia",
     release: "Q1 2020",
