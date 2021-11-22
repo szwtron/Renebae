@@ -1,32 +1,37 @@
 import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonCard, IonGrid, IonText, IonRow, IonCardContent, IonInput, IonItem, IonLabel, IonCardHeader, IonCardTitle, IonCol, IonButton, IonLoading } from "@ionic/react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import firebaseInit from "../firebase_config";
 import './Login.css';
 import { toast } from "../toast";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useHistory } from "react-router";
 
 const Login: React.FC = () => {
     const [busy, setBusy] = useState<boolean>(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [user, setUser] = useState<any>(null);
 
     const db = getFirestore(firebaseInit);
     const auth = getAuth(firebaseInit);
+    const history = useHistory();
+
 
     async function login() {
         setBusy(true);
         try {
             const res = await signInWithEmailAndPassword(auth, username, password);
-            console.log(res);
             toast('Login Successful');
             setBusy(false);
+            history.push('/Home');
         } catch (error: any) {
             console.log(error);
             toast(error.message);
             setBusy(false);
         }
     }
+
     return (
         <IonPage>
             <IonHeader>

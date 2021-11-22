@@ -1,10 +1,25 @@
 import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { cartOutline, heartOutline, trashBinOutline } from 'ionicons/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import './Cart.css';
 
 const Cart: React.FC = () => {
     const [jumlahbarang, setJumlahBarang] = useState<number>(0);
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const history = useHistory();
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user: any) => {
+            if (!user) {
+                window.location.href = '/page/Login';
+            }
+        });
+    }, []);
+
+
     const plus = async () => {
         let i = jumlahbarang;
         i++;
