@@ -1,6 +1,6 @@
 import { IonApp, IonRouterOutlet, IonSplitPane } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, useHistory } from 'react-router-dom';
 import Menu from './components/Menu';
 import Page from './pages/Page';
 
@@ -30,6 +30,10 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Logout from './pages/Logout';
+import Admin from './pages/Admin/Admin';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useEffect } from 'react';
+import CRUDCategories from './pages/Admin/CRUDCategories';
 
 const App: React.FC = () => {
   return (
@@ -40,6 +44,12 @@ const App: React.FC = () => {
           <IonRouterOutlet id="main">
             <Route path="/" exact={true}>
               <Redirect to="/Home" />
+            </Route>
+            <Route path="/page/Admin" exact={true}>
+              <Admin />
+            </Route>
+            <Route path="/page/Admin/Categories" exact={true}>
+              <CRUDCategories />
             </Route>
             <Route path="/page/Profile" exact={true}>
               <Profile />

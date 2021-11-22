@@ -27,6 +27,7 @@ const Signup: React.FC = () => {
             const res = await createUserWithEmailAndPassword(auth, username, password)
             console.log(res);
             setBusy(false);
+            window.location.href = '/page/Login';
         } catch (error: any) {
             console.log(error);
             toast(error.message);

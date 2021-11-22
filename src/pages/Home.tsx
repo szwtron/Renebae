@@ -20,7 +20,7 @@ const Home: React.FC = () => {
   const auth = getAuth(firebaseInit);
   //Read data
   //Usage getData:
-  // Call function 
+  // Call function
   useEffect(() => {
     async function getData() {
       const productFirebase = firebase.getData("product");
@@ -106,7 +106,6 @@ const Home: React.FC = () => {
         <IonToolbar>
           <IonButtons slot="start">
             <IonMenuButton />
-            
           </IonButtons>
           <IonTitle>Renebae</IonTitle>
           <IonAvatar className='avatarImage' slot="end">
