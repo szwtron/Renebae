@@ -1,38 +1,36 @@
 import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSlide, IonSlides, IonText, IonTitle, IonToolbar } from '@ionic/react';
 import { cartOutline } from 'ionicons/icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Page.css';
 import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useHistory } from 'react-router';
+import { firebaseFunction } from "../services/firebase";
 
 const Home: React.FC = () => {
   const db = getFirestore(firebaseInit);
   const storage = getStorage(firebaseInit);
+  const firebase = new firebaseFunction();
   const [product, setProduct] = useState<Array<any>>([]);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
 
   const history = useHistory();
   const auth = getAuth(firebaseInit);
+  const user = auth.currentUser;
   //Read data
+  //Usage getData:
+  // Call function 
   useEffect(() => {
     async function getData() {
-      const querySnapshot = await getDocs(collection(db, "product"));
-      console.log('querySnapshot', querySnapshot);
-      setProduct(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-
-      querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
-        console.log('doc:', doc);
-      });
-    };
-
+      const productFirebase = firebase.getData("product");
+      setProduct(await productFirebase);
+    }
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setIsSignedIn(true);
         const uid = user.uid;
+        setIsSignedIn(true);
         console.log('uid:', uid);
       } else {
         setIsSignedIn(false);
@@ -41,30 +39,37 @@ const Home: React.FC = () => {
     getData();
   }, []);
 
+
+  //setProduct(productFirebase.map((doc) => ({...doc.data(), id:doc.id})));
+  
+
+    
+
+
+  // useEffect(() => {
+  //   async function getData() {
+  //     const querySnapshot = await getDocs(collection(db, "cart"));
+  //     console.log('querySnapshot', querySnapshot);
+  //     setProduct(querySnapshot.docs.map((doc) => ({...doc.data(), id:doc.id})));
+
+  //     querySnapshot.forEach((doc) => {
+  //       console.log(`${doc.id} => ${doc.data()}`);
+  //       console.log('doc:', doc);  
+  //     });
+  //   }
+  //   getData();
+  //   console.log(JSON.parse(product[0].gravity));
+  // }, []);
+
+  const json = [
+    {"Item Code":"sthing","Product Name":"sthing","Qantity":"1","Unit Price":"0","Item Total":"0"},
+    {"Item Code":"sthing","Product Name":"sthing","Qantity":"1","Unit Price":"0","Item Total":"0"},
+    {"Item Code":"sthing","Product Name":"sthing","Qantity":"1","Unit Price":"0","Item Total":"0"},
+    {"Item Code":"sthing","Product Name":"sthing","Qantity":"1","Unit Price":"0","Item Total":"0"}
+  ];
+
   //Dummy Data
   const dummyData = [{
-    name: "RTX 2060",
-    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/download.jpg?alt=media&token=e7f8f42f-0814-4a55-9599-470fe8527fa9",
-    price: "5.524.130",
-    category: "gaming",
-    release: "Q1 2019",
-    effectiveSpeed: 88,
-    lighting: 114,
-    reflection: 117,
-    mrender: 133,
-    gravity: 100
-  }, {
-    name: "MX 230",
-    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/nvidia_geforce_mx230_chip.jpg?alt=media&token=3b700a7d-69eb-414a-a9e8-053127020ef4",
-    price: "1.000.000",
-    category: "electronics",
-    release: "Q1 2017",
-    effectiveSpeed: 40,
-    lighting: 80,
-    reflection: 100,
-    mrender: 90,
-    gravity: 100
-  }, {
     name: "Quadro RTX 4000",
     image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/gigabyte_gigabyte-vga-nvidia-quadro-rtx-4000_full02.jpg?alt=media&token=f24dff28-dd45-4dd9-9ec2-ef35f81a7378",
     price: "5.000.000",
@@ -74,12 +79,27 @@ const Home: React.FC = () => {
     lighting: 100,
     reflection: 100,
     mrender: 110,
-    gravity: 100
+    gravity: JSON.stringify(json)
   }];
+
+  //data user
+  const dummyDataUser = [{
+    uid: user?.uid,
+    username: "haneure",
+    name: "Christian Halim",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/Chris%20crop.png?alt=media&token=497301d1-0692-42ec-bfae-c2aceccf09d4",
+    email: user?.email,
+    photoURL: user?.photoURL,
+    phone: user?.phoneNumber,
+    birthdate: "17-November-2000",
+    address1: "Jl. Kenari No. 7 RT/RW 001/002 Anggut Dalam Bengkulu",
+    address2: "Kec. Ratu Samban 38222 Bengkulu"
+  }];
+
   const addData = async () => {
     try {
-      dummyData.forEach(async element => {
-        const docRef = await addDoc(collection(db, "product"), element);
+      dummyDataUser.forEach(async element => {
+        const docRef = await addDoc(collection(db, "user"), element);
         console.log("Document written with ID: ", docRef.id);
       });
     } catch (e) {
@@ -101,6 +121,7 @@ const Home: React.FC = () => {
         <IonToolbar>
           <IonButtons slot="start">
             <IonMenuButton />
+            
           </IonButtons>
           <IonTitle>Renebae</IonTitle>
           <IonAvatar className='avatarImage' slot="end">
@@ -115,6 +136,7 @@ const Home: React.FC = () => {
             <IonTitle size="large">Renebae</IonTitle>
           </IonToolbar>
         </IonHeader>
+        <IonButton onClick={addData}>wee</IonButton>
 
         <IonCard color="secondary">
           <IonCardContent>
@@ -139,11 +161,11 @@ const Home: React.FC = () => {
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                  {product.filter(product => product.category === 'gaming').map(product => (
-                    <IonCard className='categoryCard filter-options'>
-                      <img className='cardImages' src={product.image} />
-                      <IonCardContent>
-                        <IonText className="ion-margin">{product.name}</IonText> <br />
+                {product.filter(product=>product.category === 'gaming').map(product => (
+                  <IonCard key={product.id} className='categoryCard filter-options'>
+                    <img className='cardImages' src={product.image} />
+                    <IonCardContent>
+                      <IonText className="ion-margin">{product.name}</IonText> <br/>
 
                         {product.price == 0 ?
                           <IonText className="ion-margin"></IonText>
@@ -200,11 +222,11 @@ const Home: React.FC = () => {
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                  {product.filter(product => product.category === 'electronic').map(product => (
-                    <IonCard className='categoryCard filter-options'>
-                      <img className='cardImages' src={product.image} />
-                      <IonCardContent>
-                        <IonText className="ion-margin">{product.name}</IonText> <br />
+                {product.filter(product=>product.category === 'electronic').map(product => (
+                  <IonCard key={product.id} className='categoryCard filter-options'>
+                    <img className='cardImages' src={product.image} />
+                    <IonCardContent>
+                      <IonText className="ion-margin">{product.name}</IonText> <br/>
 
                         {product.price == 0 ?
                           <IonText className="ion-margin"></IonText>

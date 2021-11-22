@@ -1,12 +1,21 @@
 import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { cartOutline, heartOutline, trashBinOutline } from 'ionicons/icons';
-import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import firebaseInit from "../firebase_config";
+import { getStorage } from "firebase/storage";
+import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import './Cart.css';
+import { firebaseFunction } from '../services/firebase';
 
 const Cart: React.FC = () => {
     const [jumlahbarang, setJumlahBarang] = useState<number>(0);
+    const [product, setProduct] = useState<Array<any>>([]);
+    const firebase = new firebaseFunction();
+    const db = getFirestore(firebaseInit);
+    const storage = getStorage(firebaseInit);
+
     const auth = getAuth();
     const user = auth.currentUser;
     const history = useHistory();
@@ -33,6 +42,14 @@ const Cart: React.FC = () => {
         }
     }
 
+    useEffect(() => {
+        async function getData() {
+            const productFirebase = firebase.getData("cart");
+            setProduct(await productFirebase);
+        }
+        getData();
+    }, []);
+
     return (
         <IonPage>
             <IonHeader>
@@ -50,9 +67,11 @@ const Cart: React.FC = () => {
             <IonContent fullscreen className="ion-padding">
                 <IonGrid>
                     <IonRow><h3>Shopping Cart</h3></IonRow>
-                    <IonRow>
+
+                    {product.map(product => (
+                    <IonRow key={product.id}>
                         <IonCol size="5">
-                            <IonRow><img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" alt="" /></IonRow>
+                            <IonRow><img src={product.image} alt="" /></IonRow>
                             <IonRow><IonCol className="ion-text-center">PS 5</IonCol></IonRow>
                             <IonRow><IonCol className="ion-text-center">Rp. 1.500.000</IonCol></IonRow>
                         </IonCol>
@@ -86,6 +105,7 @@ const Cart: React.FC = () => {
                             </IonRow>
                         </IonCol>
                     </IonRow>
+                    ))}
                 </IonGrid>
 
                 <IonGrid>
