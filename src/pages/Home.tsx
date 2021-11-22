@@ -6,29 +6,6 @@ import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 
-const slideOpts = {
-  slidesPerView: 2.5,
-  spaceBetween: 1,
-  breakpoints: {
-    1024: {
-      slidesPerView: 4.5,
-      spaceBetween: 1
-    },
-    768: {
-      slidesPerView: 3.5,
-      spaceBetween: 1
-    },
-    640: {
-      slidesPerView: 2.5,
-      spaceBetween: 1
-    },
-    320: {
-      slidesPerView: 1.5,
-      spaceBetween: 1
-    }
-  }
-}
-
 const Home: React.FC = () => {
   const db = getFirestore(firebaseInit);
   const storage = getStorage(firebaseInit);
@@ -50,21 +27,46 @@ const Home: React.FC = () => {
   }, []);
 
   //Dummy Data
-  const addData = async() => {
+  const dummyData = [{
+    name: "RTX 2060",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-test.appspot.com/o/rtx2060.png?alt=media&token=5fa85bd8-07c3-4daf-b0e8-805f5654428c",
+    price: "5.524.130",
+    category: "gaming",
+    release: "Q1 2019",
+    effectiveSpeed: 88,
+    lighting: 114,
+    reflection: 117,
+    mrender: 133,
+    gravity: 100
+  }, {
+    name: "MX 230",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-test.appspot.com/o/rtx2060.png?alt=media&token=5fa85bd8-07c3-4daf-b0e8-805f5654428c",
+    price: "1.000.000",
+    category: "electronics",
+    release: "Q1 2017",
+    effectiveSpeed: 40,
+    lighting: 80,
+    reflection: 100,
+    mrender: 90,
+    gravity: 100
+  }, {
+    name: "Quadro RTX 4000",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-test.appspot.com/o/rtx2060.png?alt=media&token=5fa85bd8-07c3-4daf-b0e8-805f5654428c",
+    price: "5.000.000",
+    category: "multimedia",
+    release: "Q1 2020",
+    effectiveSpeed: 90,
+    lighting: 100,
+    reflection: 100,
+    mrender: 110,
+    gravity: 100
+  }];
+  const addData = async () => {
     try {
-      const docRef = await addDoc(collection(db, "product"),{
-        name: "RTX 2060",
-        image: "https://firebasestorage.googleapis.com/v0/b/renebae-test.appspot.com/o/rtx2060.png?alt=media&token=5fa85bd8-07c3-4daf-b0e8-805f5654428c",
-        price: "5,524,130",
-        category: "gaming",
-        release: "Q1 2019",
-        effectiveSpeed: 88,
-        lighting: 114,
-        reflection: 117,
-        mrender: 133,
-        gravity: 100
+      dummyData.forEach(async element => {
+        const docRef = await addDoc(collection(db, "product"), element);
+        console.log("Document written with ID: ", docRef.id);
       });
-      console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
