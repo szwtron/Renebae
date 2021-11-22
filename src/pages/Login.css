@@ -1,9 +1,8 @@
 .centered {
-    text-align: center;
+  text-align: center;
 }
 
 .contentCenter {
-  width: 50%;
   justify-content: center;
   align-items: center;
   margin-left: auto;

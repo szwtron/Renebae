@@ -1,25 +1,31 @@
 import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonCard, IonGrid, IonText, IonRow, IonCardContent, IonInput, IonItem, IonLabel, IonCardHeader, IonCardTitle, IonCol, IonButton, IonLoading } from "@ionic/react";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { useState } from "react";
 import firebaseInit from "../firebase_config";
 import './Login.css';
 import { toast } from "../toast";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
     const [busy, setBusy] = useState<boolean>(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [cpassword, setCpassword] = useState('');
 
-    const db = getFirestore(firebaseInit);
     const auth = getAuth(firebaseInit);
 
-    async function login() {
+    async function Signup() {
+        console.log(username);
         setBusy(true);
+        if (password !== cpassword) {
+            return toast('Password does not match');
+        }
+        if (username.trim() === '' || password.trim() === '') {
+            return toast('Username and password cannot be empty');
+        }
+
         try {
-            const res = await signInWithEmailAndPassword(auth, username, password);
+            const res = await createUserWithEmailAndPassword(auth, username, password)
             console.log(res);
-            toast('Login Successful');
             setBusy(false);
         } catch (error: any) {
             console.log(error);
@@ -27,6 +33,7 @@ const Login: React.FC = () => {
             setBusy(false);
         }
     }
+
     return (
         <IonPage>
             <IonHeader>
@@ -34,7 +41,7 @@ const Login: React.FC = () => {
                     <IonButtons slot="start">
                         <IonMenuButton />
                     </IonButtons>
-                    <IonTitle>Login</IonTitle>
+                    <IonTitle>Sign up</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonLoading message="Please wait..." duration={0} isOpen={busy} />
@@ -42,7 +49,7 @@ const Login: React.FC = () => {
                 <div className="contentCenter">
                     <IonCard>
                         <IonCardHeader>
-                            <IonCardTitle>Login</IonCardTitle>
+                            <IonCardTitle>Sign up</IonCardTitle>
                         </IonCardHeader>
                         <IonCardContent>
                             <IonGrid>
@@ -63,13 +70,16 @@ const Login: React.FC = () => {
                                     </IonCol>
                                 </IonRow>
                                 <IonRow>
-                                    <IonCol size="5">
-                                        <IonButton expand="block" onClick={login}>Login</IonButton>
+                                    <IonCol>
+                                        <IonItem>
+                                            <IonLabel position="floating">Confirm Password</IonLabel>
+                                            <IonInput type="password" onIonChange={(e: any) => setCpassword(e.target.value)} />
+                                        </IonItem>
                                     </IonCol>
-                                    <IonCol size="2">
-                                    </IonCol>
-                                    <IonCol size="5">
-                                        <IonButton expand="block" color="tertiary" href="/page/signup">Sign Up</IonButton>
+                                </IonRow>
+                                <IonRow>
+                                    <IonCol>
+                                        <IonButton expand="block" color="tertiary" onClick={Signup}>Sign Up</IonButton>
                                     </IonCol>
                                 </IonRow>
                             </IonGrid>
@@ -81,4 +91,4 @@ const Login: React.FC = () => {
     );
 }
 
-export default Login;
+export default Signup;
