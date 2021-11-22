@@ -1,15 +1,32 @@
 import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { cartOutline, heartOutline, trashBinOutline } from 'ionicons/icons';
+import { cartOutline, heartOutline, logoWindows, trashBinOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import firebaseInit from "../firebase_config";
 import './Cart.css';
 
 const Cart: React.FC = () => {
+    const db = getFirestore(firebaseInit);
     const [jumlahbarang, setJumlahBarang] = useState<number>(0);
     const auth = getAuth();
     const user = auth.currentUser;
+    const [cart, setCart] = useState<Array<any>>([]);
     const history = useHistory();
+    let subTotal = 0;
+
+    {
+        cart.filter(cart => cart.userId === user?.uid).map(cart => {
+            var string = JSON.parse(cart.items).price;
+            string = string.replaceAll('.', '');
+            subTotal += (parseInt(string) * parseInt(JSON.parse(cart.items).qty));
+            //console.log(subTotal);
+        })
+    };
+    let grandTotal = 0;
+    grandTotal = subTotal + 10000;
 
     useEffect(() => {
         onAuthStateChanged(auth, (user: any) => {
@@ -17,18 +34,29 @@ const Cart: React.FC = () => {
                 window.location.href = '/page/Login';
             }
         });
-    }, []);
-
-
-    const plus = async () => {
-        let i = jumlahbarang;
-        i++;
-        setJumlahBarang(i);
+        async function getData() {
+            const querySnapshot = await getDocs(collection(db, "cart"));
+            // console.log('querySnapshot', querySnapshot);
+            setCart(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        }
+        getData();
+    });
+    
+    async function deleteFromCart(idC: string) {
+        await deleteDoc(doc(db, "cart", idC));
+        //window.location.href = '/page/Cart';
     }
-    const min = async () => {
-        let i = jumlahbarang;
+    //plus minus qty belom
+    const plus = async (i: number) => {
+        i++;
+        console.log(i);
+        setJumlahBarang(i);
+        return i;
+    }
+    const min = async (i: number) => {
         if (i != 0) {
             i--;
+            console.log(i);
             setJumlahBarang(i);
         }
     }
@@ -50,42 +78,44 @@ const Cart: React.FC = () => {
             <IonContent fullscreen className="ion-padding">
                 <IonGrid>
                     <IonRow><h3>Shopping Cart</h3></IonRow>
-                    <IonRow>
-                        <IonCol size="5">
-                            <IonRow><img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" alt="" /></IonRow>
-                            <IonRow><IonCol className="ion-text-center">PS 5</IonCol></IonRow>
-                            <IonRow><IonCol className="ion-text-center">Rp. 1.500.000</IonCol></IonRow>
-                        </IonCol>
-                        <IonCol size="7">
-                            <IonRow>
-                                <IonCol className="ion-text-center">
-                                    <IonButton color="dark" fill="outline" onClick={min} size="small">-</IonButton>
-                                </IonCol>
-                                <IonCol>
-                                    <IonInput className="ion-text-center" type="number" value={jumlahbarang}></IonInput>
-                                </IonCol>
-                                <IonCol className="ion-text-center">
-                                    <IonButton color="dark" fill="outline" onClick={plus} size="small">+</IonButton>
-                                </IonCol>
-                            </IonRow>
-                            <IonRow>
-                                <IonCol>
-                                    <IonButton color="success" fill="outline" className="moveToBtn" expand="block">
-                                        <IonIcon icon={heartOutline} slot="start" />
-                                        Move to Wishlist
-                                    </IonButton>
-                                </IonCol>
-                            </IonRow>
-                            <IonRow>
-                                <IonCol>
-                                    <IonButton color="danger" fill="outline" className="removeBtn" expand="block">
-                                        <IonIcon icon={trashBinOutline} slot="start" />
-                                        Remove
-                                    </IonButton>
-                                </IonCol>
-                            </IonRow>
-                        </IonCol>
-                    </IonRow>
+                    {cart && cart.filter(cart => cart.userId === user?.uid).map(cart => (
+                        <IonRow key={cart.id}>
+                            <IonCol size="5">
+                                <IonRow><img src={JSON.parse(cart.items).image} alt="" /></IonRow>
+                                <IonRow><IonCol className="ion-text-center">{JSON.parse(cart.items).name}</IonCol></IonRow>
+                                <IonRow><IonCol className="ion-text-center">Rp. {JSON.parse(cart.items).price}</IonCol></IonRow>
+                            </IonCol>
+                            <IonCol size="7">
+                                <IonRow>
+                                    <IonCol className="ion-text-center">
+                                        <IonButton color="dark" fill="outline" onClick={() => min(JSON.parse(cart.items).qty)} size="small">-</IonButton>
+                                    </IonCol>
+                                    <IonCol>
+                                        <IonInput className="ion-text-center" type="number" value={JSON.parse(cart.items).qty}></IonInput>
+                                    </IonCol>
+                                    <IonCol className="ion-text-center">
+                                        <IonButton color="dark" fill="outline" onClick={() => plus(JSON.parse(cart.items).qty)} size="small">+</IonButton>
+                                    </IonCol>
+                                </IonRow>
+                                <IonRow>
+                                    <IonCol>
+                                        <IonButton color="success" fill="outline" className="moveToBtn" expand="block">
+                                            <IonIcon icon={heartOutline} slot="start" />
+                                            Move to Wishlist
+                                        </IonButton>
+                                    </IonCol>
+                                </IonRow>
+                                <IonRow>
+                                    <IonCol>
+                                        <IonButton onClick={() => deleteFromCart(cart.id)} color="danger" fill="outline" className="removeBtn" expand="block">
+                                            <IonIcon icon={trashBinOutline} slot="start" />
+                                            Remove
+                                        </IonButton>
+                                    </IonCol>
+                                </IonRow>
+                            </IonCol>
+                        </IonRow>
+                    ))}
                 </IonGrid>
 
                 <IonGrid>
@@ -94,7 +124,7 @@ const Cart: React.FC = () => {
                     </IonRow>
                     <IonRow className="cart-summary">
                         <IonCol>Sub Total</IonCol>
-                        <IonCol> Rp. 3.000.000</IonCol>
+                        <IonCol>Rp. {subTotal}</IonCol>
                     </IonRow>
                     <IonRow className="cart-summary">
                         <IonCol>Shipping</IonCol>
@@ -107,11 +137,11 @@ const Cart: React.FC = () => {
                     <hr color='light' />
                     <IonRow className="cart-summary">
                         <IonCol>Grand Total</IonCol>
-                        <IonCol>Rp. 3.010.000</IonCol>
+                        <IonCol>Rp. {grandTotal}</IonCol>
                     </IonRow>
                     <IonRow>
                         <IonCol>
-                            <IonButton expand="block" color="medium">Proceed To Checkout</IonButton>
+                            <IonButton routerLink="/page/Cart/Checkout" expand="block" color="medium">Proceed To Checkout</IonButton>
                         </IonCol>
                     </IonRow>
                     <IonRow>
