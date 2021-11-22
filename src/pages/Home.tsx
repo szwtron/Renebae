@@ -18,6 +18,7 @@ const Home: React.FC = () => {
 
   const history = useHistory();
   const auth = getAuth(firebaseInit);
+  const user = auth.currentUser;
   //Read data
   //Usage getData:
   // Call function 
@@ -81,10 +82,24 @@ const Home: React.FC = () => {
     gravity: JSON.stringify(json)
   }];
 
+  //data user
+  const dummyDataUser = [{
+    uid: user?.uid,
+    username: "haneure",
+    name: "Christian Halim",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/Chris%20crop.png?alt=media&token=497301d1-0692-42ec-bfae-c2aceccf09d4",
+    email: user?.email,
+    photoURL: user?.photoURL,
+    phone: user?.phoneNumber,
+    birthdate: "17-November-2000",
+    address1: "Jl. Kenari No. 7 RT/RW 001/002 Anggut Dalam Bengkulu",
+    address2: "Kec. Ratu Samban 38222 Bengkulu"
+  }];
+
   const addData = async () => {
     try {
-      dummyData.forEach(async element => {
-        const docRef = await addDoc(collection(db, "cart"), element);
+      dummyDataUser.forEach(async element => {
+        const docRef = await addDoc(collection(db, "user"), element);
         console.log("Document written with ID: ", docRef.id);
       });
     } catch (e) {
@@ -121,7 +136,7 @@ const Home: React.FC = () => {
             <IonTitle size="large">Renebae</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonButton>wee</IonButton>
+        <IonButton onClick={addData}>wee</IonButton>
 
         <IonCard color="secondary">
           <IonCardContent>
