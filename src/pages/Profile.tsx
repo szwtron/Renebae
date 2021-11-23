@@ -1,5 +1,5 @@
 import { addDoc, collection } from "@firebase/firestore";
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonText, IonImg, IonGrid, IonRow, IonCard, IonButton } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonText, IonImg, IonGrid, IonRow, IonCard, IonButton, useIonViewWillEnter } from "@ionic/react";
 import { info } from "console";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -18,20 +18,16 @@ const Profile: React.FC = () => {
     const auth = getAuth(firebaseInit);
     const user = auth.currentUser;
     const firebase = new firebaseFunction();
-
     const history = useHistory();
 
-    useEffect(() => {
-        async function getData() {
-            const productFirebase = firebase.getData("user");
-            setUser(await productFirebase);
-        }
+    useIonViewWillEnter(() => {
         getData();
-    }, []);
+    });
 
-    {userInfo.filter(info=>info.uid === user?.uid).map(info=>{
-        console.log(info.name);
-    })}
+    const getData = async () => {
+        const productFirebase = firebase.getData("user");
+        setUser(await productFirebase);
+    }
 
     const dummyData = [{
     uid: user?.uid,
