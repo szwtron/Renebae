@@ -2,10 +2,13 @@ import { IonAvatar, IonButton, IonButtons, IonCard, IonCardHeader, IonCol, IonCo
 import { addOutline, pencilOutline, trashBinOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { firebaseFunction } from "../../services/firebase";
+import { useHistory, useParams } from 'react-router-dom'
+import { deleteDoc, doc } from "firebase/firestore";
 
 const CRUDCategories : React.FC = () => {
     const firebase = new firebaseFunction();
     const [categories, setCategories] = useState<Array<any>>([]);
+    const history = useHistory();
 
     useEffect(() => {
         async function getData() {
@@ -14,6 +17,13 @@ const CRUDCategories : React.FC = () => {
         }
         getData();
     }, []);
+
+    const deleteCat = async (nama: string) => {
+        console.log(nama + " Dihapus");
+        // await firebase.deleteData("categories", categoryName, field);
+        //history.push('/page/Admin/Categories');
+        
+    }
 
     console.log(categories);
     return (
@@ -43,7 +53,7 @@ const CRUDCategories : React.FC = () => {
                                 <IonTitle>Categories</IonTitle>
                             </IonCol>
                             <IonCol>
-                                <IonButton expand="block" color="success"><IonIcon slot='icon-only' icon={addOutline} />Add Category</IonButton>
+                                <IonButton expand="block" color="success" routerLink={`/page/addcategory/`}><IonIcon slot='icon-only' icon={addOutline} />Add Category</IonButton>
                             </IonCol>
                         </IonRow>
                     </IonGrid>
@@ -74,10 +84,10 @@ const CRUDCategories : React.FC = () => {
                                         <td>
                                             <IonRow>
                                                 <IonCol>
-                                                    { window.innerWidth < 500 ? <IonButton color="warning"><IonIcon slot='icon-only' icon={pencilOutline} /></IonButton> : <IonButton color="warning"><IonIcon slot='icon-only' icon={pencilOutline} />Edit</IonButton>}
+                                                    { window.innerWidth < 500 ? <IonButton color="warning" routerLink={`/page/editcategory/${category.id}`}><IonIcon slot='icon-only' icon={pencilOutline} /></IonButton> : <IonButton color="warning" routerLink={`/page/editcategory/${category.id}`}><IonIcon slot='icon-only' icon={pencilOutline} />Edit</IonButton>}
                                                 </IonCol>
                                                 <IonCol>
-                                                    { window.innerWidth < 500 ? <IonButton color="danger"><IonIcon slot='icon-only' icon={trashBinOutline} /></IonButton> : <IonButton color="danger"><IonIcon slot='icon-only' icon={trashBinOutline} />Delete</IonButton>}
+                                                    { window.innerWidth < 500 ? <IonButton color="danger" onClick={() => deleteCat(category.name)}><IonIcon slot='icon-only' icon={trashBinOutline} /></IonButton> : <IonButton color="danger" onClick={() => deleteCat(category.name)}><IonIcon slot='icon-only' icon={trashBinOutline} />Delete</IonButton>}
                                                 </IonCol>
                                             </IonRow>
                                         </td>

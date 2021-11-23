@@ -36,6 +36,8 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useEffect } from 'react';
 import CRUDCategories from './pages/Admin/CRUDCategories';
 import CRUDProducts from './pages/Admin/CRUDProducts';
+import EditCategory from './pages/Admin/UpdateCategories';
+import AddCategory from './pages/Admin/AddCategories';
 
 const App: React.FC = () => {
   return (
@@ -82,6 +84,12 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/editprofile" exact={true}>
               <EditProfile />
+            </Route>
+            <Route path="/page/editcategory/:id" exact={true}>
+              <EditCategory />
+            </Route>
+            <Route path="/page/addcategory" exact={true}>
+              <AddCategory />
             </Route>
             <Route path="/page/Logout" exact={true}>
               <Logout />

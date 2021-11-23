@@ -44,7 +44,19 @@ const Home: React.FC = () => {
 
   //setProduct(productFirebase.map((doc) => ({...doc.data(), id:doc.id})));
   
-
+  //data user
+  const dummyDataUser = {
+    uid: user?.uid,
+    username: "juliushoho",
+    name: "Julius Cannavaro",
+    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/Chris%20crop.png?alt=media&token=497301d1-0692-42ec-bfae-c2aceccf09d4",
+    email: user?.email,
+    photoURL: user?.photoURL,
+    phone: user?.phoneNumber,
+    birthdate: "17-July-2001",
+    address1: "Taman Sentosa Blok D3 No.35",
+    address2: "Kec. Pasir Sari, Cikarang Selatan"
+  };
     
 
 
@@ -216,6 +228,8 @@ const Home: React.FC = () => {
         </IonCard>
 
         <IonSearchbar></IonSearchbar>
+
+        <IonButton onClick={isSignedIn ? () => firebase.addData(dummyDataUser, "user") : signedOut}>Test</IonButton>
 
         <IonCard>
           <IonCardContent>
