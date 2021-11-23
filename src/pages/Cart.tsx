@@ -7,10 +7,16 @@ import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore } from "fireb
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 import './Cart.css';
+import { firebaseFunction } from '../services/firebase';
 
 const Cart: React.FC = () => {
     const db = getFirestore(firebaseInit);
     const [jumlahbarang, setJumlahBarang] = useState<number>(0);
+    const [product, setProduct] = useState<Array<any>>([]);
+    const firebase = new firebaseFunction();
+    const db = getFirestore(firebaseInit);
+    const storage = getStorage(firebaseInit);
+
     const auth = getAuth();
     const user = auth.currentUser;
     const [cart, setCart] = useState<Array<any>>([]);
@@ -60,6 +66,14 @@ const Cart: React.FC = () => {
             setJumlahBarang(i);
         }
     }
+
+    useEffect(() => {
+        async function getData() {
+            const productFirebase = firebase.getData("cart");
+            setProduct(await productFirebase);
+        }
+        getData();
+    }, []);
 
     return (
         <IonPage>
