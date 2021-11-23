@@ -8,6 +8,7 @@ import firebaseInit from '../firebase_config';
 import { firebaseFunction } from "../services/firebase";
 import { useHistory } from 'react-router';
 import './Page.css';
+import { getMetadata } from '@firebase/storage';
 
 const EditProfile: React.FC = () => {
 
@@ -29,44 +30,32 @@ const EditProfile: React.FC = () => {
   const phoneRef = useRef<HTMLIonInputElement>(null);
 
   useEffect(() => {
-        async function getData() {
-            const userFirebase = firebase.getData("user");
-            setUser(await userFirebase);
-        }
-        getData();
-    }, []);
-    async function addData(){
-      firebase.addData(dummyDataUser, "user");
+    getData();
+  }, []);
 
-    }
-    const updateData = () => {
-        const field = {
-            username: usernameRef.current?.value,
-            email: emailRef.current?.value,
-            name: nameRef.current?.value,
-            birthdate: dateRef.current?.value,
-            address1: address1Ref.current?.value,
-            address2: address2Ref.current?.value,
-            phone: phoneRef.current?.value as number
-        }
-        firebase.updateData("user", userInfo, field);
-        history.push('/page/Profile');
-    }
-    console.log(user?.uid);
+  const getData = async () => {
+    const userFirebase = firebase.getData("user");
+    setUser(await userFirebase);
+  };
 
-    const dummyDataUser = {
-      id: user?.uid,
-      uid: user?.uid,
-      username: "haneurea",
-      name: "Christian Halim",
-      image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/Chris%20crop.png?alt=media&token=497301d1-0692-42ec-bfae-c2aceccf09d4",
-      email: user?.email,
-      photoURL: user?.photoURL,
-      phone: user?.phoneNumber,
-      birthdate: "17-November-2000",
-      address1: "Jl. Kenari No. 7 RT/RW 001/002 Anggut Dalam Bengkulu",
-      address2: "Kec. Ratu Samban 38222 Bengkulu"
-    };
+  const updateData = async () => {
+      const field = {
+          username: usernameRef.current?.value,
+          email: emailRef.current?.value,
+          name: nameRef.current?.value,
+          birthdate: dateRef.current?.value,
+          address1: address1Ref.current?.value,
+          address2: address2Ref.current?.value,
+          phone: phoneRef.current?.value as number
+      }
+      userInfo.filter(user => user.uid == user?.uid).map(user => {
+        firebase.updateData("user", user.id, field);
+      })
+      history.push('/Home');
+  }
+
+    
+
   return (
     <IonPage>
       <IonHeader>
