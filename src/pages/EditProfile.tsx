@@ -126,9 +126,8 @@ const EditProfile: React.FC = () => {
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonButton onClick={addData}>wee</IonButton>
-        {userInfo.filter(info=>info.uid === user?.uid).map(info => (
-            <IonGrid key={info.uid} className="ion-padding">
+        {userInfo.filter(info=>info. userId === user?.uid).map(info => (
+            <IonGrid key={info.userId} className="ion-padding">
                 <IonRow className="">
                   <IonCol className="ion-text-center">
                     <div className="image-preview">
