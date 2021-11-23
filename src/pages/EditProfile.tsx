@@ -1,5 +1,5 @@
 import { getAuth } from '@firebase/auth';
-import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { getFirestore } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
@@ -9,13 +9,21 @@ import { firebaseFunction } from "../services/firebase";
 import { useHistory } from 'react-router';
 import './Page.css';
 import { getMetadata } from '@firebase/storage';
+import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
+import { camera } from 'ionicons/icons';
+import {base64FromPath} from "@ionic/react-hooks/filesystem";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const EditProfile: React.FC = () => {
-
+  const [takenPhoto, setTakenPhoto] = useState<{
+    path: string | undefined;
+    preview: string;
+  }>();
   const { name } = useParams<{ name: string; }>();
   const [userInfo, setUser] = useState<Array<any>>([]);
   
   const db = getFirestore(firebaseInit);
+  const storage = getStorage(firebaseInit);
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
   const firebase = new firebaseFunction();
@@ -34,25 +42,79 @@ const EditProfile: React.FC = () => {
   }, []);
 
   const getData = async () => {
-    const userFirebase = firebase.getData("user");
-    setUser(await userFirebase);
+    const userFirebase = await firebase.getData("user");
+    console.log(userFirebase);
+    setUser(userFirebase);
+    userFirebase.filter(user => user.uid == user?.uid).map(user => {
+      setTakenPhoto({
+       path: user.image,
+       preview: user.image
+     });
+    });
   };
 
   const updateData = async () => {
-      const field = {
-          username: usernameRef.current?.value,
-          email: emailRef.current?.value,
-          name: nameRef.current?.value,
-          birthdate: dateRef.current?.value,
-          address1: address1Ref.current?.value,
-          address2: address2Ref.current?.value,
-          phone: phoneRef.current?.value as number
-      }
-      userInfo.filter(user => user.uid == user?.uid).map(user => {
-        firebase.updateData("user", user.id, field);
+    const fileName = usernameRef.current?.value + '.jpg';
+    const base64Image  = await base64FromPath(takenPhoto!.preview);
+    fetch(base64Image)
+    .then(async(res) => {
+        const parsedBlob = await res.blob();
+
+        //Upload photo to firebase
+        const storageRef = ref(storage, fileName);
+        uploadBytes(storageRef, parsedBlob).then((snapshot) => {
+        console.log('upload file success');
+
+        //Get photo URL
+        getDownloadURL(ref(storage, fileName)).then((url)=>{
+          const field = {
+            username: usernameRef.current?.value,
+            email: emailRef.current?.value,
+            name: nameRef.current?.value,
+            birthdate: dateRef.current?.value,
+            address1: address1Ref.current?.value,
+            address2: address2Ref.current?.value,
+            phone: phoneRef.current?.value as number,
+            image: url
+          }
+
+          //Update the data
+          userInfo.filter(info => info.userId == user?.uid).map(user => {
+            console.log(user.userId);
+            firebase.updateData("user", user.id, field);
+          })
+          history.push('/Home');
+        })
       })
-      history.push('/Home');
-  }
+    });
+  };
+
+  const takePhotoHandler = async () => {
+    const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Uri, 
+        source: CameraSource.Camera,
+        quality: 90,
+        width: 500
+    });
+    console.log(photo);
+    
+    //Set lat and lng where photo is taken
+    // const coordinates = await Geolocation.getCurrentPosition({enableHighAccuracy:true});
+    // console.log('Current position:', coordinates);
+    // console.log('Lat:', coordinates.coords.latitude);
+    // console.log('Lng:', coordinates.coords.longitude);
+    // setLat(coordinates.coords.latitude);
+    // setLng(coordinates.coords.longitude);
+
+    if(!photo || /*!photo.path ||*/ !photo.webPath){
+        return;
+    }
+    
+    setTakenPhoto({
+        path: photo.path,
+        preview: photo.webPath
+    });
+  };
 
     
 
@@ -75,6 +137,19 @@ const EditProfile: React.FC = () => {
         </IonHeader>
         {userInfo.filter(info=>info.uid === user?.uid).map(info => (
             <IonGrid key={info.uid} className="ion-padding">
+                <IonRow className="">
+                  <IonCol className="ion-text-center">
+                    <div className="image-preview">
+                        {!takenPhoto && <h3>No photo choosen.</h3>}
+                        {takenPhoto && <img src={takenPhoto.preview} alt="Preview"/>}
+                        
+                    </div>
+                    <IonButton fill="clear" onClick={takePhotoHandler}>
+                        <IonIcon slot="start" icon={camera}></IonIcon>
+                        <IonLabel>Take Photo</IonLabel>
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
                 <IonRow>
                     <IonCol>
                     <IonItem>
