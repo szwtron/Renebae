@@ -27,6 +27,7 @@ const Profile: React.FC = () => {
     const getData = async () => {
         const productFirebase = firebase.getData("user");
         setUser(await productFirebase);
+        console.log(userInfo);
     }
 
     const dummyData = [{
@@ -66,7 +67,7 @@ const Profile: React.FC = () => {
             </IonHeader>
             <IonContent>
                 <IonCard>
-                    {userInfo.filter(info=>info.uid === user?.uid).map(info => (
+                    {userInfo.filter(info=>info.userId === user?.uid).map(info => (
                         <IonGrid key={info.uid}>
                             <IonRow>
                                 <div className="contentCenter">
