@@ -1,78 +1,166 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonLoading, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { cartOutline, heartOutline, logoWindows, trashBinOutline } from 'ionicons/icons';
-import { useEffect, useState } from 'react';
+import { car, cartOutline, heartOutline, logoWindows, trashBinOutline } from 'ionicons/icons';
+import { JSXElementConstructor, Key, ReactChild, ReactElement, ReactFragment, ReactNodeArray, ReactPortal, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 import './Cart.css';
+import { cartFunction } from '../services/cart';
 import { firebaseFunction } from '../services/firebase';
+import NumberFormat from 'react-number-format';
+import { async } from '@firebase/util';
 
 const Cart: React.FC = () => {
     const db = getFirestore(firebaseInit);
     const [jumlahbarang, setJumlahBarang] = useState<number>(0);
     const [product, setProduct] = useState<Array<any>>([]);
+    const [busy, setBusy] = useState<boolean>(false);
     const firebase = new firebaseFunction();
     const storage = getStorage(firebaseInit);
-
+    const carts = new cartFunction();
     const auth = getAuth();
     const user = auth.currentUser;
     const [cart, setCart] = useState<Array<any>>([]);
     const history = useHistory();
+    let cartArray: Array<any> = [];
+    let dataArray: Array<any> = [];
+    let updatedDataArray: Array<any> = [];
+    let filteredDataArray: Array<string> = [];
+    let cartId = '';
     let subTotal = 0;
-
-    {
-        cart.filter(cart => cart.userId === user?.uid).map(cart => {
-            var string = JSON.parse(cart.items).price;
-            string = string.replaceAll('.', '');
-            subTotal += (parseInt(string) * parseInt(JSON.parse(cart.items).qty));
-            //console.log(subTotal);
-        })
-    };
-    let grandTotal = 0;
-    grandTotal = subTotal + 10000;
-
     useEffect(() => {
         onAuthStateChanged(auth, (user: any) => {
             if (!user) {
                 window.location.href = '/page/Login';
             }
         });
-        async function getData() {
-            const querySnapshot = await getDocs(collection(db, "cart"));
-            // console.log('querySnapshot', querySnapshot);
-            setCart(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-        }
-        getData();
-    });
-    
-    async function deleteFromCart(idC: string) {
-        await deleteDoc(doc(db, "cart", idC));
-        //window.location.href = '/page/Cart';
-    }
-    //plus minus qty belom
-    const plus = async (i: number) => {
-        i++;
-        console.log(i);
-        setJumlahBarang(i);
-        return i;
-    }
-    const min = async (i: number) => {
-        if (i != 0) {
-            i--;
-            console.log(i);
-            setJumlahBarang(i);
-        }
-    }
-
-    useEffect(() => {
-        async function getData() {
-            const productFirebase = firebase.getData("cart");
-            setProduct(await productFirebase);
-        }
         getData();
     }, []);
+
+    async function getData() {
+        const productFirebase = firebase.getData("cart");
+        setCart(await productFirebase);
+    }
+    // useEffect(() => {
+    //     async function getData() {
+    //         const productFirebase = firebase.getData("cart");
+    //         setProduct(await productFirebase);
+    //     }
+    //     getData();
+    // }, []);
+
+    //buat ngeprint cartnya
+    cart.filter(cart => cart.userId === user?.uid).map(cart => {
+        console.log(cart.userId)
+        console.log(user?.uid)
+        cartId = cart.id;
+        console.log(cart.items)
+        cartArray = (cart.items);
+        cartArray.forEach(e => {
+            console.log("asd");
+            subTotal += (parseInt(e.price) * parseInt(e.qty));
+            console.log(subTotal);
+            dataArray.push(e);
+        });
+    })
+
+    console.log(dataArray);
+    const deleteFromCart = (idP: string) => {
+        cart.filter(cart => cart.userId === user?.uid).map(cart => {
+            console.log(filteredDataArray);
+            cartId = cart.id;
+            cartArray = dataArray.filter(e => e.idP !== idP)
+            console.log(dataArray.filter(e => e.idP !== idP));
+            console.log(cartArray);
+
+        })
+        cartArray.forEach(e => {
+            filteredDataArray.push(e)
+        });
+        console.log(filteredDataArray);
+
+        carts.updateData(filteredDataArray, user?.uid, cartId);
+        getData();
+    }
+
+
+    let grandTotal = 0;
+    grandTotal = subTotal + 10000;
+    const  plusmin =  ( idP: string, plusmin: string)=>{
+        
+        let index = 0;
+        let count = 0;
+        let qty = 0;
+        cart.filter(cart => cart.userId === user?.uid).map(cart => {
+            cartId = cart.id;
+            dataArray = (cart.items);
+            console.log(dataArray);
+            if (plusmin === "plus") {
+                dataArray.forEach((e: any) => {
+                    if (e.idP === idP) {
+                        qty = e.qty;
+                        qty++;
+                        var obj = {
+                            idP: e.idP,
+                            name: e.name,
+                            image: e.image,
+                            price: e.price,
+                            qty: qty
+                        }
+                        updatedDataArray.push(obj);
+                    }
+                    else {
+                        qty = e.qty;
+                        obj = {
+                            idP: e.idP,
+                            name: e.name,
+                            image: e.image,
+                            price: e.price,
+                            qty: qty
+                        }
+                        updatedDataArray.push(obj);
+                    }
+                    console.log(updatedDataArray);
+                });
+                carts.updateData(updatedDataArray, user?.uid, cartId);
+            }
+            else if (plusmin === "min") {
+                dataArray.forEach((e: any) => {
+                    if (e.idP === idP) {
+                        qty = e.qty;
+                        qty--;
+                        var obj = {
+                            idP: e.idP,
+                            name: e.name,
+                            image: e.image,
+                            price: e.price,
+                            qty: qty
+                        }
+                        updatedDataArray.push(obj);
+                    }
+                    else {
+                        qty = e.qty;
+                        obj = {
+                            idP: e.idP,
+                            name: e.name,
+                            image: e.image,
+                            price: e.price,
+                            qty: qty
+                        }
+                        updatedDataArray.push(obj);
+                    }
+                    console.log(updatedDataArray);
+                });
+                carts.updateData(updatedDataArray, user?.uid, cartId);
+            }
+        })
+        getData();
+
+    }
+
+
 
     return (
         <IonPage>
@@ -87,27 +175,35 @@ const Cart: React.FC = () => {
                     </IonAvatar>
                 </IonToolbar>
             </IonHeader>
+            <IonLoading message="Please wait..." duration={3000} isOpen={busy} />
 
             <IonContent fullscreen className="ion-padding">
                 <IonGrid>
                     <IonRow><h3>Shopping Cart</h3></IonRow>
-                    {cart && cart.filter(cart => cart.userId === user?.uid).map(cart => (
-                        <IonRow key={cart.id}>
+                    {dataArray.length === 0 && (
+                        <IonRow>
+                            <IonCol>
+                                <h5>Keranjang Belanja anda masih kosong</h5>
+                            </IonCol>
+                        </IonRow>
+                    )}
+                    {dataArray && dataArray.map((dataArray: { idP: string; image: string | undefined; name: null | string | undefined; price: string | undefined; qty: number; }) => (
+                        <IonRow key={dataArray.idP}>
                             <IonCol size="5">
-                                <IonRow><img src={JSON.parse(cart.items).image} alt="" /></IonRow>
-                                <IonRow><IonCol className="ion-text-center">{JSON.parse(cart.items).name}</IonCol></IonRow>
-                                <IonRow><IonCol className="ion-text-center">Rp. {JSON.parse(cart.items).price}</IonCol></IonRow>
+                                <IonRow><img src={dataArray.image} alt="" /></IonRow>
+                                <IonRow><IonCol className="ion-text-center">{dataArray.name}</IonCol></IonRow>
+                                <IonRow><IonCol className="ion-text-center">Rp. {dataArray.price}</IonCol></IonRow>
                             </IonCol>
                             <IonCol size="7">
                                 <IonRow>
                                     <IonCol className="ion-text-center">
-                                        <IonButton color="dark" fill="outline" onClick={() => min(JSON.parse(cart.items).qty)} size="small">-</IonButton>
+                                        <IonButton color="dark" fill="outline" onClick={() => plusmin( dataArray.idP, "min")} size="small" >-</IonButton>
                                     </IonCol>
                                     <IonCol>
-                                        <IonInput className="ion-text-center" type="number" value={JSON.parse(cart.items).qty}></IonInput>
+                                        <IonInput className="ion-text-center" type="number" value={dataArray.qty} disabled></IonInput>
                                     </IonCol>
                                     <IonCol className="ion-text-center">
-                                        <IonButton color="dark" fill="outline" onClick={() => plus(JSON.parse(cart.items).qty)} size="small">+</IonButton>
+                                        <IonButton color="dark" fill="outline" onClick={() => plusmin( dataArray.idP, "plus")} size="small">+</IonButton>
                                     </IonCol>
                                 </IonRow>
                                 <IonRow>
@@ -120,7 +216,7 @@ const Cart: React.FC = () => {
                                 </IonRow>
                                 <IonRow>
                                     <IonCol>
-                                        <IonButton onClick={() => deleteFromCart(cart.id)} color="danger" fill="outline" className="removeBtn" expand="block">
+                                        <IonButton onClick={() => deleteFromCart(dataArray.idP)} color="danger" fill="outline" className="removeBtn" expand="block">
                                             <IonIcon icon={trashBinOutline} slot="start" />
                                             Remove
                                         </IonButton>
@@ -137,7 +233,17 @@ const Cart: React.FC = () => {
                     </IonRow>
                     <IonRow className="cart-summary">
                         <IonCol>Sub Total</IonCol>
-                        <IonCol>Rp. {subTotal}</IonCol>
+                        <IonCol>
+                            <NumberFormat
+                                thousandsGroupStyle="thousand"
+                                value={subTotal}
+                                prefix="Rp. "
+                                decimalSeparator="."
+                                displayType="text"
+                                type="text"
+                                thousandSeparator={true}
+                                allowNegative={true} />
+                        </IonCol>
                     </IonRow>
                     <IonRow className="cart-summary">
                         <IonCol>Shipping</IonCol>
@@ -150,7 +256,17 @@ const Cart: React.FC = () => {
                     <hr color='light' />
                     <IonRow className="cart-summary">
                         <IonCol>Grand Total</IonCol>
-                        <IonCol>Rp. {grandTotal}</IonCol>
+                        <IonCol>
+                            <NumberFormat
+                                thousandsGroupStyle="thousand"
+                                value={grandTotal}
+                                prefix="Rp. "
+                                decimalSeparator="."
+                                displayType="text"
+                                type="text"
+                                thousandSeparator={true}
+                                allowNegative={true} />
+                        </IonCol>
                     </IonRow>
                     <IonRow>
                         <IonCol>

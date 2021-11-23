@@ -28,12 +28,6 @@ const Home: React.FC = () => {
   //Usage getData:
   // Call function 
   useEffect(() => {
-    async function getData() {
-      const productFirebase = firebase.getData("product");
-      setProduct(await productFirebase);
-      const cartFirebase = firebase.getData("cart");
-      setCart(await cartFirebase);
-    }
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;
@@ -42,9 +36,16 @@ const Home: React.FC = () => {
       } else {
         setIsSignedIn(false);
       }
+      getData()
     });
-    getData();
   },[]);
+
+  async function getData() {
+    const productFirebase = firebase.getData("product");
+    setProduct(await productFirebase);
+    const cartFirebase = firebase.getData("cart");
+    setCart(await cartFirebase);
+  }
 
   const json = [
     { "Item Code": "sthing", "Product Name": "sthing", "Qantity": "1", "Unit Price": "0", "Item Total": "0" },
@@ -58,42 +59,18 @@ const Home: React.FC = () => {
   }
 
   async function addToCart(idP: string, image: string, name: string, price: string) {
-    //console.log(cart.length)
     let i = 1;
     let qty = 0;
-    let dataArray: Array<string>=[];
-    let updatedDataArray: Array<string> = [];
+    let dataArray: Array<any>=[];
+    let updatedDataArray: Array<any> = [];
     let count = 0;
     console.log(cart);
-    let cartId: string;
-    // cart.filter(cart => cart.userId === user?.uid).map(cart => {
-    //   dataArray = (cart.items);
-    //   let iter=0;
-    //   console.log(dataArray)
-    //   dataArray.forEach((e: any) => {
-    //     console.log(JSON.parse(e).idP)
-    //     i++;
-    //     console.log(i)
-    //     console.log(idP)
-    //     if (JSON.parse(e).idP != idP) {
-    //       var obj = {
-    //         idP: idP,
-    //         name: name,
-    //         image: image,
-    //         price: price,
-    //         qty: 1
-    //       }
-    //       const myJSON = JSON.stringify(obj);
-    //       dataArray.push(myJSON);
-    //       count=1;
-    //       console.log(dataArray);
-    //       //carts.updateData(dataArray, user?.uid, cartId);
-    //     }
-    //   });
 
+    let cartId: string;
     cart.filter(cart => cart.userId === user?.uid).map(cart => {
       cartId = cart.id;
       dataArray = (cart.items);
+      console.log(dataArray);
       if(dataArray.length==0){
         var obj = {
           idP: idP,
@@ -102,8 +79,7 @@ const Home: React.FC = () => {
           price: price,
           qty: 1
         }
-        const myJSON = JSON.stringify(obj);
-        dataArray.push(myJSON);
+        dataArray.push(obj);
         console.log(dataArray);
         carts.updateData(dataArray, user?.uid, cartId);
         count=2; 
@@ -111,7 +87,7 @@ const Home: React.FC = () => {
       }
       else{
         dataArray.forEach((e: any) => {
-          if (JSON.parse(e).idP === idP) {
+          if (e.idP === idP) {
             count = 1;
           }
         });
@@ -123,30 +99,28 @@ const Home: React.FC = () => {
       dataArray = (cart.items);
       dataArray.forEach((e: any) => {
         if (count == 1) {
-          if (JSON.parse(e).idP === idP) {
-            qty = JSON.parse(e).qty;
+          if (e.idP === idP) {
+            qty = e.qty;
             qty++;
             var obj = {
-              idP: JSON.parse(e).idP,
-              name: JSON.parse(e).name,
-              image: JSON.parse(e).image,
-              price: JSON.parse(e).price,
+              idP: e.idP,
+              name: e.name,
+              image: e.image,
+              price: e.price,
               qty: qty
             }
-            const myJSON = JSON.stringify(obj);
-            updatedDataArray.push(myJSON);
+            updatedDataArray.push(obj);
           }
           else {
-            qty = JSON.parse(e).qty;
+            qty = e.qty;
             obj = {
-              idP: JSON.parse(e).idP,
-              name: JSON.parse(e).name,
-              image: JSON.parse(e).image,
-              price: JSON.parse(e).price,
+              idP: e.idP,
+              name: e.name,
+              image: e.image,
+              price: e.price,
               qty: qty
             }
-            const myJSON = JSON.stringify(obj);
-            updatedDataArray.push(myJSON);
+            updatedDataArray.push(obj);
           }
           console.log(updatedDataArray);
           carts.updateData(updatedDataArray, user?.uid, cartId);
@@ -159,51 +133,14 @@ const Home: React.FC = () => {
             price: price,
             qty: 1
           }
-          const myJSON = JSON.stringify(obj);
-          dataArray.push(myJSON);
+          dataArray.push(obj);
           console.log(dataArray);
           carts.updateData(dataArray, user?.uid, cartId);
           count = 3;
         }
       });
+      getData();
     })
-
-    // dataArray.forEach((e: any) => {
-    //   if(count == 0){
-    //     if (JSON.parse(e).idP === idP) {
-    //       qty = JSON.parse(e).qty;
-    //       qty++;
-    //       var obj = {
-    //         idP: JSON.parse(e).idP,
-    //         name: JSON.parse(e).name,
-    //         image: JSON.parse(e).image,
-    //         price: JSON.parse(e).price,
-    //         qty: qty
-    //       }
-    //       const myJSON = JSON.stringify(obj);
-    //       updatedDataArray.push(myJSON);
-    //     }
-    //     else {
-    //       qty = JSON.parse(e).qty;
-    //       obj = {
-    //         idP: JSON.parse(e).idP,
-    //         name: JSON.parse(e).name,
-    //         image: JSON.parse(e).image,
-    //         price: JSON.parse(e).price,
-    //         qty: qty
-    //       }
-    //       const myJSON = JSON.stringify(obj);
-    //       updatedDataArray.push(myJSON);
-    //     }
-    //     console.log(updatedDataArray);
-    //   }
-    //   cartId = cart.id;
-    // });
-
-    // carts.updateData(updatedDataArray, user?.uid, cartId);
-    // })
-
-    //history.push('/Home')
   }
 
   return (
@@ -250,7 +187,7 @@ const Home: React.FC = () => {
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                  {product.filter(product => product.category === 'multimedia').map(product => (
+                  {product.filter(product => product.category === 'gaming').map(product => (
                     <IonCard key={product.id} className='categoryCard filter-options'>
                       <img className='cardImages' src={product.image} />
                       <IonCardContent>
