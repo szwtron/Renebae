@@ -227,19 +227,6 @@ const Home: React.FC = () => {
             <IonTitle size="large">Renebae</IonTitle>
           </IonToolbar>
         </IonHeader>
-
-        <IonToast
-          isOpen={showToast1}
-          onDidDismiss={() => setShowToast1(false)}
-          message="Barang Berhasil ditambahkan ke keranjang."
-          duration={1000}
-        />
-        <IonToast
-          isOpen={showToast2}
-          onDidDismiss={() => setShowToast2(false)}
-          message="Jumlah Barang Berhasil ditambahkan."
-          duration={1000}
-        />
         <IonCard color="secondary">
           <IonCardContent>
             <IonText color="light"><div className='center-text'><h1>Banner Ads</h1><br /><h1>728 X 90</h1></div></IonText>
