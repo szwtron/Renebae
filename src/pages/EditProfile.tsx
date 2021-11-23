@@ -8,6 +8,7 @@ import firebaseInit from '../firebase_config';
 import { firebaseFunction } from "../services/firebase";
 import { useHistory } from 'react-router';
 import './Page.css';
+import { getMetadata } from '@firebase/storage';
 
 const EditProfile: React.FC = () => {
 
@@ -29,14 +30,15 @@ const EditProfile: React.FC = () => {
   const phoneRef = useRef<HTMLIonInputElement>(null);
 
   useEffect(() => {
-        async function getData() {
-            const userFirebase = firebase.getData("user");
-            setUser(await userFirebase);
-        }
-        getData();
-    }, []);
+    getData();
+  }, []);
 
-    const updateData = () => {
+  const getData = async () => {
+    const userFirebase = firebase.getData("user");
+    setUser(await userFirebase);
+  };
+
+    const updateData = async () => {
         const field = {
             username: usernameRef.current?.value,
             email: emailRef.current?.value,
@@ -46,9 +48,12 @@ const EditProfile: React.FC = () => {
             address2: address2Ref.current?.value,
             phone: phoneRef.current?.value as number
         }
-        firebase.updateData("user", userInfo, field);
-        history.push('/page/Profile');
+        await firebase.updateData("user", user?.uid, field);
+        getData();
+        history.push('/Home');
     }
+
+    
 
   return (
     <IonPage>
