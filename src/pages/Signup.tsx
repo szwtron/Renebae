@@ -87,6 +87,7 @@ const Signup: React.FC = () => {
             email: email,
             image: url,
             name: name,
+            blob:"",
             phone: phone
         };
         try {
