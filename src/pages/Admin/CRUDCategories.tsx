@@ -18,10 +18,10 @@ const CRUDCategories : React.FC = () => {
         getData();
     }, []);
 
-    const deleteCat = async (nama: string) => {
-        console.log(nama + " Dihapus");
-        // await firebase.deleteData("categories", categoryName, field);
-        //history.push('/page/Admin/Categories');
+    const deleteCat = async (id: any) => {
+        console.log(id + " Dihapus");
+        await firebase.deleteData("categories", id);
+        history.push('/page/Admin/Categories');
         
     }
 
@@ -87,7 +87,7 @@ const CRUDCategories : React.FC = () => {
                                                     { window.innerWidth < 500 ? <IonButton color="warning" routerLink={`/page/editcategory/${category.id}`}><IonIcon slot='icon-only' icon={pencilOutline} /></IonButton> : <IonButton color="warning" routerLink={`/page/editcategory/${category.id}`}><IonIcon slot='icon-only' icon={pencilOutline} />Edit</IonButton>}
                                                 </IonCol>
                                                 <IonCol>
-                                                    { window.innerWidth < 500 ? <IonButton color="danger" onClick={() => deleteCat(category.name)}><IonIcon slot='icon-only' icon={trashBinOutline} /></IonButton> : <IonButton color="danger" onClick={() => deleteCat(category.name)}><IonIcon slot='icon-only' icon={trashBinOutline} />Delete</IonButton>}
+                                                    { window.innerWidth < 500 ? <IonButton color="danger" onClick={() => deleteCat(category.id)}><IonIcon slot='icon-only' icon={trashBinOutline} /></IonButton> : <IonButton color="danger" onClick={() => deleteCat(category.id)}><IonIcon slot='icon-only' icon={trashBinOutline} />Delete</IonButton>}
                                                 </IonCol>
                                             </IonRow>
                                         </td>

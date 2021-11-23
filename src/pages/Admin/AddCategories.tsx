@@ -48,6 +48,7 @@ const AddCategory: React.FC = () => {
         const myJSON = JSON.stringify(obj);
         console.log(myJSON);
         await firebase.addData(obj, "categories");
+        history.push('/page/Admin/Categories');
     }
 
   return (
