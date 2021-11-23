@@ -1,6 +1,6 @@
 .img-item{
-    width: max-content;
-    height: max-content;
+    width: 360px;
+    height: 200px;
 }
 
 .center-txt{
@@ -10,4 +10,8 @@
 .font-size20{
     font-size: 20px;
     font-weight: bold;
+}
+
+.halfWidth{
+    width: 50%;
 }

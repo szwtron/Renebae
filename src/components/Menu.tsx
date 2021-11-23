@@ -11,8 +11,10 @@ import {
 } from '@ionic/react';
 
 import { useLocation } from 'react-router-dom';
-import { archiveOutline, archiveSharp, bookmarkOutline, cartOutline, cartSharp, closeOutline, closeSharp, heartOutline, heartSharp, homeOutline, homeSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, personOutline, personSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
+import { archiveOutline, archiveSharp, bookmarkOutline, cartOutline, cartSharp, closeOutline, closeSharp, heartOutline, heartSharp, homeOutline, homeSharp, logInOutline, logInSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, personOutline, personSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
 import './Menu.css';
+import { getAuth } from 'firebase/auth';
+import firebaseInit from '../firebase_config';
 
 interface AppPage {
   url: string;
@@ -21,7 +23,13 @@ interface AppPage {
   title: string;
 }
 
-const appPages: AppPage[] = [
+let appPages: AppPage[] = [
+  {
+    title: 'Login',
+    url: '/page/Login',
+    iosIcon: logInOutline,
+    mdIcon: logInSharp
+  },
   {
     title: 'Home',
     url: '/Home',
@@ -64,6 +72,75 @@ const labels = ['NVidia', 'AMD Radeon', 'GeForce', 'Vega', 'MX Series', 'RX Seri
 
 const Menu: React.FC = () => {
   const location = useLocation();
+
+  const auth = getAuth(firebaseInit);
+  const user = auth.currentUser;
+
+  if (user) {
+    appPages= [
+      {
+        title: 'Home',
+        url: '/Home',
+        iosIcon: homeOutline,
+        mdIcon: homeSharp
+      },
+      {
+        title: 'Profile',
+        url: '/page/Profile',
+        iosIcon: personOutline,
+        mdIcon: personSharp
+      },
+      {
+        title: 'Category',
+        url: '/page/Categories',
+        iosIcon: paperPlaneOutline,
+        mdIcon: paperPlaneSharp
+      },
+      {
+        title: 'Wishlist',
+        url: '/page/Wishlist',
+        iosIcon: heartOutline,
+        mdIcon: heartSharp
+      },
+      {
+        title: 'Cart',
+        url: '/page/Cart',
+        iosIcon: cartOutline,
+        mdIcon: cartSharp
+      },
+      {
+        title: 'Logout',
+        url: '/page/Logout',
+        iosIcon: closeOutline,
+        mdIcon: closeSharp
+      }
+    ];
+  } else {
+    appPages = [
+      {
+        title: 'Login',
+        url: '/page/Login',
+        iosIcon: logInOutline,
+        mdIcon: logInSharp
+      },
+      {
+        title: 'Home',
+        url: '/Home',
+        iosIcon: homeOutline,
+        mdIcon: homeSharp
+      },
+      {
+        title: 'Category',
+        url: '/page/Categories',
+        iosIcon: paperPlaneOutline,
+        mdIcon: paperPlaneSharp
+      }
+    ];
+  }
+
+  const renderSideMenu = () => {
+    console.log(auth.currentUser);
+  };
 
   return (
     <IonMenu contentId="main" type="overlay">
