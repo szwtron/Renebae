@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, getFirestore, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { getStorage, ref } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 export class firebaseFunction {
@@ -46,6 +46,15 @@ export class firebaseFunction {
         try {
             await updateDoc(docRef, fieldToBeUpdated);
             console.log("Document updated successfully, ", docRef.id);
+        } catch (e) {
+            console.error("Error updating document: ", e)
+        }
+    }
+
+    public async deleteData(collectionName: string, idDoc: any) {
+        try {
+            await deleteDoc(doc(this.db, collectionName, idDoc));
+            console.log("Document deleted successfully, ");
         } catch (e) {
             console.error("Error updating document: ", e)
         }

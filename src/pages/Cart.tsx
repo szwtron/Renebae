@@ -14,7 +14,6 @@ const Cart: React.FC = () => {
     const [jumlahbarang, setJumlahBarang] = useState<number>(0);
     const [product, setProduct] = useState<Array<any>>([]);
     const firebase = new firebaseFunction();
-    const db = getFirestore(firebaseInit);
     const storage = getStorage(firebaseInit);
 
     const auth = getAuth();
