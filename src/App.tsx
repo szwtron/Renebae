@@ -35,6 +35,7 @@ import Admin from './pages/Admin/Admin';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useEffect } from 'react';
 import CRUDCategories from './pages/Admin/CRUDCategories';
+import CRUDProducts from './pages/Admin/CRUDProducts';
 
 const App: React.FC = () => {
   return (
@@ -51,6 +52,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Admin/Categories" exact={true}>
               <CRUDCategories />
+            </Route>
+            <Route path="/page/Admin/Products" exact={true}>
+              <CRUDProducts />
             </Route>
             <Route path="/page/Profile" exact={true}>
               <Profile />

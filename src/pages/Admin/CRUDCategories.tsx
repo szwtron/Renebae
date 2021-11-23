@@ -1,5 +1,5 @@
 import { IonAvatar, IonButton, IonButtons, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonMenuButton, IonPage, IonRow, IonText, IonTitle, IonToolbar } from "@ionic/react";
-import { addOutline } from "ionicons/icons";
+import { addOutline, pencilOutline, trashBinOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { firebaseFunction } from "../../services/firebase";
 
@@ -74,10 +74,10 @@ const CRUDCategories : React.FC = () => {
                                         <td>
                                             <IonRow>
                                                 <IonCol>
-                                                    <IonButton color="warning">Edit</IonButton>
+                                                    { window.innerWidth < 500 ? <IonButton color="warning"><IonIcon slot='icon-only' icon={pencilOutline} /></IonButton> : <IonButton color="warning"><IonIcon slot='icon-only' icon={pencilOutline} />Edit</IonButton>}
                                                 </IonCol>
                                                 <IonCol>
-                                                    <IonButton color="danger">Delete</IonButton>
+                                                    { window.innerWidth < 500 ? <IonButton color="danger"><IonIcon slot='icon-only' icon={trashBinOutline} /></IonButton> : <IonButton color="danger"><IonIcon slot='icon-only' icon={trashBinOutline} />Delete</IonButton>}
                                                 </IonCol>
                                             </IonRow>
                                         </td>
