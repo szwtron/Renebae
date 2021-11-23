@@ -2,11 +2,12 @@ import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeade
 import { cartOutline } from 'ionicons/icons';
 import { useEffect, useRef, useState } from 'react';
 import './Page.css';
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useHistory } from 'react-router';
+import { userInfo } from 'os';
 import { firebaseFunction } from "../services/firebase";
 
 const Home: React.FC = () => {
@@ -15,7 +16,8 @@ const Home: React.FC = () => {
   const firebase = new firebaseFunction();
   const [product, setProduct] = useState<Array<any>>([]);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
-
+  const [cart, setCart] = useState<Array<any>>([]);
+  const [showToast1, setShowToast1] = useState(false);
   const history = useHistory();
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
@@ -81,29 +83,95 @@ const Home: React.FC = () => {
     mrender: 110,
     gravity: JSON.stringify(json)
   }];
+  // const addData = async () => {
+  //   try {
+  //     dummyData.forEach(async element => {
+  //       const docRef = await addDoc(collection(db, "product"), element);
+  //       console.log("Document written with ID: ", docRef.id);
+  //     });
+  //   } catch (e) {
+  //     console.error("Error adding document: ", e);
+  //   }
+  // }
 
-  //data user
-  const dummyDataUser = [{
-    uid: user?.uid,
-    username: "haneure",
-    name: "Christian Halim",
-    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/Chris%20crop.png?alt=media&token=497301d1-0692-42ec-bfae-c2aceccf09d4",
-    email: user?.email,
-    photoURL: user?.photoURL,
-    phone: user?.phoneNumber,
-    birthdate: "17-November-2000",
-    address1: "Jl. Kenari No. 7 RT/RW 001/002 Anggut Dalam Bengkulu",
-    address2: "Kec. Ratu Samban 38222 Bengkulu"
-  }];
+  const addToCart = async (idP: string, image: string, name: string, price: string) => {
+    //console.log(cart.length)
+    let i = 1;
+    let qty = 0;
+    if (cart.length === 0) {
+      var obj = {
+        idP: idP,
+        name: name,
+        image: image,
+        price: price,
+        qty: 1
+      }
+      console.log("asd");
+      const myJSON = JSON.stringify(obj);
+      addData(myJSON);
+    } else {
+      console.log(cart);
+      let count = 0;
+      cart.filter(cart => cart.userId === user?.uid).map(cart => {
+        if (JSON.parse(cart.items).idP === idP) {
+          count++;
+        }
+      })
+      cart.filter(cart => cart.userId === user?.uid).map(cart => {
+        if (JSON.parse(cart.items).idP === idP) {
+          qty = parseInt(JSON.parse(cart.items).qty);
+          qty++;
+          console.log("qty : ", qty)
+          var obj = {
+            idP: JSON.parse(cart.items).idP,
+            name: JSON.parse(cart.items).name,
+            image: JSON.parse(cart.items).image,
+            price: JSON.parse(cart.items).price,
+            qty: qty
+          }
+          const myJSON = JSON.stringify(obj);
+          console.log("asd")
+          updateData(myJSON, cart.userId, cart.id);
+        }
+        else if(count == 0){
+          obj = {
+            idP: idP,
+            name: name,
+            image: image,
+            price: price,
+            qty: 1
+          }
+          console.log("add produk baru");
+          const myJSON = JSON.stringify(obj);
+          addData(myJSON);
+        }
+      })
+    }
+    history.push('/Home')
+  }
 
-  const addData = async () => {
+  const updateData = async (items: string, userId: string, idC: string) => {
+    const docRef = doc(db, "cart", idC);
     try {
-      dummyDataUser.forEach(async element => {
-        const docRef = await addDoc(collection(db, "user"), element);
-        console.log("Document written with ID: ", docRef.id);
-      });
+      await updateDoc(docRef, { items, userId });
+      console.log("Document updated successfully, ", docRef.id);
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.error("Error updating document: ", e)
+    }
+  }
+
+  const addData = async (myJSON: string) => {
+    try {
+      const docRef = await addDoc(collection(db, "cart"), {
+        userId: user?.uid,
+        // iamge: image,
+        // name: name,
+        // price: price
+        items: myJSON
+      });
+      console.log("Dcocument written with ID: ", docRef.id);
+    } catch (e) {
+      console.log("Error Adding document", e);
     }
   }
 
@@ -136,8 +204,12 @@ const Home: React.FC = () => {
             <IonTitle size="large">Renebae</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonButton onClick={addData}>wee</IonButton>
-
+        <IonToast
+          isOpen={showToast1}
+          onDidDismiss={() => setShowToast1(false)}
+          message="Barang sudah ada dikeranjang anda."
+          duration={1000}
+        />
         <IonCard color="secondary">
           <IonCardContent>
             <IonText color="light"><div className='center-text'><h1>Banner Ads</h1><br /><h1>728 X 90</h1></div></IonText>
@@ -173,7 +245,7 @@ const Home: React.FC = () => {
                           <IonText className="ion-margin">Rp {product.price}</IonText>
                         }
                         <br />
-                        <IonButton className="ion-margin"><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
+                        <IonButton className="ion-margin" onClick={isSignedIn ? () => addToCart(product.id, product.image, product.name, product.price) : signedOut}><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
                       </IonCardContent>
                     </IonCard>
                   ))}
@@ -234,7 +306,7 @@ const Home: React.FC = () => {
                           <IonText className="ion-margin">Rp {product.price}</IonText>
                         }
                         <br />
-                        <IonButton className="ion-margin" onClick={isSignedIn ? signedIn : signedOut}><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
+                        <IonButton className="ion-margin" onClick={isSignedIn ? () => addToCart(product.id, product.image, product.name, product.price) : signedOut}><IonIcon slot='icon-only' icon={cartOutline} />&nbsp;Buy Now</IonButton>
                       </IonCardContent>
                     </IonCard>
                   ))}
