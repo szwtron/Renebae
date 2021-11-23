@@ -35,7 +35,10 @@ const EditProfile: React.FC = () => {
         }
         getData();
     }, []);
+    async function addData(){
+      firebase.addData(dummyDataUser, "user");
 
+    }
     const updateData = () => {
         const field = {
             username: usernameRef.current?.value,
@@ -49,7 +52,21 @@ const EditProfile: React.FC = () => {
         firebase.updateData("user", userInfo, field);
         history.push('/page/Profile');
     }
+    console.log(user?.uid);
 
+    const dummyDataUser = {
+      id: user?.uid,
+      uid: user?.uid,
+      username: "haneurea",
+      name: "Christian Halim",
+      image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/Chris%20crop.png?alt=media&token=497301d1-0692-42ec-bfae-c2aceccf09d4",
+      email: user?.email,
+      photoURL: user?.photoURL,
+      phone: user?.phoneNumber,
+      birthdate: "17-November-2000",
+      address1: "Jl. Kenari No. 7 RT/RW 001/002 Anggut Dalam Bengkulu",
+      address2: "Kec. Ratu Samban 38222 Bengkulu"
+    };
   return (
     <IonPage>
       <IonHeader>
@@ -67,6 +84,7 @@ const EditProfile: React.FC = () => {
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
+        <IonButton onClick={addData}>wee</IonButton>
         {userInfo.filter(info=>info.uid === user?.uid).map(info => (
             <IonGrid key={info.uid} className="ion-padding">
                 <IonRow>

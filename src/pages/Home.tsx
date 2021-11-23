@@ -1,4 +1,4 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSlide, IonSlides, IonText, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSlide, IonSlides, IonText, IonTitle, IonToast, IonToolbar } from '@ionic/react';
 import { cartOutline } from 'ionicons/icons';
 import { useEffect, useRef, useState } from 'react';
 import './Page.css';
@@ -9,15 +9,18 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useHistory } from 'react-router';
 import { userInfo } from 'os';
 import { firebaseFunction } from "../services/firebase";
+import { cartFunction } from '../services/cart';
 
 const Home: React.FC = () => {
   const db = getFirestore(firebaseInit);
   const storage = getStorage(firebaseInit);
   const firebase = new firebaseFunction();
+  const carts = new cartFunction();
   const [product, setProduct] = useState<Array<any>>([]);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<any>>([]);
   const [showToast1, setShowToast1] = useState(false);
+  const [showToast2, setShowToast2] = useState(false);
   const history = useHistory();
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
@@ -28,6 +31,8 @@ const Home: React.FC = () => {
     async function getData() {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
+      const cartFirebase = firebase.getData("cart");
+      setCart(await cartFirebase);
     }
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -39,148 +44,166 @@ const Home: React.FC = () => {
       }
     });
     getData();
-  }, []);
-
-
-  //setProduct(productFirebase.map((doc) => ({...doc.data(), id:doc.id})));
-  
-
-    
-
-
-  // useEffect(() => {
-  //   async function getData() {
-  //     const querySnapshot = await getDocs(collection(db, "cart"));
-  //     console.log('querySnapshot', querySnapshot);
-  //     setProduct(querySnapshot.docs.map((doc) => ({...doc.data(), id:doc.id})));
-
-  //     querySnapshot.forEach((doc) => {
-  //       console.log(`${doc.id} => ${doc.data()}`);
-  //       console.log('doc:', doc);  
-  //     });
-  //   }
-  //   getData();
-  //   console.log(JSON.parse(product[0].gravity));
-  // }, []);
+  },[]);
 
   const json = [
-    {"Item Code":"sthing","Product Name":"sthing","Qantity":"1","Unit Price":"0","Item Total":"0"},
-    {"Item Code":"sthing","Product Name":"sthing","Qantity":"1","Unit Price":"0","Item Total":"0"},
-    {"Item Code":"sthing","Product Name":"sthing","Qantity":"1","Unit Price":"0","Item Total":"0"},
-    {"Item Code":"sthing","Product Name":"sthing","Qantity":"1","Unit Price":"0","Item Total":"0"}
+    { "Item Code": "sthing", "Product Name": "sthing", "Qantity": "1", "Unit Price": "0", "Item Total": "0" },
+    { "Item Code": "sthing", "Product Name": "sthing", "Qantity": "1", "Unit Price": "0", "Item Total": "0" },
+    { "Item Code": "sthing", "Product Name": "sthing", "Qantity": "1", "Unit Price": "0", "Item Total": "0" },
+    { "Item Code": "sthing", "Product Name": "sthing", "Qantity": "1", "Unit Price": "0", "Item Total": "0" }
   ];
 
-  //Dummy Data
-  const dummyData = [{
-    name: "Quadro RTX 4000",
-    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/gigabyte_gigabyte-vga-nvidia-quadro-rtx-4000_full02.jpg?alt=media&token=f24dff28-dd45-4dd9-9ec2-ef35f81a7378",
-    price: "5.000.000",
-    category: "multimedia",
-    release: "Q1 2020",
-    effectiveSpeed: 90,
-    lighting: 100,
-    reflection: 100,
-    mrender: 110,
-    gravity: JSON.stringify(json)
-  }];
-  // const addData = async () => {
-  //   try {
-  //     dummyData.forEach(async element => {
-  //       const docRef = await addDoc(collection(db, "product"), element);
-  //       console.log("Document written with ID: ", docRef.id);
-  //     });
-  //   } catch (e) {
-  //     console.error("Error adding document: ", e);
-  //   }
-  // }
+  const signedOut = () => {
+    history.push('/page/Login');
+  }
 
-  const addToCart = async (idP: string, image: string, name: string, price: string) => {
+  async function addToCart(idP: string, image: string, name: string, price: string) {
     //console.log(cart.length)
     let i = 1;
     let qty = 0;
-    if (cart.length === 0) {
-      var obj = {
-        idP: idP,
-        name: name,
-        image: image,
-        price: price,
-        qty: 1
+    let dataArray: Array<string>=[];
+    let updatedDataArray: Array<string> = [];
+    let count = 0;
+    console.log(cart);
+    let cartId: string;
+    // cart.filter(cart => cart.userId === user?.uid).map(cart => {
+    //   dataArray = (cart.items);
+    //   let iter=0;
+    //   console.log(dataArray)
+    //   dataArray.forEach((e: any) => {
+    //     console.log(JSON.parse(e).idP)
+    //     i++;
+    //     console.log(i)
+    //     console.log(idP)
+    //     if (JSON.parse(e).idP != idP) {
+    //       var obj = {
+    //         idP: idP,
+    //         name: name,
+    //         image: image,
+    //         price: price,
+    //         qty: 1
+    //       }
+    //       const myJSON = JSON.stringify(obj);
+    //       dataArray.push(myJSON);
+    //       count=1;
+    //       console.log(dataArray);
+    //       //carts.updateData(dataArray, user?.uid, cartId);
+    //     }
+    //   });
+
+    cart.filter(cart => cart.userId === user?.uid).map(cart => {
+      cartId = cart.id;
+      dataArray = (cart.items);
+      if(dataArray.length==0){
+        var obj = {
+          idP: idP,
+          name: name,
+          image: image,
+          price: price,
+          qty: 1
+        }
+        const myJSON = JSON.stringify(obj);
+        dataArray.push(myJSON);
+        console.log(dataArray);
+        carts.updateData(dataArray, user?.uid, cartId);
+        count=2; 
+        console.log("succes");
       }
-      console.log("asd");
-      const myJSON = JSON.stringify(obj);
-      addData(myJSON);
-    } else {
-      console.log(cart);
-      let count = 0;
-      cart.filter(cart => cart.userId === user?.uid).map(cart => {
-        if (JSON.parse(cart.items).idP === idP) {
-          count++;
-        }
-      })
-      cart.filter(cart => cart.userId === user?.uid).map(cart => {
-        if (JSON.parse(cart.items).idP === idP) {
-          qty = parseInt(JSON.parse(cart.items).qty);
-          qty++;
-          console.log("qty : ", qty)
-          var obj = {
-            idP: JSON.parse(cart.items).idP,
-            name: JSON.parse(cart.items).name,
-            image: JSON.parse(cart.items).image,
-            price: JSON.parse(cart.items).price,
-            qty: qty
+      else{
+        dataArray.forEach((e: any) => {
+          if (JSON.parse(e).idP === idP) {
+            count = 1;
           }
-          const myJSON = JSON.stringify(obj);
-          console.log("asd")
-          updateData(myJSON, cart.userId, cart.id);
+        });
+      }
+    })
+
+    cart.filter(cart => cart.userId === user?.uid).map(cart => {
+      cartId = cart.id;
+      dataArray = (cart.items);
+      dataArray.forEach((e: any) => {
+        if (count == 1) {
+          if (JSON.parse(e).idP === idP) {
+            qty = JSON.parse(e).qty;
+            qty++;
+            var obj = {
+              idP: JSON.parse(e).idP,
+              name: JSON.parse(e).name,
+              image: JSON.parse(e).image,
+              price: JSON.parse(e).price,
+              qty: qty
+            }
+            const myJSON = JSON.stringify(obj);
+            updatedDataArray.push(myJSON);
+          }
+          else {
+            qty = JSON.parse(e).qty;
+            obj = {
+              idP: JSON.parse(e).idP,
+              name: JSON.parse(e).name,
+              image: JSON.parse(e).image,
+              price: JSON.parse(e).price,
+              qty: qty
+            }
+            const myJSON = JSON.stringify(obj);
+            updatedDataArray.push(myJSON);
+          }
+          console.log(updatedDataArray);
+          carts.updateData(updatedDataArray, user?.uid, cartId);
         }
-        else if(count == 0){
-          obj = {
+        else if(count == 0) {
+           obj = {
             idP: idP,
             name: name,
             image: image,
             price: price,
             qty: 1
           }
-          console.log("add produk baru");
           const myJSON = JSON.stringify(obj);
-          addData(myJSON);
+          dataArray.push(myJSON);
+          console.log(dataArray);
+          carts.updateData(dataArray, user?.uid, cartId);
+          count = 3;
         }
-      })
-    }
-    history.push('/Home')
-  }
-
-  const updateData = async (items: string, userId: string, idC: string) => {
-    const docRef = doc(db, "cart", idC);
-    try {
-      await updateDoc(docRef, { items, userId });
-      console.log("Document updated successfully, ", docRef.id);
-    } catch (e) {
-      console.error("Error updating document: ", e)
-    }
-  }
-
-  const addData = async (myJSON: string) => {
-    try {
-      const docRef = await addDoc(collection(db, "cart"), {
-        userId: user?.uid,
-        // iamge: image,
-        // name: name,
-        // price: price
-        items: myJSON
       });
-      console.log("Dcocument written with ID: ", docRef.id);
-    } catch (e) {
-      console.log("Error Adding document", e);
-    }
-  }
+    })
 
-  const signedIn = () => {
-    console.log('signedIn');
-  }
+    // dataArray.forEach((e: any) => {
+    //   if(count == 0){
+    //     if (JSON.parse(e).idP === idP) {
+    //       qty = JSON.parse(e).qty;
+    //       qty++;
+    //       var obj = {
+    //         idP: JSON.parse(e).idP,
+    //         name: JSON.parse(e).name,
+    //         image: JSON.parse(e).image,
+    //         price: JSON.parse(e).price,
+    //         qty: qty
+    //       }
+    //       const myJSON = JSON.stringify(obj);
+    //       updatedDataArray.push(myJSON);
+    //     }
+    //     else {
+    //       qty = JSON.parse(e).qty;
+    //       obj = {
+    //         idP: JSON.parse(e).idP,
+    //         name: JSON.parse(e).name,
+    //         image: JSON.parse(e).image,
+    //         price: JSON.parse(e).price,
+    //         qty: qty
+    //       }
+    //       const myJSON = JSON.stringify(obj);
+    //       updatedDataArray.push(myJSON);
+    //     }
+    //     console.log(updatedDataArray);
+    //   }
+    //   cartId = cart.id;
+    // });
 
-  const signedOut = () => {
-    history.push('/page/Login');
+    // carts.updateData(updatedDataArray, user?.uid, cartId);
+    // })
+
+    //history.push('/Home')
   }
 
   return (
@@ -189,7 +212,7 @@ const Home: React.FC = () => {
         <IonToolbar>
           <IonButtons slot="start">
             <IonMenuButton />
-            
+
           </IonButtons>
           <IonTitle>Renebae</IonTitle>
           <IonAvatar className='avatarImage' slot="end">
@@ -204,10 +227,17 @@ const Home: React.FC = () => {
             <IonTitle size="large">Renebae</IonTitle>
           </IonToolbar>
         </IonHeader>
+
         <IonToast
           isOpen={showToast1}
           onDidDismiss={() => setShowToast1(false)}
-          message="Barang sudah ada dikeranjang anda."
+          message="Barang Berhasil ditambahkan ke keranjang."
+          duration={1000}
+        />
+        <IonToast
+          isOpen={showToast2}
+          onDidDismiss={() => setShowToast2(false)}
+          message="Jumlah Barang Berhasil ditambahkan."
           duration={1000}
         />
         <IonCard color="secondary">
@@ -233,11 +263,11 @@ const Home: React.FC = () => {
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                {product.filter(product=>product.category === 'gaming').map(product => (
-                  <IonCard key={product.id} className='categoryCard filter-options'>
-                    <img className='cardImages' src={product.image} />
-                    <IonCardContent>
-                      <IonText className="ion-margin">{product.name}</IonText> <br/>
+                  {product.filter(product => product.category === 'multimedia').map(product => (
+                    <IonCard key={product.id} className='categoryCard filter-options'>
+                      <img className='cardImages' src={product.image} />
+                      <IonCardContent>
+                        <IonText className="ion-margin">{product.name}</IonText> <br />
 
                         {product.price == 0 ?
                           <IonText className="ion-margin"></IonText>
@@ -294,11 +324,11 @@ const Home: React.FC = () => {
             <IonGrid className="ion-no-padding content">
               <IonRow>
                 <div className="filter">
-                {product.filter(product=>product.category === 'electronic').map(product => (
-                  <IonCard key={product.id} className='categoryCard filter-options'>
-                    <img className='cardImages' src={product.image} />
-                    <IonCardContent>
-                      <IonText className="ion-margin">{product.name}</IonText> <br/>
+                  {product.filter(product => product.category === 'electronic').map(product => (
+                    <IonCard key={product.id} className='categoryCard filter-options'>
+                      <img className='cardImages' src={product.image} />
+                      <IonCardContent>
+                        <IonText className="ion-margin">{product.name}</IonText> <br />
 
                         {product.price == 0 ?
                           <IonText className="ion-margin"></IonText>
