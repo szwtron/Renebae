@@ -1,31 +1,133 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
-import { cartOutline } from 'ionicons/icons';
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonLoading, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { car, cartOutline, heartOutline, logoWindows, trashBinOutline } from 'ionicons/icons';
+import { JSXElementConstructor, Key, ReactChild, ReactElement, ReactFragment, ReactNodeArray, ReactPortal, useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import firebaseInit from "../firebase_config";
 import './Checkout.css';
-
-const slideOpts = {
-    slidesPerView: 3.5,
-    spaceBetween: 1,
-    breakpoints: {
-        1024: {
-            slidesPerView: 4.5,
-            spaceBetween: 1
-        },
-        768: {
-            slidesPerView: 3.5,
-            spaceBetween: 1
-        },
-        640: {
-            slidesPerView: 2.5,
-            spaceBetween: 1
-        },
-        320: {
-            slidesPerView: 1.5,
-            spaceBetween: 1
-        }
-    }
-}
+import { cartFunction } from '../services/cart';
+import { firebaseFunction } from '../services/firebase';
+import NumberFormat from 'react-number-format';
+import { Geolocation } from "@capacitor/geolocation";
+import { GoogleMap, InfoWindow, LoadScript, Marker } from "@react-google-maps/api";
+import { async } from '@firebase/util';
+import { userInfo } from 'os';
+import { toast } from '../toast';
 
 const Checkout: React.FC = () => {
+    const history = useHistory();
+    const [busy, setBusy] = useState<boolean>(false);
+    const db = getFirestore(firebaseInit);
+    const [lat, setLat] = useState<number>(0);
+    const [lng, setLng] = useState<number>(0);
+    const firebase = new firebaseFunction();
+    const carts = new cartFunction();
+    const [cart, setCart] = useState<Array<any>>([]);
+    const [name, setName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [address, setAddress] = useState<string>('');
+    const [city, setCity] = useState<string>('');
+    const [country, setCountry] = useState<string>('');
+    const [postalCode, setPostalCode] = useState<string>('');
+    const auth = getAuth();
+    const user = auth.currentUser;
+    let cartArray: Array<any> = [];
+    let dataArray: Array<any> = [];
+    let cartId = '';
+    let subTotal = 0;
+
+    // useEffect(()=>{
+        
+    // },[])
+
+    useIonViewWillEnter(() => {
+        getCurrentPosition();
+        getData();
+    })
+
+    async function getData() {
+        const productFirebase = firebase.getData("cart");
+        setCart(await productFirebase);
+    }
+
+    async function addData(data: object) {
+        //data: any, collectionName: string
+        try{
+            await firebase.addData(data, "orders");
+            toast("Order successfuly added");
+            history.push('/Home');
+        }
+        catch(e:any){
+            toast(e.message);
+        }
+    }
+
+    cart.filter(cart => cart.userId === user?.uid).map(cart => {
+        console.log(cart.userId)
+        console.log(user?.uid)
+        cartId = cart.id;
+        console.log(cart.items)
+        cartArray = (cart.items);
+        cartArray.forEach(e => {
+            console.log("asd");
+            subTotal += (parseInt(e.price) * parseInt(e.qty));
+            console.log(subTotal);
+            dataArray.push(e);
+        });
+    })
+    let grandTotal = 0;
+    grandTotal += subTotal + 10000;
+
+    const getCurrentPosition = async () => {
+        const coordinates = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+
+        console.log('Current position: ', coordinates);
+        console.log('Lat: ', coordinates.coords.latitude);
+        console.log('Lng: ', coordinates.coords.longitude);
+        setLat(coordinates.coords.latitude);
+        setLng(coordinates.coords.longitude);
+    };
+
+    function selectPos( e:google.maps.MapMouseEvent){
+        if(e.latLng?.lat()){setLat(e.latLng.lat())};
+        if(e.latLng?.lng()){setLat(e.latLng.lng())};
+        console.log(lng)
+        console.log(lat)
+    }
+    //buat ngeprint cartnya
+    function addtoOrder() {
+        if (name === '' || email === '' || address === '' || city === '' || country === '' || postalCode === '') {
+            toast("Input field must be filled")
+        }else{
+            console.log(busy);
+            var users = {
+                name: name,
+                email: email,
+                address: address,
+                city: city,
+                country: country,
+                postalCode: postalCode,
+                lat :lat,
+                lng: lng
+            }
+            var data = {
+                total: grandTotal,
+                users: users,
+                items: dataArray,
+                status: 2,
+                userId: user?.uid
+            }
+            console.log(user?.uid);
+            addData(data);
+        }
+    }
+    const containerStyle = {
+        width: '100%',
+        height: '50%'
+    };
+
 
     return (
         <IonPage>
@@ -40,24 +142,17 @@ const Checkout: React.FC = () => {
                     </IonAvatar>
                 </IonToolbar>
             </IonHeader>
+            <IonLoading message="Please wait..." duration={0} isOpen={busy} />
 
             <IonContent fullscreen className="ion-padding">
                 <IonGrid>
-                <h3>Checkout</h3>
-                <h6>Billing Address</h6>
+                    <h3>Checkout</h3>
+                    <h6>Billing Address</h6>
                     <IonRow>
                         <IonCol>
                             <IonItem>
-                                <IonLabel position="stacked">Company Name</IonLabel>
-                                <IonInput></IonInput>
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
-                    <IonRow>
-                        <IonCol>
-                            <IonItem>
-                                <IonLabel position="stacked">First Name</IonLabel>
-                                <IonInput></IonInput>
+                                <IonLabel position="stacked">Full Name</IonLabel>
+                                <IonInput onIonChange={(e: any) => setName(e.target.value)} required></IonInput>
                             </IonItem>
                         </IonCol>
                     </IonRow>
@@ -65,7 +160,7 @@ const Checkout: React.FC = () => {
                         <IonCol>
                             <IonItem>
                                 <IonLabel position="stacked">Email</IonLabel>
-                                <IonInput></IonInput>
+                                <IonInput type="email" onIonChange={(e: any) => setEmail(e.target.value)}></IonInput>
                             </IonItem>
                         </IonCol>
                     </IonRow>
@@ -73,7 +168,7 @@ const Checkout: React.FC = () => {
                         <IonCol>
                             <IonItem>
                                 <IonLabel position="stacked">Street Address</IonLabel>
-                                <IonInput></IonInput>
+                                <IonInput onIonChange={(e: any) => setAddress(e.target.value)}></IonInput>
                             </IonItem>
                         </IonCol>
                     </IonRow>
@@ -81,7 +176,7 @@ const Checkout: React.FC = () => {
                         <IonCol>
                             <IonItem>
                                 <IonLabel position="stacked">City</IonLabel>
-                                <IonInput></IonInput>
+                                <IonInput onIonChange={(e: any) => setCity(e.target.value)}></IonInput>
                             </IonItem>
                         </IonCol>
                     </IonRow>
@@ -89,24 +184,47 @@ const Checkout: React.FC = () => {
                         <IonCol>
                             <IonItem>
                                 <IonLabel position="stacked">Country</IonLabel>
-                                <IonInput></IonInput>
+                                <IonInput onIonChange={(e: any) => setCountry(e.target.value)}></IonInput>
                             </IonItem>
                         </IonCol>
                         <IonCol>
                             <IonItem>
                                 <IonLabel position="stacked">Postal Code</IonLabel>
-                                <IonInput></IonInput>
+                                <IonInput onIonChange={(e: any) => setPostalCode(e.target.value)} type="number"></IonInput>
                             </IonItem>
                         </IonCol>
                     </IonRow>
                 </IonGrid>
+                Map:
+                <LoadScript googleMapsApiKey="AIzaSyAlLM8KDJySDya6H2ErQ5ZPB07CzpnMutA">
+                                <GoogleMap
+                                    mapContainerStyle={containerStyle}
+                                    center={{ lat: lat, lng: lng }}
+                                    //onClick={selectPos}
+                                    zoom={18}
+                                    >
+                                    { /* Child components, such as markers, info windows, etc. */}
+                                    <></>
+                                    <Marker position={{ lat: lat, lng: lng }} />
+                                </GoogleMap>
+                            </LoadScript>
                 <IonGrid>
                     <IonRow>
                         <h5>Cart Summary</h5>
                     </IonRow>
                     <IonRow className="cart-summary">
                         <IonCol>Sub Total</IonCol>
-                        <IonCol> Rp. 3.000.000</IonCol>
+                        <IonCol>
+                            <NumberFormat
+                                thousandsGroupStyle="thousand"
+                                value={subTotal}
+                                prefix="Rp. "
+                                decimalSeparator="."
+                                displayType="text"
+                                type="text"
+                                thousandSeparator={true}
+                                allowNegative={true} />
+                        </IonCol>
                     </IonRow>
                     <IonRow className="cart-summary">
                         <IonCol>Shipping</IonCol>
@@ -119,58 +237,33 @@ const Checkout: React.FC = () => {
                     <hr color='light' />
                     <IonRow className="cart-summary">
                         <IonCol>Grand Total</IonCol>
-                        <IonCol>Rp. 3.010.000</IonCol>
+                        <IonCol>
+                            <NumberFormat
+                                thousandsGroupStyle="thousand"
+                                value={grandTotal}
+                                prefix="Rp. "
+                                decimalSeparator="."
+                                displayType="text"
+                                type="text"
+                                thousandSeparator={true}
+                                allowNegative={true} />
+                        </IonCol>
                     </IonRow>
                 </IonGrid>
                 <hr />
                 <IonGrid>
                     <IonRow>
-                        Choose Payment methods:
+                        Payment methods:
                     </IonRow>
                     <IonRow className="payment-method">
                         <IonSegment onIonChange={e => console.log('Segment selected', e.detail.value)}>
-                            <IonSegmentButton value="friends">
-                                <img width="100px" src="https://cdn.sindonews.net/dyn/620/content/2014/02/26/35/839402/hZszf7PH6B.jpg" alt="" />
-                            </IonSegmentButton>
-                            <IonSegmentButton value="enemies">
-                                <img width="100px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Visa.svg/1200px-Visa.svg.png" alt="" />
+                            <IonSegmentButton value="BCA">
+                                <img width="150px" src="https://image.cermati.com/v1428073854/brands/avqoa9rfng8bklutfhm6.jpg" alt="" />
                             </IonSegmentButton>
                         </IonSegment>
                     </IonRow>
                 </IonGrid>
-                <IonGrid>
-                    <IonRow>
-                        <IonCol>
-                            <IonItem>
-                                <IonLabel position="stacked">Nama Lengkap</IonLabel>
-                                <IonInput></IonInput>
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
-                    <IonRow>
-                        <IonCol>
-                            <IonItem>
-                                <IonLabel position="stacked">Cardholder Name</IonLabel>
-                                <IonInput></IonInput>
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
-                    <IonRow>
-                        <IonCol>
-                            <IonItem>
-                                <IonLabel position="stacked">End Date</IonLabel>
-                                <IonInput type="date"></IonInput>
-                            </IonItem>
-                        </IonCol>
-                        <IonCol>
-                            <IonItem>
-                                <IonLabel position="stacked">CVV</IonLabel>
-                                <IonInput></IonInput>
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
-                </IonGrid>
-                <IonButton expand="block" color="medium">Pay</IonButton>
+                <IonButton expand="block" onClick={() => addtoOrder()} color="medium">Pay</IonButton>
             </IonContent>
         </IonPage>
     );

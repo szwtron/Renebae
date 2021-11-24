@@ -11,6 +11,7 @@ import { cartFunction } from '../services/cart';
 import { firebaseFunction } from '../services/firebase';
 import NumberFormat from 'react-number-format';
 import { async } from '@firebase/util';
+import { toast } from '../toast';
 
 const Cart: React.FC = () => {
     const db = getFirestore(firebaseInit);
@@ -40,16 +41,17 @@ const Cart: React.FC = () => {
     }, []);
 
     async function getData() {
-        const productFirebase = firebase.getData("cart");
-        setCart(await productFirebase);
+        try {
+            const productFirebase = firebase.getData("cart");
+            setCart(await productFirebase);
+        }
+        catch (e:any) {
+            toast(e.message);
+        }
+
     }
-    // useEffect(() => {
-    //     async function getData() {
-    //         const productFirebase = firebase.getData("cart");
-    //         setProduct(await productFirebase);
-    //     }
-    //     getData();
-    // }, []);
+
+
 
     //buat ngeprint cartnya
     cart.filter(cart => cart.userId === user?.uid).map(cart => {
@@ -68,95 +70,105 @@ const Cart: React.FC = () => {
 
     console.log(dataArray);
     const deleteFromCart = (idP: string) => {
-        cart.filter(cart => cart.userId === user?.uid).map(cart => {
+        try {
+            cart.filter(cart => cart.userId === user?.uid).map(cart => {
+                console.log(filteredDataArray);
+                cartId = cart.id;
+                cartArray = dataArray.filter(e => e.idP !== idP)
+                console.log(dataArray.filter(e => e.idP !== idP));
+                console.log(cartArray);
+
+            })
+            cartArray.forEach(e => {
+                filteredDataArray.push(e)
+            });
             console.log(filteredDataArray);
-            cartId = cart.id;
-            cartArray = dataArray.filter(e => e.idP !== idP)
-            console.log(dataArray.filter(e => e.idP !== idP));
-            console.log(cartArray);
 
-        })
-        cartArray.forEach(e => {
-            filteredDataArray.push(e)
-        });
-        console.log(filteredDataArray);
+            carts.updateData(filteredDataArray, user?.uid, cartId);
+            getData();
+        }
+        catch (e: any) {
+            toast(e.message);
+        }
 
-        carts.updateData(filteredDataArray, user?.uid, cartId);
-        getData();
     }
 
 
     let grandTotal = 0;
     grandTotal = subTotal + 10000;
-    const  plusmin =  ( idP: string, plusmin: string)=>{
-        
+    const plusmin = (idP: string, plusmin: string) => {
         let index = 0;
         let count = 0;
         let qty = 0;
-        cart.filter(cart => cart.userId === user?.uid).map(cart => {
-            cartId = cart.id;
-            dataArray = (cart.items);
-            console.log(dataArray);
-            if (plusmin === "plus") {
-                dataArray.forEach((e: any) => {
-                    if (e.idP === idP) {
-                        qty = e.qty;
-                        qty++;
-                        var obj = {
-                            idP: e.idP,
-                            name: e.name,
-                            image: e.image,
-                            price: e.price,
-                            qty: qty
+        try {
+            cart.filter(cart => cart.userId === user?.uid).map(cart => {
+                cartId = cart.id;
+                dataArray = (cart.items);
+                console.log(dataArray);
+                if (plusmin === "plus") {
+                    dataArray.forEach((e: any) => {
+                        if (e.idP === idP) {
+                            qty = e.qty;
+                            qty++;
+                            var obj = {
+                                idP: e.idP,
+                                name: e.name,
+                                image: e.image,
+                                price: e.price,
+                                qty: qty
+                            }
+                            updatedDataArray.push(obj);
                         }
-                        updatedDataArray.push(obj);
-                    }
-                    else {
-                        qty = e.qty;
-                        obj = {
-                            idP: e.idP,
-                            name: e.name,
-                            image: e.image,
-                            price: e.price,
-                            qty: qty
+                        else {
+                            qty = e.qty;
+                            obj = {
+                                idP: e.idP,
+                                name: e.name,
+                                image: e.image,
+                                price: e.price,
+                                qty: qty
+                            }
+                            updatedDataArray.push(obj);
                         }
-                        updatedDataArray.push(obj);
-                    }
-                    console.log(updatedDataArray);
-                });
-                carts.updateData(updatedDataArray, user?.uid, cartId);
-            }
-            else if (plusmin === "min") {
-                dataArray.forEach((e: any) => {
-                    if (e.idP === idP) {
-                        qty = e.qty;
-                        qty--;
-                        var obj = {
-                            idP: e.idP,
-                            name: e.name,
-                            image: e.image,
-                            price: e.price,
-                            qty: qty
+                        console.log(updatedDataArray);
+                    });
+                    carts.updateData(updatedDataArray, user?.uid, cartId);
+                }
+                else if (plusmin === "min") {
+                    dataArray.forEach((e: any) => {
+                        if (e.idP === idP) {
+                            qty = e.qty;
+                            qty--;
+                            var obj = {
+                                idP: e.idP,
+                                name: e.name,
+                                image: e.image,
+                                price: e.price,
+                                qty: qty
+                            }
+                            updatedDataArray.push(obj);
                         }
-                        updatedDataArray.push(obj);
-                    }
-                    else {
-                        qty = e.qty;
-                        obj = {
-                            idP: e.idP,
-                            name: e.name,
-                            image: e.image,
-                            price: e.price,
-                            qty: qty
+                        else {
+                            qty = e.qty;
+                            obj = {
+                                idP: e.idP,
+                                name: e.name,
+                                image: e.image,
+                                price: e.price,
+                                qty: qty
+                            }
+                            updatedDataArray.push(obj);
                         }
-                        updatedDataArray.push(obj);
-                    }
-                    console.log(updatedDataArray);
-                });
-                carts.updateData(updatedDataArray, user?.uid, cartId);
-            }
-        })
-        getData();
+                        console.log(updatedDataArray);
+                    });
+                    carts.updateData(updatedDataArray, user?.uid, cartId);
+                }
+            })
+            getData();
+        }
+        catch (e: any) {
+            toast(e.meesage)
+        }
 
     }
 
@@ -197,13 +209,13 @@ const Cart: React.FC = () => {
                             <IonCol size="7">
                                 <IonRow>
                                     <IonCol className="ion-text-center">
-                                        <IonButton color="dark" fill="outline" onClick={() => plusmin( dataArray.idP, "min")} size="small" >-</IonButton>
+                                        <IonButton color="dark" fill="outline" onClick={() => plusmin(dataArray.idP, "min")} size="small" >-</IonButton>
                                     </IonCol>
                                     <IonCol>
                                         <IonInput className="ion-text-center" type="number" value={dataArray.qty} disabled></IonInput>
                                     </IonCol>
                                     <IonCol className="ion-text-center">
-                                        <IonButton color="dark" fill="outline" onClick={() => plusmin( dataArray.idP, "plus")} size="small">+</IonButton>
+                                        <IonButton color="dark" fill="outline" onClick={() => plusmin(dataArray.idP, "plus")} size="small">+</IonButton>
                                     </IonCol>
                                 </IonRow>
                                 <IonRow>
