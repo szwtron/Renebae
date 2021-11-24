@@ -10,6 +10,7 @@ import { useHistory } from 'react-router';
 import { userInfo } from 'os';
 import { firebaseFunction } from "../services/firebase";
 import { cartFunction } from '../services/cart';
+import { toast } from '../toast';
 
 const Home: React.FC = () => {
   const db = getFirestore(firebaseInit);
@@ -41,10 +42,16 @@ const Home: React.FC = () => {
   },[]);
 
   async function getData() {
-    const productFirebase = firebase.getData("product");
-    setProduct(await productFirebase);
-    const cartFirebase = firebase.getData("cart");
-    setCart(await cartFirebase);
+    try{
+      const productFirebase = firebase.getData("product");
+      setProduct(await productFirebase);
+      const cartFirebase = firebase.getData("cart");
+      setCart(await cartFirebase);
+    }
+    catch(e:any){
+      toast(e.message);
+    }
+    
   }
 
   const json = [
@@ -67,66 +74,13 @@ const Home: React.FC = () => {
     console.log(cart);
 
     let cartId: string;
-    cart.filter(cart => cart.userId === user?.uid).map(cart => {
-      cartId = cart.id;
-      dataArray = (cart.items);
-      console.log(dataArray);
-      if(dataArray.length==0){
-        var obj = {
-          idP: idP,
-          name: name,
-          image: image,
-          price: price,
-          qty: 1
-        }
-        dataArray.push(obj);
+    try{
+      cart.filter(cart => cart.userId === user?.uid).map(cart => {
+        cartId = cart.id;
+        dataArray = (cart.items);
         console.log(dataArray);
-        carts.updateData(dataArray, user?.uid, cartId);
-        count=2; 
-        console.log("succes");
-      }
-      else{
-        dataArray.forEach((e: any) => {
-          if (e.idP === idP) {
-            count = 1;
-          }
-        });
-      }
-    })
-
-    cart.filter(cart => cart.userId === user?.uid).map(cart => {
-      cartId = cart.id;
-      dataArray = (cart.items);
-      dataArray.forEach((e: any) => {
-        if (count == 1) {
-          if (e.idP === idP) {
-            qty = e.qty;
-            qty++;
-            var obj = {
-              idP: e.idP,
-              name: e.name,
-              image: e.image,
-              price: e.price,
-              qty: qty
-            }
-            updatedDataArray.push(obj);
-          }
-          else {
-            qty = e.qty;
-            obj = {
-              idP: e.idP,
-              name: e.name,
-              image: e.image,
-              price: e.price,
-              qty: qty
-            }
-            updatedDataArray.push(obj);
-          }
-          console.log(updatedDataArray);
-          carts.updateData(updatedDataArray, user?.uid, cartId);
-        }
-        else if(count == 0) {
-           obj = {
+        if(dataArray.length==0){
+          var obj = {
             idP: idP,
             name: name,
             image: image,
@@ -136,11 +90,69 @@ const Home: React.FC = () => {
           dataArray.push(obj);
           console.log(dataArray);
           carts.updateData(dataArray, user?.uid, cartId);
-          count = 3;
+          count=2; 
+          console.log("succes");
         }
-      });
+        else{
+          dataArray.forEach((e: any) => {
+            if (e.idP === idP) {
+              count = 1;
+            }
+          });
+        }
+      })
+  
+      cart.filter(cart => cart.userId === user?.uid).map(cart => {
+        cartId = cart.id;
+        dataArray = (cart.items);
+        dataArray.forEach((e: any) => {
+          if (count == 1) {
+            if (e.idP === idP) {
+              qty = e.qty;
+              qty++;
+              var obj = {
+                idP: e.idP,
+                name: e.name,
+                image: e.image,
+                price: e.price,
+                qty: qty
+              }
+              updatedDataArray.push(obj);
+            }
+            else {
+              qty = e.qty;
+              obj = {
+                idP: e.idP,
+                name: e.name,
+                image: e.image,
+                price: e.price,
+                qty: qty
+              }
+              updatedDataArray.push(obj);
+            }
+            console.log(updatedDataArray);
+            carts.updateData(updatedDataArray, user?.uid, cartId);
+          }
+          else if(count == 0) {
+             obj = {
+              idP: idP,
+              name: name,
+              image: image,
+              price: price,
+              qty: 1
+            }
+            dataArray.push(obj);
+            console.log(dataArray);
+            carts.updateData(dataArray, user?.uid, cartId);
+            count = 3;
+          }
+        });
+      })
       getData();
-    })
+    } 
+    catch(e:any){
+      toast(e.message);
+    }
   }
 
   return (
