@@ -1,4 +1,4 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonMenuButton, IonPage, IonRow, IonText, IonTitle, IonToolbar } from "@ionic/react";
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonMenuButton, IonPage, IonRow, IonText, IonTitle, IonToolbar, useIonViewWillEnter } from "@ionic/react";
 import { addOutline, pencilOutline, trashBinOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { firebaseFunction } from "../../services/firebase";
@@ -10,19 +10,20 @@ const CRUDCategories : React.FC = () => {
     const [categories, setCategories] = useState<Array<any>>([]);
     const history = useHistory();
 
-    useEffect(() => {
-        async function getData() {
-            const categoriesFirebase = firebase.getData("categories");
-            setCategories(await categoriesFirebase);
-        }
+    useIonViewWillEnter(() => {
         getData();
-    }, []);
+    });
+
+    async function getData() {
+        const categoriesFirebase = firebase.getData("categories");
+        setCategories(await categoriesFirebase);
+    }
 
     const deleteCat = async (id: any) => {
         console.log(id + " Dihapus");
         await firebase.deleteData("categories", id);
+        getData();
         history.push('/page/Admin/Categories');
-        
     }
 
     console.log(categories);
@@ -74,7 +75,7 @@ const CRUDCategories : React.FC = () => {
                         <tbody>
                             {categories.map((category, index) => {
                                 return (
-                                    <tr key={index}>
+                                    <tr>
                                         <td>
                                             <IonText>{index+1}</IonText>
                                         </td>
