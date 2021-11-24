@@ -43,15 +43,13 @@ const EditProfile: React.FC = () => {
 
   const getData = async () => {
     const userFirebase = await firebase.getData("user");
-    //console.log(userFirebase);
     setUser(userFirebase);
-    userInfo.filter(info => info.userId == user?.uid).map(user => {
+    userFirebase.filter(info => info.userId == user?.uid).map(user => {
       setTakenPhoto({
        path: user.image,
-       preview: user.blob
+       preview: user.image
      });
     });
-    //console.log(takenPhoto?.preview);
   };
 
   const updateData = async () => {
@@ -126,8 +124,8 @@ const EditProfile: React.FC = () => {
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        {userInfo.filter(info=>info. userId === user?.uid).map(info => (
-            <IonGrid key={info.userId} className="ion-padding">
+        {userInfo.filter(info=>info.uid === user?.uid).map(info => (
+            <IonGrid key={info.uid} className="ion-padding">
                 <IonRow className="">
                   <IonCol className="ion-text-center">
                     <div className="image-preview">
