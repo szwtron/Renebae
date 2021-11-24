@@ -12,7 +12,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 const UpdateCategory: React.FC = () => {
 
   const idcat = useParams<{ id: string; }>().id;
-  const [categoryName, setUser] = useState<Array<any>>([]);
+  const [categoryName, setCategory] = useState<Array<any>>([]);
   const db = getFirestore(firebaseInit);
   const batch = writeBatch(db);
   const auth = getAuth(firebaseInit);
@@ -29,9 +29,14 @@ const UpdateCategory: React.FC = () => {
 
   async function getData() {
     const categoryFirebase = firebase.getData("categories");
-    setUser(await categoryFirebase);
     const productFirebase = firebase.getData("product");
-    setProduct(await productFirebase);
+    try{
+      setCategory(await categoryFirebase);
+      setProduct(await productFirebase);
+    }catch(e){
+      console.log(e);
+    }
+    
   }
 
   const updateData = async (oldName: string) => {
@@ -39,18 +44,24 @@ const UpdateCategory: React.FC = () => {
           name: nameRef.current?.value,
       }
       //await firebase.updateData("categories", idcat, field);
-      const catRef = doc(db, "categories", idcat);
-      batch.update(catRef, field);
 
-      {product.filter(product=>product.category === oldName).map(product => {
-          //updateProduct(product.id)
-          const data = {
-            category: nameRef.current?.value,
-          }
-          const prodRef = doc(db, "product", product.id);
-          batch.update(prodRef, data);
-      })}
-      await batch.commit();
+      try{
+        const catRef = doc(db, "categories", idcat);
+        batch.update(catRef, field);
+  
+        {product.filter(product=>product.category === oldName).map(product => {
+            //updateProduct(product.id)
+            const data = {
+              category: nameRef.current?.value,
+            }
+            const prodRef = doc(db, "product", product.id);
+            batch.update(prodRef, data);
+        })}
+        await batch.commit();
+      }catch(e){
+        console.log(e);
+      }
+      
       history.push('/page/Admin/Categories');
   }
 

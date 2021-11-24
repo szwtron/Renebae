@@ -11,8 +11,7 @@ import { compassSharp } from 'ionicons/icons';
 
 const AddCategory: React.FC = () => {
 
-  const namecat = useParams<{ name: string; }>().name;
-  const [categoryName, setUser] = useState<Array<any>>([]);
+  const [categoryName, setCategory] = useState<Array<any>>([]);
   
   const db = getFirestore(firebaseInit);
   const auth = getAuth(firebaseInit);
@@ -26,8 +25,12 @@ const AddCategory: React.FC = () => {
 
   useEffect(() => {
         async function getData() {
+          try{
             const categoryFirebase = firebase.getData("categories");
-            setUser(await categoryFirebase);
+            setCategory(await categoryFirebase);
+          }catch(e){
+            console.log(e);
+          }
         }
         getData();
     }, []);
@@ -44,10 +47,14 @@ const AddCategory: React.FC = () => {
         var obj = {
             name: newName
         }
-        console.log("add category baru");
-        const myJSON = JSON.stringify(obj);
-        console.log(myJSON);
-        await firebase.addData(obj, "categories");
+        try{
+          console.log("add category baru");
+          const myJSON = JSON.stringify(obj);
+          console.log(myJSON);
+          await firebase.addData(obj, "categories");
+        }catch(e){
+          console.log(e);
+        }
         history.push('/page/Admin/Categories');
     }
 
@@ -65,7 +72,7 @@ const AddCategory: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">{namecat}</IonTitle>
+            <IonTitle size="large">Add Category</IonTitle>
           </IonToolbar>
         </IonHeader>
         <IonRow>

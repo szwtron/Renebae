@@ -1,22 +1,45 @@
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonCard, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonImg } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonCard, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonImg, useIonViewWillEnter } from "@ionic/react";
 import { addOutline, pencilOutline, trashBinOutline } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import { firebaseFunction } from "../../services/firebase";
 import './CRUDProducts.css';
 import { getPlatforms, Platforms } from "@ionic/core";
+import { useHistory } from "react-router";
+import { getStorage } from "firebase/storage";
 
 const CRUDProducts: React.FC = () => {
-    const firebase = new firebaseFunction();
     const [products, setProducts] = useState<Array<any>>([]);
+    const firebase = new firebaseFunction();
+    const history = useHistory();
+    const [file, setFile] = useState<File>();
+    const [fileName, setFileName] = useState('');
+    const [product, setProduct] = useState<Array<any>>([]);
+    const [categoryName, setCategory] = useState<Array<any>>([]);
+    const storage = getStorage();
 
+    useIonViewWillEnter(() => {
+        getData();
+    });
 
-    useEffect(() => {
-        async function getData() {
+    async function getData() {
+        try{
             const productsFirebase = firebase.getData("product");
             setProducts(await productsFirebase);
+        }catch(e){
+            console.log(e);
         }
-        getData();
-    }, []);
+    }
+
+    const deleteProd = async (id: any) => {
+        console.log(id + " Dihapus");
+        try{
+            await firebase.deleteData("product", id);
+            getData();
+        }catch(e){
+            console.log(e);
+        }
+        history.push('/page/Admin/Products');
+    }
 
     console.log(products);
     return (
@@ -46,7 +69,7 @@ const CRUDProducts: React.FC = () => {
                                 <IonTitle>Categories</IonTitle>
                             </IonCol>
                             <IonCol>
-                                <IonButton expand="block" color="success"><IonIcon slot='icon-only' icon={addOutline} />Add product</IonButton>
+                                <IonButton expand="block" color="success" routerLink={`/page/addproduct/`}><IonIcon slot='icon-only' icon={addOutline} />Add product</IonButton>
                             </IonCol>
                         </IonRow>
                     </IonGrid>
@@ -95,10 +118,10 @@ const CRUDProducts: React.FC = () => {
                                         <td>
                                             <IonRow>
                                                 <IonCol>
-                                                    { window.innerWidth < 500 ? <IonButton color="warning"><IonIcon slot='icon-only' icon={pencilOutline} /></IonButton> : <IonButton color="warning"><IonIcon slot='icon-only' icon={pencilOutline} />Edit</IonButton>}
+                                                    { window.innerWidth < 500 ? <IonButton color="warning" routerLink={`/page/updateproduct/${product.id}`}><IonIcon slot='icon-only' icon={pencilOutline} /></IonButton> : <IonButton color="warning" routerLink={`/page/updateproduct/${product.id}`}><IonIcon slot='icon-only' icon={pencilOutline} />Edit</IonButton>}
                                                 </IonCol>
                                                 <IonCol>
-                                                    { window.innerWidth < 500 ? <IonButton color="danger"><IonIcon slot='icon-only' icon={trashBinOutline} /></IonButton> : <IonButton color="danger"><IonIcon slot='icon-only' icon={trashBinOutline} />Delete</IonButton>}
+                                                    { window.innerWidth < 500 ? <IonButton color="danger" onClick={() => deleteProd(product.id)}><IonIcon slot='icon-only' icon={trashBinOutline} /></IonButton> : <IonButton color="danger" onClick={() => deleteProd(product.id)}><IonIcon slot='icon-only' icon={trashBinOutline} />Delete</IonButton>}
                                                 </IonCol>
                                             </IonRow>
                                         </td>
