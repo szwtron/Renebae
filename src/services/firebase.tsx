@@ -26,26 +26,10 @@ export class firebaseFunction {
     }
 
     public async updateData(collectionName: string, id: any, fieldToBeUpdated: any) {
-        let docId: string = "";
-        // Create an initial document to update.
-
-        //query where id input == id field yang ingin diubah
-        const q = query(collection(this.db, collectionName), where("id", "==", id));
-
-        //get docs ini buat ambil id document sesuai hasil query
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
-            
-            //ini doc id nya
-            docId = doc.id;
-        });
-
-        const docRef = doc(this.db, collectionName, docId.toString());
+        const docRef = doc(this.db, collectionName, id);
         try {
             await updateDoc(docRef, fieldToBeUpdated);
-            console.log("Document updated successfully, ", docRef.id);
+            console.log("Document updated successfully, ", id);
         } catch (e) {
             console.error("Error updating document: ", e)
         }

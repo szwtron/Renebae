@@ -38,20 +38,21 @@ const EditProfile: React.FC = () => {
     setUser(await userFirebase);
   };
 
-    const updateData = async () => {
-        const field = {
-            username: usernameRef.current?.value,
-            email: emailRef.current?.value,
-            name: nameRef.current?.value,
-            birthdate: dateRef.current?.value,
-            address1: address1Ref.current?.value,
-            address2: address2Ref.current?.value,
-            phone: phoneRef.current?.value as number
-        }
-        await firebase.updateData("user", user?.uid, field);
-        getData();
-        history.push('/Home');
-    }
+  const updateData = async () => {
+      const field = {
+          username: usernameRef.current?.value,
+          email: emailRef.current?.value,
+          name: nameRef.current?.value,
+          birthdate: dateRef.current?.value,
+          address1: address1Ref.current?.value,
+          address2: address2Ref.current?.value,
+          phone: phoneRef.current?.value as number
+      }
+      userInfo.filter(user => user.uid == user?.uid).map(user => {
+        firebase.updateData("user", user.id, field);
+      })
+      history.push('/Home');
+  }
 
     
 
