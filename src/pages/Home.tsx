@@ -171,7 +171,6 @@ const Home: React.FC = () => {
         </IonCard>
 
         <IonSearchbar></IonSearchbar>
-        <IonButton onClick={() => firebase.deleteData("categories", "CWVwbAKjkn8L8swCkAaQ")}>wee</IonButton>
 
         <IonCard>
           <IonCardContent>

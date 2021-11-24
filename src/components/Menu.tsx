@@ -11,7 +11,7 @@ import {
 } from '@ionic/react';
 
 import { useLocation } from 'react-router-dom';
-import { archiveOutline, archiveSharp, bookmarkOutline, cartOutline, cartSharp, closeOutline, closeSharp, heartOutline, heartSharp, homeOutline, homeSharp, logInOutline, logInSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, personOutline, personSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
+import { archiveOutline, archiveSharp, bookmarkOutline, cartOutline, cartSharp, cashOutline, cashSharp, closeOutline, closeSharp, cubeOutline, cubeSharp, heartOutline, heartSharp, homeOutline, homeSharp, logInOutline, logInSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, personOutline, personSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
 import './Menu.css';
 import { getAuth } from 'firebase/auth';
 import firebaseInit from '../firebase_config';
@@ -75,8 +75,42 @@ const Menu: React.FC = () => {
 
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
+  console.log(user?.email);
 
-  if (user) {
+  if (user && user?.email === 'admin@renebae.com') {
+    appPages= [
+      {
+        title: 'Home',
+        url: '/page/Admin',
+        iosIcon: homeOutline,
+        mdIcon: homeSharp
+      },
+      {
+        title: 'Orders',
+        url: '/page/Cart',
+        iosIcon: cashOutline,
+        mdIcon: cashSharp
+      },
+      {
+        title: 'Categories',
+        url: '/page/Admin/Categories',
+        iosIcon: paperPlaneOutline,
+        mdIcon: paperPlaneSharp
+      },
+      {
+        title: 'Products',
+        url: '/page/Admin/Products',
+        iosIcon: cubeOutline,
+        mdIcon: cubeSharp
+      },
+      {
+        title: 'Logout',
+        url: '/page/Logout',
+        iosIcon: closeOutline,
+        mdIcon: closeSharp
+      }
+    ];
+  } else if (user) {
     appPages= [
       {
         title: 'Home',
@@ -138,16 +172,12 @@ const Menu: React.FC = () => {
     ];
   }
 
-  const renderSideMenu = () => {
-    console.log(auth.currentUser);
-  };
-
   return (
     <IonMenu contentId="main" type="overlay">
       <IonContent>
         <IonList id="inbox-list">
           <IonListHeader>Renebae</IonListHeader>
-          <IonNote>renebae@umn.ac.id</IonNote>
+          <IonNote>renebaeofficial@gmail.com</IonNote>
           {appPages.map((appPage, index) => {
             return (
               <IonMenuToggle key={index} autoHide={false}>

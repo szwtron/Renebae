@@ -24,7 +24,11 @@ const Login: React.FC = () => {
             const res = await signInWithEmailAndPassword(auth, username, password);
             toast('Login Successful');
             setBusy(false);
-            history.push('/Home');
+            if (username === 'admin@renebae.com') {
+                history.push('/page/Admin');
+            } else {
+                history.push('/Home');
+            }
         } catch (error: any) {
             console.log(error);
             toast(error.message);
