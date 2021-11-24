@@ -151,7 +151,7 @@ const Home: React.FC = () => {
       getData();
     } 
     catch(e:any){
-      toast(e.message);
+      toast(e);
     }
   }
 
