@@ -82,46 +82,44 @@ const Cart: React.FC = () => {
                     }
                     wishArray.push(obj);
                     console.log(wishArray);
+                    console.log("asd111");
+
                     carts.updateData(wishArray, user?.uid, wishId, "wishlists");
-                    count = 2;
+                    count = 1;
                     console.log("succes");
                 }
                 else {
                     wishArray.forEach((e: any) => {
                         if (e.idP === idP) {
                             count = 1;
+                            toast("Item already listed");
                         }
                     });
                 }
             })
 
             wish.filter(wish => wish.userId === user?.uid).map(wish => {
+                console.log(count)
                 wishArray = (wish.items);
-                wishArray.forEach((e: any) => {
-                    if (count == 1) {
-                        if (e.idP === idP) {
-                            toast("Item already listed");
-                        }
-                    }
-                    else {
+                    if (count !== 1) {
                         var obj = {
                             idP: idP,
                             name: name,
                             image: image,
                             price: price,
                         }
+                        console.log("asd111");
                         wishArray.push(obj);
                         console.log(wishArray);
                         carts.updateData(wishArray, user?.uid, wishId, "wishlists");
                     }
-                });
             })
-            getData();
             setBusy(false);
         }
         catch (e: any) {
             toast(e);
         }
+        getData();
     }
 
     //buat ngeprint cartnya
@@ -269,7 +267,7 @@ const Cart: React.FC = () => {
                             </IonCol>
                         </IonRow>
                     )}
-                    {dataArray && dataArray.map((dataArray: { idP: string; image: string ; name:  string ; price: number ; qty: number; }) => (
+                    {dataArray && dataArray.map((dataArray: { idP: string; image: string; name: string; price: number; qty: number; }) => (
                         <IonRow key={dataArray.idP}>
                             <IonCol size="5">
                                 <IonRow><img src={dataArray.image} alt="" className="img-container" /></IonRow>

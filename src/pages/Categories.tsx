@@ -1,5 +1,5 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
-import { cartOutline, closeCircleOutline } from 'ionicons/icons';
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonFabButton, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
+import { cartOutline, closeCircleOutline, heartOutline } from 'ionicons/icons';
 import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
@@ -27,21 +27,21 @@ const Categories: React.FC = () => {
     useIonViewWillEnter(() => {
         getData();
     })
-    
-      async function getData() {
-        try{
-          const productFirebase = firebase.getData("product");
-          setProduct(await productFirebase);
-          const cartFirebase = firebase.getData("cart");
-          setCart(await cartFirebase);
-          const wishFirebase = firebase.getData("wishlists");
-          setWish(await wishFirebase);
+
+    async function getData() {
+        try {
+            const productFirebase = firebase.getData("product");
+            setProduct(await productFirebase);
+            const cartFirebase = firebase.getData("cart");
+            setCart(await cartFirebase);
+            const wishFirebase = firebase.getData("wishlists");
+            setWish(await wishFirebase);
         }
-        catch(e:any){
-          toast(e.message);
+        catch (e: any) {
+            toast(e.message);
         }
-        
-      }
+
+    }
 
     async function addToWishlist(idP: string, image: string, name: string, price: number) {
         let i = 1;
@@ -67,12 +67,75 @@ const Categories: React.FC = () => {
                     }
                     wishArray.push(obj);
                     console.log(wishArray);
+                    console.log("asd111");
+
                     carts.updateData(wishArray, user?.uid, wishId, "wishlists");
-                    count = 2;
+                    count = 1;
                     console.log("succes");
                 }
                 else {
                     wishArray.forEach((e: any) => {
+                        if (e.idP === idP) {
+                            count = 1;
+                            toast("Item already listed");
+                        }
+                    });
+                }
+            })
+
+            wish.filter(wish => wish.userId === user?.uid).map(wish => {
+                console.log(count)
+                wishArray = (wish.items);
+                    if (count !== 1) {
+                        var obj = {
+                            idP: idP,
+                            name: name,
+                            image: image,
+                            price: price,
+                        }
+                        console.log("asd111");
+                        wishArray.push(obj);
+                        console.log(wishArray);
+                        carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+                    }
+            })
+            setBusy(false);
+        }
+        catch (e: any) {
+            toast(e);
+        }
+        getData();
+    }
+    async function addToCart(idP: string, image: string, name: string, price: string) {
+        let i = 1;
+        let qty = 0;
+        let dataArray: Array<any> = [];
+        let updatedDataArray: Array<any> = [];
+        let count = 0;
+        console.log(cart);
+
+        let cartId: string;
+        try {
+            cart.filter(cart => cart.userId === user?.uid).map(cart => {
+                cartId = cart.id;
+                dataArray = (cart.items);
+                console.log(dataArray);
+                if (dataArray.length == 0) {
+                    var obj = {
+                        idP: idP,
+                        name: name,
+                        image: image,
+                        price: price,
+                        qty: 1
+                    }
+                    dataArray.push(obj);
+                    console.log(dataArray);
+                    carts.updateData(dataArray, user?.uid, cartId, "cart");
+                    count = 2;
+                    console.log("succes");
+                }
+                else {
+                    dataArray.forEach((e: any) => {
                         if (e.idP === idP) {
                             count = 1;
                         }
@@ -80,123 +143,58 @@ const Categories: React.FC = () => {
                 }
             })
 
-            wish.filter(wish => wish.userId === user?.uid).map(wish => {
-                wishArray = (wish.items);
-                wishArray.forEach((e: any) => {
+            cart.filter(cart => cart.userId === user?.uid).map(cart => {
+                cartId = cart.id;
+                dataArray = (cart.items);
+                dataArray.forEach((e: any) => {
                     if (count == 1) {
                         if (e.idP === idP) {
-                            toast("Item already listed");
+                            qty = e.qty;
+                            qty++;
+                            var obj = {
+                                idP: e.idP,
+                                name: e.name,
+                                image: e.image,
+                                price: e.price,
+                                qty: qty
+                            }
+                            updatedDataArray.push(obj);
                         }
+                        else {
+                            qty = e.qty;
+                            obj = {
+                                idP: e.idP,
+                                name: e.name,
+                                image: e.image,
+                                price: e.price,
+                                qty: qty
+                            }
+                            updatedDataArray.push(obj);
+                        }
+                        console.log(updatedDataArray);
+                        carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
                     }
-                    else {
-                        var obj = {
+                    else if (count == 0) {
+                        obj = {
                             idP: idP,
                             name: name,
                             image: image,
                             price: price,
+                            qty: 1
                         }
-                        wishArray.push(obj);
-                        console.log(wishArray);
-                        carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+                        dataArray.push(obj);
+                        console.log(dataArray);
+                        carts.updateData(dataArray, user?.uid, cartId, "cart");
+                        count = 3;
                     }
                 });
             })
             getData();
-            setBusy(false);
         }
         catch (e: any) {
             toast(e);
         }
     }
-    async function addToCart(idP: string, image: string, name: string, price: string) {
-        let i = 1;
-        let qty = 0;
-        let dataArray: Array<any>=[];
-        let updatedDataArray: Array<any> = [];
-        let count = 0;
-        console.log(cart);
-    
-        let cartId: string;
-        try{
-          cart.filter(cart => cart.userId === user?.uid).map(cart => {
-            cartId = cart.id;
-            dataArray = (cart.items);
-            console.log(dataArray);
-            if(dataArray.length==0){
-              var obj = {
-                idP: idP,
-                name: name,
-                image: image,
-                price: price,
-                qty: 1
-              }
-              dataArray.push(obj);
-              console.log(dataArray);
-              carts.updateData(dataArray, user?.uid, cartId, "cart");
-              count=2; 
-              console.log("succes");
-            }
-            else{
-              dataArray.forEach((e: any) => {
-                if (e.idP === idP) {
-                  count = 1;
-                }
-              });
-            }
-          })
-      
-          cart.filter(cart => cart.userId === user?.uid).map(cart => {
-            cartId = cart.id;
-            dataArray = (cart.items);
-            dataArray.forEach((e: any) => {
-              if (count == 1) {
-                if (e.idP === idP) {
-                  qty = e.qty;
-                  qty++;
-                  var obj = {
-                    idP: e.idP,
-                    name: e.name,
-                    image: e.image,
-                    price: e.price,
-                    qty: qty
-                  }
-                  updatedDataArray.push(obj);
-                }
-                else {
-                  qty = e.qty;
-                  obj = {
-                    idP: e.idP,
-                    name: e.name,
-                    image: e.image,
-                    price: e.price,
-                    qty: qty
-                  }
-                  updatedDataArray.push(obj);
-                }
-                console.log(updatedDataArray);
-                carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
-              }
-              else if(count == 0) {
-                 obj = {
-                  idP: idP,
-                  name: name,
-                  image: image,
-                  price: price,
-                  qty: 1
-                }
-                dataArray.push(obj);
-                console.log(dataArray);
-                carts.updateData(dataArray, user?.uid, cartId, "cart");
-                count = 3;
-              }
-            });
-          })
-          getData();
-        } 
-        catch(e:any){
-          toast(e);
-        }
-      }
     return (
         <IonPage>
             <IonHeader>
@@ -213,8 +211,8 @@ const Categories: React.FC = () => {
 
             <IonContent fullscreen className="ion-padding">
                 <IonGrid>
-                {/* <IonSearchbar value={searchText} onIonChange={e => setSearchText(e.detail.value!)}></IonSearchbar> */}
-                {/* <IonSelect value={gender} placeholder="Select One" onIonChange={e => setGender(e.detail.value)}>
+                    {/* <IonSearchbar value={searchText} onIonChange={e => setSearchText(e.detail.value!)}></IonSearchbar> */}
+                    {/* <IonSelect value={gender} placeholder="Select One" onIonChange={e => setGender(e.detail.value)}>
                     <IonSelectOption value="female">Female</IonSelectOption>
                     <IonSelectOption value="male">Male</IonSelectOption>
                 </IonSelect> */}
@@ -228,20 +226,23 @@ const Categories: React.FC = () => {
                         {product.map(product => (
                             <IonCol size='6'>
                                 <IonCard>
-                                    <img className="img-item" src={product.image}/>
+                                    <IonFabButton color="danger" onClick={ () => addToWishlist(product.id, product.image, product.name, product.price)} size="small" className="wishlist-button">
+                                        <IonIcon className="wishlist-icon" icon={heartOutline} ></IonIcon>
+                                    </IonFabButton>
+                                    <img className="img-item" src={product.image} />
                                     <IonCardTitle className="center-txt">{product.name}</IonCardTitle>
                                     <IonCardContent className="center-txt font-size20">
-                                    {product.price == 0 ?
-                                        <div>
-                                            <IonText className="ion-margin"></IonText>
-                                            <br/><IonButton className="center-txt" color="danger"><IonIcon icon={closeCircleOutline}/>Out of Stock</IonButton>
-                                        </div>
-                                    :
-                                        <div>
-                                            <IonText className="ion-margin">Rp {product.price}</IonText>
-                                            <br/><IonButton className="center-txt"><IonIcon icon={cartOutline}/>Add to Cart</IonButton>
-                                        </div>
-                                    }
+                                        {product.price == 0 ?
+                                            <div>
+                                                <IonText className="ion-margin"></IonText>
+                                                <br /><IonButton className="center-txt" color="danger"><IonIcon icon={closeCircleOutline} />Out of Stock</IonButton>
+                                            </div>
+                                            :
+                                            <div>
+                                                <IonText className="ion-margin">Rp {product.price}</IonText>
+                                                <br /><IonButton className="center-txt"><IonIcon icon={cartOutline} />Add to Cart</IonButton>
+                                            </div>
+                                        }
                                     </IonCardContent>
                                 </IonCard>
                             </IonCol>

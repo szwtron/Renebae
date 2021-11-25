@@ -38,14 +38,14 @@ const Home: React.FC = () => {
         setIsSignedIn(false);
       }
     });
-  },[]);
+  }, []);
 
   useIonViewWillEnter(() => {
     getData();
-})
+  })
 
   async function getData() {
-    try{
+    try {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
       const cartFirebase = firebase.getData("cart");
@@ -53,10 +53,10 @@ const Home: React.FC = () => {
       const wishFirebase = firebase.getData("wishlists");
       setWish(await wishFirebase);
     }
-    catch(e:any){
+    catch (e: any) {
       toast(e.message);
     }
-    
+
   }
 
   const json = [
@@ -73,18 +73,18 @@ const Home: React.FC = () => {
   async function addToCart(idP: string, image: string, name: string, price: string) {
     let i = 1;
     let qty = 0;
-    let dataArray: Array<any>=[];
+    let dataArray: Array<any> = [];
     let updatedDataArray: Array<any> = [];
     let count = 0;
     console.log(cart);
 
     let cartId: string;
-    try{
+    try {
       cart.filter(cart => cart.userId === user?.uid).map(cart => {
         cartId = cart.id;
         dataArray = (cart.items);
         console.log(dataArray);
-        if(dataArray.length==0){
+        if (dataArray.length == 0) {
           var obj = {
             idP: idP,
             name: name,
@@ -95,10 +95,10 @@ const Home: React.FC = () => {
           dataArray.push(obj);
           console.log(dataArray);
           carts.updateData(dataArray, user?.uid, cartId, "cart");
-          count=2; 
+          count = 2;
           console.log("succes");
         }
-        else{
+        else {
           dataArray.forEach((e: any) => {
             if (e.idP === idP) {
               count = 1;
@@ -106,7 +106,7 @@ const Home: React.FC = () => {
           });
         }
       })
-  
+
       cart.filter(cart => cart.userId === user?.uid).map(cart => {
         cartId = cart.id;
         dataArray = (cart.items);
@@ -138,8 +138,8 @@ const Home: React.FC = () => {
             console.log(updatedDataArray);
             carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
           }
-          else if(count == 0) {
-             obj = {
+          else if (count == 0) {
+            obj = {
               idP: idP,
               name: name,
               image: image,
@@ -154,8 +154,8 @@ const Home: React.FC = () => {
         });
       })
       getData();
-    } 
-    catch(e:any){
+    }
+    catch (e: any) {
       toast(e);
     }
   }
@@ -163,66 +163,65 @@ const Home: React.FC = () => {
     let i = 1;
     let qty = 0;
     let wishArray: Array<any> = [];
+    let updatedWishArray: Array<any> = [];
     let wishId = '';
     let count = 0;
     console.log(cart);
     setBusy(true);
     let cartId: string;
     try {
-        wish.filter(wish => wish.userId === user?.uid).map(wish => {
-            wishId = wish.id;
-            wishArray = (wish.items);
-            console.log(wishArray);
-            if (wishArray.length == 0) {
-                var obj = {
-                    idP: idP,
-                    name: name,
-                    image: image,
-                    price: price,
-                }
-                wishArray.push(obj);
-                console.log(wishArray);
-                carts.updateData(wishArray, user?.uid, wishId, "wishlists");
-                count = 2;
-                console.log("succes");
-            }
-            else {
-                wishArray.forEach((e: any) => {
-                    if (e.idP === idP) {
-                        count = 1;
-                    }
-                });
-            }
-        })
+      wish.filter(wish => wish.userId === user?.uid).map(wish => {
+        wishId = wish.id;
+        wishArray = (wish.items);
+        console.log(wishArray);
+        if (wishArray.length == 0) {
+          var obj = {
+            idP: idP,
+            name: name,
+            image: image,
+            price: price,
+          }
+          wishArray.push(obj);
+          console.log(wishArray);
+          console.log("asd111");
 
-        wish.filter(wish => wish.userId === user?.uid).map(wish => {
-            wishArray = (wish.items);
-            wishArray.forEach((e: any) => {
-                if (count == 1) {
-                    if (e.idP === idP) {
-                        toast("Item already listed");
-                    }
-                }
-                else {
-                    var obj = {
-                        idP: idP,
-                        name: name,
-                        image: image,
-                        price: price,
-                    }
-                    wishArray.push(obj);
-                    console.log(wishArray);
-                    carts.updateData(wishArray, user?.uid, wishId, "wishlists");
-                }
-            });
-        })
-        getData();
-        setBusy(false);
+          carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+          count = 1;
+          console.log("succes");
+        }
+        else {
+          wishArray.forEach((e: any) => {
+            if (e.idP === idP) {
+              count = 1;
+              toast("Item already listed");
+            }
+          });
+        }
+      })
+
+      wish.filter(wish => wish.userId === user?.uid).map(wish => {
+        console.log(count)
+        wishArray = (wish.items);
+        if (count !== 1) {
+          var obj = {
+            idP: idP,
+            name: name,
+            image: image,
+            price: price,
+          }
+          console.log("asd111");
+          wishArray.push(obj);
+          console.log(wishArray);
+          carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+        }
+      })
+      setBusy(false);
     }
     catch (e: any) {
-        toast(e);
+      toast(e);
     }
-}
+    getData();
+  }
 
   return (
     <IonPage>
@@ -270,7 +269,7 @@ const Home: React.FC = () => {
                 <div className="filter">
                   {product.filter(product => product.category === 'gaming').map(product => (
                     <IonCard key={product.id} className='categoryCard filter-options'>
-                      <IonFabButton color="danger" onClick={isSignedIn ? () => addToWishlist(product.id, product.image, product.name, product.price)  : signedOut} size="small" className="wishlist-button">
+                      <IonFabButton color="danger" onClick={isSignedIn ? () => addToWishlist(product.id, product.image, product.name, product.price) : signedOut} size="small" className="wishlist-button">
                         <IonIcon className="wishlist-icon" icon={heartOutline} ></IonIcon>
                       </IonFabButton>
                       <img className='cardImages' src={product.image} />
@@ -334,6 +333,9 @@ const Home: React.FC = () => {
                 <div className="filter">
                   {product.filter(product => product.category === 'electronic').map(product => (
                     <IonCard key={product.id} className='categoryCard filter-options'>
+                      <IonFabButton color="danger" onClick={isSignedIn ? () => addToWishlist(product.id, product.image, product.name, product.price) : signedOut} size="small" className="wishlist-button">
+                        <IonIcon className="wishlist-icon" icon={heartOutline} ></IonIcon>
+                      </IonFabButton>
                       <img className='cardImages' src={product.image} />
                       <IonCardContent>
                         <IonText className="ion-margin">{product.name}</IonText> <br />
