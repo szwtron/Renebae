@@ -60,7 +60,7 @@ const Checkout: React.FC = () => {
 
     async function updateData() {
         try {
-            const productFirebase = carts.updateData(clearCart,user?.uid,cartId);
+            const productFirebase = carts.updateData(clearCart,user?.uid,cartId, "cart");
             await productFirebase;
         }
         catch (e: any) {

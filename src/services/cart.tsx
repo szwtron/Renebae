@@ -7,8 +7,8 @@ export class cartFunction {
     db = getFirestore(firebaseInit);
     storage = getStorage(firebaseInit);
     
-      public async updateData (items: Array<any>, userId:any,  idC: string) {
-        const docRef = doc(this.db, "cart", idC);
+      public async updateData (items: Array<any>, userId:any,  id: string, collectionName:string) {
+        const docRef = doc(this.db, collectionName, id);
         try {
           await updateDoc(docRef, {items, userId});
           console.log("Document updated successfully, ", docRef.id);
