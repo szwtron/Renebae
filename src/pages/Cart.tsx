@@ -1,4 +1,4 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonLoading, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonLoading, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { car, cartOutline, heartOutline, logoWindows, trashBinOutline } from 'ionicons/icons';
 import { JSXElementConstructor, Key, ReactChild, ReactElement, ReactFragment, ReactNodeArray, ReactPortal, useEffect, useState } from 'react';
@@ -31,15 +31,19 @@ const Cart: React.FC = () => {
     let filteredDataArray: Array<string> = [];
     let cartId = '';
     let subTotal = 0;
-    useEffect(() => {
-        onAuthStateChanged(auth, (user: any) => {
-            if (!user) {
-                window.location.href = '/page/Login';
-            }
-        });
-        getData();
-    }, []);
+    // useEffect(() => {
+    //     onAuthStateChanged(auth, (user: any) => {
+    //         if (!user) {
+    //             window.location.href = '/page/Login';
+    //         }
+    //     });
+    //     getData();
+    // }, []);
 
+    useIonViewWillEnter(() => {
+        getData();
+    })
+    
     async function getData() {
         try {
             const productFirebase = firebase.getData("cart");
@@ -202,7 +206,7 @@ const Cart: React.FC = () => {
                     {dataArray && dataArray.map((dataArray: { idP: string; image: string | undefined; name: null | string | undefined; price: string | undefined; qty: number; }) => (
                         <IonRow key={dataArray.idP}>
                             <IonCol size="5">
-                                <IonRow><img src={dataArray.image} alt="" /></IonRow>
+                                <IonRow><img src={dataArray.image} alt="" className="img-container" /></IonRow>
                                 <IonRow><IonCol className="ion-text-center">{dataArray.name}</IonCol></IonRow>
                                 <IonRow><IonCol className="ion-text-center">Rp. {dataArray.price}</IonCol></IonRow>
                             </IonCol>
