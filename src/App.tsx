@@ -38,6 +38,7 @@ import CRUDCategories from './pages/Admin/CRUDCategories';
 import CRUDProducts from './pages/Admin/CRUDProducts';
 import EditCategory from './pages/Admin/UpdateCategories';
 import AddCategory from './pages/Admin/AddCategories';
+import Wishlist from './pages/Wishlist';
 
 const App: React.FC = () => {
   return (
@@ -60,6 +61,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Profile" exact={true}>
               <Profile />
+            </Route>
+            <Route path="/page/Wishlist" exact={true}>
+              <Wishlist />
             </Route>
             <Route path="/page/test" exact={true}>
               <Page />

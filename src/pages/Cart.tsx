@@ -24,6 +24,7 @@ const Cart: React.FC = () => {
     const auth = getAuth();
     const user = auth.currentUser;
     const [cart, setCart] = useState<Array<any>>([]);
+    const [wish, setWish] = useState<Array<any>>([]);
     const history = useHistory();
     let cartArray: Array<any> = [];
     let dataArray: Array<any> = [];
@@ -43,19 +44,85 @@ const Cart: React.FC = () => {
     useIonViewWillEnter(() => {
         getData();
     })
-    
+
     async function getData() {
         try {
             const productFirebase = firebase.getData("cart");
             setCart(await productFirebase);
+            const wishFirebase = firebase.getData("wishlists");
+            setWish(await wishFirebase);
         }
-        catch (e:any) {
+        catch (e: any) {
             toast(e.message);
         }
 
     }
 
+    async function addToWishlist(idP: string, image: string, name: string, price: number) {
+        let i = 1;
+        let qty = 0;
+        let wishArray: Array<any> = [];
+        let updatedWishArray: Array<any> = [];
+        let wishId = '';
+        let count = 0;
+        console.log(cart);
+        setBusy(true);
+        let cartId: string;
+        try {
+            wish.filter(wish => wish.userId === user?.uid).map(wish => {
+                wishId = wish.id;
+                wishArray = (wish.items);
+                console.log(wishArray);
+                if (wishArray.length == 0) {
+                    var obj = {
+                        idP: idP,
+                        name: name,
+                        image: image,
+                        price: price,
+                    }
+                    wishArray.push(obj);
+                    console.log(wishArray);
+                    carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+                    count = 2;
+                    console.log("succes");
+                }
+                else {
+                    wishArray.forEach((e: any) => {
+                        if (e.idP === idP) {
+                            count = 1;
+                        }
+                    });
+                }
+            })
 
+            wish.filter(wish => wish.userId === user?.uid).map(wish => {
+                wishArray = (wish.items);
+                wishArray.forEach((e: any) => {
+                    if (count == 1) {
+                        if (e.idP === idP) {
+                            toast("Item already listed");
+                        }
+                    }
+                    else {
+                        var obj = {
+                            idP: idP,
+                            name: name,
+                            image: image,
+                            price: price,
+                        }
+                        wishArray.push(obj);
+                        console.log(wishArray);
+                        carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+                    }
+                });
+            })
+            getData();
+            setBusy(false);
+        }
+        catch (e: any) {
+            toast(e);
+        }
+    }
 
     //buat ngeprint cartnya
     cart.filter(cart => cart.userId === user?.uid).map(cart => {
@@ -72,7 +139,6 @@ const Cart: React.FC = () => {
         });
     })
 
-    console.log(dataArray);
     const deleteFromCart = (idP: string) => {
         try {
             cart.filter(cart => cart.userId === user?.uid).map(cart => {
@@ -88,7 +154,7 @@ const Cart: React.FC = () => {
             });
             console.log(filteredDataArray);
 
-            carts.updateData(filteredDataArray, user?.uid, cartId);
+            carts.updateData(filteredDataArray, user?.uid, cartId, "cart");
             getData();
         }
         catch (e: any) {
@@ -136,7 +202,7 @@ const Cart: React.FC = () => {
                         }
                         console.log(updatedDataArray);
                     });
-                    carts.updateData(updatedDataArray, user?.uid, cartId);
+                    carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
                 }
                 else if (plusmin === "min") {
                     dataArray.forEach((e: any) => {
@@ -165,7 +231,7 @@ const Cart: React.FC = () => {
                         }
                         console.log(updatedDataArray);
                     });
-                    carts.updateData(updatedDataArray, user?.uid, cartId);
+                    carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
                 }
             })
             getData();
@@ -203,7 +269,7 @@ const Cart: React.FC = () => {
                             </IonCol>
                         </IonRow>
                     )}
-                    {dataArray && dataArray.map((dataArray: { idP: string; image: string | undefined; name: null | string | undefined; price: string | undefined; qty: number; }) => (
+                    {dataArray && dataArray.map((dataArray: { idP: string; image: string ; name:  string ; price: number ; qty: number; }) => (
                         <IonRow key={dataArray.idP}>
                             <IonCol size="5">
                                 <IonRow><img src={dataArray.image} alt="" className="img-container" /></IonRow>
@@ -224,7 +290,7 @@ const Cart: React.FC = () => {
                                 </IonRow>
                                 <IonRow>
                                     <IonCol>
-                                        <IonButton color="success" fill="outline" className="moveToBtn" expand="block">
+                                        <IonButton onClick={() => addToWishlist(dataArray.idP, dataArray.image, dataArray.name, dataArray.price)} color="success" fill="outline" className="moveToBtn" expand="block">
                                             <IonIcon icon={heartOutline} slot="start" />
                                             Move to Wishlist
                                         </IonButton>
@@ -254,10 +320,10 @@ const Cart: React.FC = () => {
                                 thousandsGroupStyle="thousand"
                                 value={subTotal}
                                 prefix="Rp. "
-                                decimalSeparator="."
+                                decimalSeparator=","
                                 displayType="text"
                                 type="text"
-                                thousandSeparator={true}
+                                thousandSeparator="."
                                 allowNegative={true} />
                         </IonCol>
                     </IonRow>
@@ -277,10 +343,10 @@ const Cart: React.FC = () => {
                                 thousandsGroupStyle="thousand"
                                 value={grandTotal}
                                 prefix="Rp. "
-                                decimalSeparator="."
+                                decimalSeparator=","
                                 displayType="text"
                                 type="text"
-                                thousandSeparator={true}
+                                thousandSeparator="."
                                 allowNegative={true} />
                         </IonCol>
                     </IonRow>

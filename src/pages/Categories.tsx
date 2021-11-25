@@ -1,30 +1,202 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonSlide, IonSlides, IonText, IonTextarea, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
 import { cartOutline, closeCircleOutline } from 'ionicons/icons';
 import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 import './Categories.css';
 import { useState, useEffect } from 'react';
+import { firebaseFunction } from '../services/firebase';
+import { cartFunction } from '../services/cart';
+import { useHistory } from 'react-router';
+import { getAuth } from 'firebase/auth';
+import { toast } from '../toast';
 
 const Categories: React.FC = () => {
-    const db = getFirestore(firebaseInit);
-    const storage = getStorage(firebaseInit);
+    const firebase = new firebaseFunction();
+    const carts = new cartFunction();
+    const [busy, setBusy] = useState<Boolean>(false);
+    const [wish, setWish] = useState<Array<any>>([]);
     const [product, setProduct] = useState<Array<any>>([]);
+    const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+    const [cart, setCart] = useState<Array<any>>([]);
+    const history = useHistory();
+    const auth = getAuth(firebaseInit);
+    const user = auth.currentUser;
 
-    //Read data
-    useEffect(() => {
+
+    useIonViewWillEnter(() => {
+        getData();
+    })
+    
       async function getData() {
-        const querySnapshot = await getDocs(collection(db, "product"));
-        console.log('querySnapshot', querySnapshot);
-        setProduct(querySnapshot.docs.map((doc) => ({...doc.data(), id:doc.id})));
-
-        querySnapshot.forEach((doc) => {
-          console.log(`${doc.id} => ${doc.data()}`);
-          console.log('doc:', doc);
-        });
+        try{
+          const productFirebase = firebase.getData("product");
+          setProduct(await productFirebase);
+          const cartFirebase = firebase.getData("cart");
+          setCart(await cartFirebase);
+          const wishFirebase = firebase.getData("wishlists");
+          setWish(await wishFirebase);
+        }
+        catch(e:any){
+          toast(e.message);
+        }
+        
       }
-      getData();
-    }, []);
+
+    async function addToWishlist(idP: string, image: string, name: string, price: number) {
+        let i = 1;
+        let qty = 0;
+        let wishArray: Array<any> = [];
+        let updatedWishArray: Array<any> = [];
+        let wishId = '';
+        let count = 0;
+        console.log(cart);
+        setBusy(true);
+        let cartId: string;
+        try {
+            wish.filter(wish => wish.userId === user?.uid).map(wish => {
+                wishId = wish.id;
+                wishArray = (wish.items);
+                console.log(wishArray);
+                if (wishArray.length == 0) {
+                    var obj = {
+                        idP: idP,
+                        name: name,
+                        image: image,
+                        price: price,
+                    }
+                    wishArray.push(obj);
+                    console.log(wishArray);
+                    carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+                    count = 2;
+                    console.log("succes");
+                }
+                else {
+                    wishArray.forEach((e: any) => {
+                        if (e.idP === idP) {
+                            count = 1;
+                        }
+                    });
+                }
+            })
+
+            wish.filter(wish => wish.userId === user?.uid).map(wish => {
+                wishArray = (wish.items);
+                wishArray.forEach((e: any) => {
+                    if (count == 1) {
+                        if (e.idP === idP) {
+                            toast("Item already listed");
+                        }
+                    }
+                    else {
+                        var obj = {
+                            idP: idP,
+                            name: name,
+                            image: image,
+                            price: price,
+                        }
+                        wishArray.push(obj);
+                        console.log(wishArray);
+                        carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+                    }
+                });
+            })
+            getData();
+            setBusy(false);
+        }
+        catch (e: any) {
+            toast(e);
+        }
+    }
+    async function addToCart(idP: string, image: string, name: string, price: string) {
+        let i = 1;
+        let qty = 0;
+        let dataArray: Array<any>=[];
+        let updatedDataArray: Array<any> = [];
+        let count = 0;
+        console.log(cart);
+    
+        let cartId: string;
+        try{
+          cart.filter(cart => cart.userId === user?.uid).map(cart => {
+            cartId = cart.id;
+            dataArray = (cart.items);
+            console.log(dataArray);
+            if(dataArray.length==0){
+              var obj = {
+                idP: idP,
+                name: name,
+                image: image,
+                price: price,
+                qty: 1
+              }
+              dataArray.push(obj);
+              console.log(dataArray);
+              carts.updateData(dataArray, user?.uid, cartId, "cart");
+              count=2; 
+              console.log("succes");
+            }
+            else{
+              dataArray.forEach((e: any) => {
+                if (e.idP === idP) {
+                  count = 1;
+                }
+              });
+            }
+          })
+      
+          cart.filter(cart => cart.userId === user?.uid).map(cart => {
+            cartId = cart.id;
+            dataArray = (cart.items);
+            dataArray.forEach((e: any) => {
+              if (count == 1) {
+                if (e.idP === idP) {
+                  qty = e.qty;
+                  qty++;
+                  var obj = {
+                    idP: e.idP,
+                    name: e.name,
+                    image: e.image,
+                    price: e.price,
+                    qty: qty
+                  }
+                  updatedDataArray.push(obj);
+                }
+                else {
+                  qty = e.qty;
+                  obj = {
+                    idP: e.idP,
+                    name: e.name,
+                    image: e.image,
+                    price: e.price,
+                    qty: qty
+                  }
+                  updatedDataArray.push(obj);
+                }
+                console.log(updatedDataArray);
+                carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
+              }
+              else if(count == 0) {
+                 obj = {
+                  idP: idP,
+                  name: name,
+                  image: image,
+                  price: price,
+                  qty: 1
+                }
+                dataArray.push(obj);
+                console.log(dataArray);
+                carts.updateData(dataArray, user?.uid, cartId, "cart");
+                count = 3;
+              }
+            });
+          })
+          getData();
+        } 
+        catch(e:any){
+          toast(e);
+        }
+      }
     return (
         <IonPage>
             <IonHeader>
