@@ -1,21 +1,69 @@
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonCard, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonImg, useIonViewWillEnter } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonCard, IonGrid, IonRow, IonCol, IonButton, IonIcon, IonText, IonImg, useIonViewWillEnter, IonLoading } from "@ionic/react";
 import { addOutline, checkmarkOutline, closeOutline, eyeOutline, pencilOutline, trashBinOutline } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import NumberFormat from "react-number-format";
 import { firebaseFunction } from "../../services/firebase";
+import { toast } from "../../toast";
 import './CRUDProducts.css';
 
 const CRUDOrders: React.FC = () => {
     const firebase = new firebaseFunction();
     const [orders, setOrders] = useState<Array<any>>([]);
+    const [busy, setBusy] = useState<boolean>(false);
 
     useIonViewWillEnter(() => {
         getData();
     });
 
     async function getData() {
-        const productsFirebase = firebase.getDataOrderBy('orders', 'timestamp', 'desc');
-        setOrders(await productsFirebase);
+        setBusy(true);
+        try {
+            const productsFirebase = firebase.getDataOrderBy('orders', 'timestamp', 'desc');
+            setOrders(await productsFirebase);
+            setBusy(false);
+        } catch (error: any) {
+            console.log(error);
+            toast(error.message);
+            setBusy(false);
+        }
+    }
+
+    async function cancelOrder(id: string) {
+        setBusy(true);
+        try {
+            await firebase.updateData('orders', id, { status: 3 });
+            toast('Order Canceled');
+            getData();
+            setBusy(false);
+        } catch (error: any) {
+            console.log(error);
+            toast(error.message);
+            setBusy(false);
+        }
+    }
+
+    async function updateOrderStatus(id: string, status: number) {
+        setBusy(true);
+        let updateStatus = 0;
+
+        if (status === 2) {
+            updateStatus = 1;
+        }
+
+        if (status === 1) {
+            updateStatus = 0;
+        }
+
+        try {
+            await firebase.updateData('orders', id, { status: updateStatus });
+            toast('Order Updated');
+            getData();
+            setBusy(false);
+        } catch (error: any) {
+            console.log(error);
+            toast(error.message);
+            setBusy(false);
+        }
     }
 
     console.log(orders);
@@ -29,7 +77,7 @@ const CRUDOrders: React.FC = () => {
                     <IonTitle>CRUD Orders</IonTitle>
                 </IonToolbar>
             </IonHeader>
-
+            <IonLoading message="Please wait..." duration={0} isOpen={busy} />
             <IonContent>
                 <IonHeader collapse="condense">
                     <IonToolbar>
@@ -112,20 +160,20 @@ const CRUDOrders: React.FC = () => {
                                                 <IonRow>
                                                     <IonCol>
                                                         {window.innerWidth < 500 ?
-                                                            <IonButton expand="block" color={order.status === 2 ? "warning" : order.status === 1 ? "primary" : order.status === 0 ? "success" : "danger"} disabled={order.status === 2 || order.status === 1 ? false : true}><IonIcon slot='icon-only' icon={checkmarkOutline} /></IonButton>
-                                                            : <IonButton expand="block" color={order.status === 2 ? "warning" : order.status === 1 ? "primary" : order.status === 0 ? "success" : "danger"} disabled={order.status === 2 || order.status === 1 ? false : true}><IonIcon slot='icon-only' icon={checkmarkOutline} />{order.status === 2 ? 'Deliver' : order.status === 1 ? 'Done' : order.status === 0 ? 'Finished' : 'Canceled'}</IonButton>
+                                                            <IonButton expand="block" color={order.status === 2 ? "warning" : order.status === 1 ? "primary" : order.status === 0 ? "success" : "danger"} disabled={order.status === 2 || order.status === 1 ? false : true} onClick={() => {updateOrderStatus(order.id, order.status)}}><IonIcon slot='icon-only' icon={checkmarkOutline} /></IonButton>
+                                                            : <IonButton expand="block" color={order.status === 2 ? "warning" : order.status === 1 ? "primary" : order.status === 0 ? "success" : "danger"} disabled={order.status === 2 || order.status === 1 ? false : true} onClick={() => {updateOrderStatus(order.id, order.status)}}><IonIcon slot='icon-only' icon={checkmarkOutline} />{order.status === 2 ? 'Deliver' : order.status === 1 ? 'Done' : order.status === 0 ? 'Finished' : 'Canceled'}</IonButton>
                                                         }
                                                     </IonCol>
                                                     <IonCol>
                                                         {window.innerWidth < 500 ?
-                                                            <IonButton expand="block" color="tertiary"><IonIcon slot='icon-only' icon={eyeOutline} /></IonButton>
-                                                            : <IonButton expand="block" color="tertiary"><IonIcon slot='icon-only' icon={eyeOutline} />View</IonButton>
+                                                            <IonButton expand="block" color="tertiary" routerLink={`/page/vieworder/${order.id}`}><IonIcon slot='icon-only' icon={eyeOutline} /></IonButton>
+                                                            : <IonButton expand="block" color="tertiary" routerLink={`/page/vieworder/${order.id}`}><IonIcon slot='icon-only' icon={eyeOutline} />View</IonButton>
                                                         }
                                                     </IonCol>
                                                     <IonCol>
                                                         {window.innerWidth < 500 ?
-                                                            <IonButton color="danger"><IonIcon slot='icon-only' icon={closeOutline} /></IonButton>
-                                                            : <IonButton color="danger"><IonIcon slot='icon-only' icon={closeOutline} />Cancel</IonButton>
+                                                            <IonButton color="danger" disabled={order.status === 2 || order.status === 1 ? false : true} onClick={()=>{cancelOrder(order.id)}}><IonIcon slot='icon-only' icon={closeOutline}  /></IonButton>
+                                                            : <IonButton color="danger" disabled={order.status === 2 || order.status === 1 ? false : true} onClick={()=>{cancelOrder(order.id)}}><IonIcon slot='icon-only' icon={closeOutline} />Cancel</IonButton>
                                                         }
                                                     </IonCol>
                                                 </IonRow>
