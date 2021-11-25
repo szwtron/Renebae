@@ -38,6 +38,8 @@ import CRUDCategories from './pages/Admin/CRUDCategories';
 import CRUDProducts from './pages/Admin/CRUDProducts';
 import EditCategory from './pages/Admin/UpdateCategories';
 import AddCategory from './pages/Admin/AddCategories';
+import UpdateProduct from './pages/Admin/UpdateProduct';
+import AddProduct from './pages/Admin/AddProduct';
 
 const App: React.FC = () => {
   return (
@@ -90,6 +92,12 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/addcategory" exact={true}>
               <AddCategory />
+            </Route>
+            <Route path="/page/updateproduct/:id" exact={true}>
+              <UpdateProduct />
+            </Route>
+            <Route path="/page/addproduct" exact={true}>
+              <AddProduct />
             </Route>
             <Route path="/page/Logout" exact={true}>
               <Logout />
