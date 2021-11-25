@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { getStorage, ref } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 export class firebaseFunction {
@@ -21,7 +21,7 @@ export class firebaseFunction {
             const docRef= await addDoc(collection(this.db,collectionName), data);
             console.log("Document Added successfully, ", docRef.id);
         } catch (e) {
-            console.log("Error updating document: ", e);    
+            console.log("Error updating document: ", e);
         }
     }
 
@@ -43,4 +43,18 @@ export class firebaseFunction {
             console.error("Error updating document: ", e)
         }
     }
+
+    public async getDataOrderBy(collectionName: string, orderField: string, orderType: 'asc' | 'desc') {
+        let products: any[];
+        const collectionRef = collection(this.db, collectionName);
+
+        const q = query(collectionRef, orderBy(orderField, orderType));
+
+        const querySnapshot = await getDocs(q);
+
+        console.log('querySnapshot', querySnapshot);
+        products = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+
+        return products;
+    };
 }
