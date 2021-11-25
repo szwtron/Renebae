@@ -38,6 +38,7 @@ import CRUDCategories from './pages/Admin/CRUDCategories';
 import CRUDProducts from './pages/Admin/CRUDProducts';
 import EditCategory from './pages/Admin/UpdateCategories';
 import AddCategory from './pages/Admin/AddCategories';
+import Compare from './pages/Compare';
 
 const App: React.FC = () => {
   return (
@@ -69,6 +70,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Cart" exact={true}>
               <Cart />
+            </Route>
+            <Route path="/page/Compare" exact={true}>
+              <Compare />
             </Route>
             <Route path="/page/Cart/Checkout" exact={true}>
               <Checkout />
