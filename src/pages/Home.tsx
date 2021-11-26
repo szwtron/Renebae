@@ -262,6 +262,7 @@ const Home: React.FC = () => {
           product.filter(product => product.id === idP).map(product =>{
             var obj = {
               idP: idP,
+              name: product.name,
               effectiveSpeed: product.effectiveSpeed,
               lighting: product.lighting,
               reflection: product.reflection,
@@ -284,6 +285,7 @@ const Home: React.FC = () => {
           product.filter(product => product.id === idP).map(product =>{
             var obj = {
               idP: idP,
+              name: product.name,
               effectiveSpeed: product.effectiveSpeed,
               lighting: product.lighting,
               reflection: product.reflection,

@@ -1,18 +1,17 @@
-import { addDoc, collection } from "@firebase/firestore";
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonText, IonImg, IonGrid, IonRow, IonCard, IonButton, useIonViewWillEnter } from "@ionic/react";
-import { info } from "console";
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonContent, IonText, IonImg, IonGrid, IonRow, IonCard, IonButton, useIonViewWillEnter, IonLoading } from "@ionic/react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import firebaseInit from "../firebase_config";
 import { firebaseFunction } from "../services/firebase";
+import { toast } from "../toast";
 import './Profile.css';
-
 
 const Profile: React.FC = () => {
     const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
     const [userInfo, setUser] = useState<Array<any>>([]);
+    const [busy, setBusy] = useState<boolean>(false);
 
     const db = getFirestore(firebaseInit);
     const auth = getAuth(firebaseInit);
@@ -25,36 +24,18 @@ const Profile: React.FC = () => {
     });
 
     const getData = async () => {
-        const productFirebase = firebase.getData("user");
-        setUser(await productFirebase);
-        console.log(userInfo);
+        setBusy(true);
+        try {
+            const productFirebase = firebase.getData("user");
+            setUser(await productFirebase);
+            setBusy(false);
+        } catch (error: any) {
+            console.log(error);
+            toast(error.message);
+            setBusy(false);
+        }
     }
 
-    const dummyData = [{
-    uid: user?.uid,
-    username: user?.displayName,
-    name: "Christian Halim",
-    image: "https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/Chris%20crop.png?alt=media&token=497301d1-0692-42ec-bfae-c2aceccf09d4",
-    email: user?.email,
-    photoURL: user?.photoURL,
-    phone: user?.phoneNumber,
-    birthdate: "17-November-2000",
-    address1: "Jl. Kenari No. 7 RT/RW 001/002 Anggut Dalam Bengkulu",
-    address2: "Kec. Ratu Samban 38222 Bengkulu"
-  }];
-
-  const addData = async () => {
-    try {
-      dummyData.forEach(async element => {
-        const docRef = await addDoc(collection(db, "user"), element);
-        console.log("Document written with ID: ", docRef.id);
-      });
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  }
-      
-    
     return (
         <IonPage>
             <IonHeader>
@@ -65,10 +46,11 @@ const Profile: React.FC = () => {
                     <IonTitle>Profile</IonTitle>
                 </IonToolbar>
             </IonHeader>
+            <IonLoading message="Please wait..." duration={0} isOpen={busy} />
             <IonContent>
                 <IonCard>
-                    {userInfo.filter(info=>info.userId === user?.uid).map(info => (
-                        <IonGrid key={info.uid}>
+                    {userInfo.filter(info=>info.userId === user?.uid).map((info, index)=> (
+                        <IonGrid key={index}>
                             <IonRow>
                                 <div className="contentCenter">
                                     <IonAvatar className="profilePicture">
@@ -100,8 +82,6 @@ const Profile: React.FC = () => {
                                 <div className="contentCenter">
                                     <IonText className="centerText"><h1>{info.address1} <br/> {info.address2}</h1></IonText>
                                 </div>
-
-                                    
                             </IonRow>
                             <IonRow>
                                 <div className="contentCenter">

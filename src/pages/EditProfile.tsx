@@ -1,18 +1,16 @@
 import { getAuth } from '@firebase/auth';
-import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
-import { getFirestore } from 'firebase/firestore';
+import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonLoading, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
-import ExploreContainer from '../components/ExploreContainer';
 import firebaseInit from '../firebase_config';
 import { firebaseFunction } from "../services/firebase";
 import { useHistory } from 'react-router';
 import './Page.css';
-import { getMetadata } from '@firebase/storage';
 import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 import { camera } from 'ionicons/icons';
 import {base64FromPath} from "@ionic/react-hooks/filesystem";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { toast } from '../toast';
 
 const EditProfile: React.FC = () => {
   let [takenPhoto, setTakenPhoto] = useState<{
@@ -21,8 +19,8 @@ const EditProfile: React.FC = () => {
   }>();
   const { name } = useParams<{ name: string; }>();
   const [userInfo, setUser] = useState<Array<any>>([]);
-  
-  const db = getFirestore(firebaseInit);
+  const [busy, setBusy] = useState<boolean>(false);
+
   const storage = getStorage(firebaseInit);
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
@@ -42,19 +40,27 @@ const EditProfile: React.FC = () => {
   });
 
   const getData = async () => {
-    const userFirebase = await firebase.getData("user");
-    setUser(userFirebase);
-    userFirebase.filter(info => info.userId == user?.uid).map(user => {
-      setTakenPhoto({
-       path: user.image,
-       preview: user.image
-     });
-    });
+    setBusy(true);
+    try {
+      const userFirebase = await firebase.getData("user");
+      setUser(userFirebase);
+      userFirebase.filter(info => info.userId == user?.uid).map(user => {
+        setTakenPhoto({
+          path: user.image,
+          preview: user.image
+        });
+      });
+      setBusy(false);
+    } catch (error: any) {
+      toast(error.message);
+      setBusy(false);
+    }
   };
 
   const updateData = async () => {
     const fileName = usernameRef.current?.value + '.jpg';
     const base64Image  = await base64FromPath(takenPhoto!.preview);
+    console.log(base64Image);
     fetch(base64Image)
     .then(async(res) => {
         const parsedBlob = await res.blob();
@@ -90,7 +96,7 @@ const EditProfile: React.FC = () => {
 
   const takePhotoHandler = async () => {
     const photo = await Camera.getPhoto({
-        resultType: CameraResultType.Uri, 
+        resultType: CameraResultType.Uri,
         source: CameraSource.Camera,
         quality: 90,
         width: 500
@@ -100,7 +106,7 @@ const EditProfile: React.FC = () => {
     if(!photo || /*!photo.path ||*/ !photo.webPath){
         return;
     }
-    
+
     setTakenPhoto({
         path: photo.path,
         preview: photo.webPath
@@ -117,15 +123,15 @@ const EditProfile: React.FC = () => {
           <IonTitle>Edit Profile</IonTitle>
         </IonToolbar>
       </IonHeader>
-
+      <IonLoading message="Please wait..." duration={0} isOpen={busy} />
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        {userInfo.filter(info=>info.userId === user?.uid).map(info => (
-            <IonGrid key={info.userId} className="ion-padding">
+        {userInfo.filter(info=>info.userId === user?.uid).map((info, index) => (
+            <IonGrid key={index} className="ion-padding">
                 <IonRow className="">
                   <IonCol className="ion-text-center">
                     <div className="image-preview">

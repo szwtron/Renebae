@@ -38,10 +38,13 @@ import CRUDCategories from './pages/Admin/CRUDCategories';
 import CRUDProducts from './pages/Admin/CRUDProducts';
 import EditCategory from './pages/Admin/UpdateCategories';
 import AddCategory from './pages/Admin/AddCategories';
+import CRUDOrders from './pages/Admin/CRUDOrders';
+import ViewOrder from './pages/Admin/ViewOrder';
 import Compare from './pages/Compare';
 import UpdateProduct from './pages/Admin/UpdateProduct';
 import AddProduct from './pages/Admin/AddProduct';
 import Wishlist from './pages/Wishlist';
+import Orders from './pages/Orders';
 
 const App: React.FC = () => {
   return (
@@ -62,8 +65,14 @@ const App: React.FC = () => {
             <Route path="/page/Admin/Products" exact={true}>
               <CRUDProducts />
             </Route>
+            <Route path="/page/Admin/Orders" exact={true}>
+              <CRUDOrders />
+            </Route>
             <Route path="/page/Profile" exact={true}>
               <Profile />
+            </Route>
+            <Route path="/page/Orders" exact={true}>
+              <Orders />
             </Route>
             <Route path="/page/Wishlist" exact={true}>
               <Wishlist />
@@ -97,6 +106,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/editcategory/:id" exact={true}>
               <EditCategory />
+            </Route>
+            <Route path="/page/vieworder/:id" exact={true}>
+              <ViewOrder />
             </Route>
             <Route path="/page/addcategory" exact={true}>
               <AddCategory />

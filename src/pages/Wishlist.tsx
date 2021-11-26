@@ -209,7 +209,7 @@ const Wishlist: React.FC = () => {
                     {dataArray.length === 0 && (
                         <IonRow>
                             <IonCol>
-                                <h5>Keranjang Belanja anda masih kosong</h5>
+                                <h5>Wishlist is empty</h5>
                             </IonCol>
                         </IonRow>
                     )}
@@ -250,7 +250,7 @@ const Wishlist: React.FC = () => {
                     ))}
                 </IonGrid>
 
-                <IonButton routerLink="/page/Cart/Checkout" expand="block" color="medium">Go to Shopping Cart</IonButton>
+                <IonButton routerLink="/Home" expand="block" color="medium">Explore our products</IonButton>
 
             </IonContent>
         </IonPage>
