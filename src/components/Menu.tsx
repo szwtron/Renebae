@@ -87,7 +87,7 @@ const Menu: React.FC = () => {
       },
       {
         title: 'Orders',
-        url: '/page/Cart',
+        url: '/page/Admin/Orders',
         iosIcon: cashOutline,
         mdIcon: cashSharp
       },
