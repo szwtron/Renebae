@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Renebae",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}
