@@ -42,6 +42,8 @@ const Signup: React.FC = () => {
             console.log(res.user.uid);
             await createUser(res.user.uid);
             await createCart(res.user.uid);
+            await createWishlist(res.user.uid);
+            await createCompare(res.user.uid);
             setBusy(false);
             history.push('/Home');
         } catch (error: any) {
@@ -59,6 +61,32 @@ const Signup: React.FC = () => {
         try {
             await firebase.addData(data, 'cart');
             console.log('Cart created');
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const createWishlist = async (uid: string) => {
+        let data = {
+            userId: uid,
+            items: []
+        };
+        try {
+            await firebase.addData(data, 'wishlists');
+            console.log('Wishlist created');
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const createCompare = async (uid: string) => {
+        let data = {
+            userId: uid,
+            items: []
+        };
+        try {
+            await firebase.addData(data, 'compare');
+            console.log('Compare created');
         } catch (error) {
             console.log(error);
         }
@@ -87,6 +115,7 @@ const Signup: React.FC = () => {
             email: email,
             image: url,
             name: name,
+            blob:"",
             phone: phone
         };
         try {
