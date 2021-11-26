@@ -2,6 +2,7 @@ import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeade
 import { cartOutline, gitCompareOutline, heartOutline } from 'ionicons/icons';
 import { useEffect, useRef, useState } from 'react';
 import './Home.css';
+import './Page.css';
 import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
@@ -11,6 +12,7 @@ import { userInfo } from 'os';
 import { firebaseFunction } from "../services/firebase";
 import { cartFunction } from '../services/cart';
 import { toast } from '../toast';
+
 
 const Home: React.FC = () => {
   const db = getFirestore(firebaseInit);
@@ -22,6 +24,9 @@ const Home: React.FC = () => {
   const [product, setProduct] = useState<Array<any>>([]);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<any>>([]);
+  const [compare, setCompare] = useState<Array<any>>([]);
+  const [showToast1, setShowToast1] = useState(false);
+  const [showToast2, setShowToast2] = useState(false);
   const history = useHistory();
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
@@ -52,6 +57,8 @@ const Home: React.FC = () => {
       setCart(await cartFirebase);
       const wishFirebase = firebase.getData("wishlists");
       setWish(await wishFirebase);
+      const compareFirebase = firebase.getData("compare");
+      setCompare(await compareFirebase);
     }
     catch (e: any) {
       toast(e.message);
@@ -223,6 +230,133 @@ const Home: React.FC = () => {
     getData();
   }
 
+  async function updateCompare(items: Array<any>, userId: any, compareId: string){
+    const docRef = doc(db, "compare", compareId);
+    try {
+      await updateDoc(docRef, {items, userId});
+      console.log("Document updated successfully, ", docRef.id);
+    } catch (e) {
+      console.error("Error updating document: ", e)
+    }
+  }
+
+  async function addToCompare(idP: string) {
+    let i = 1;
+    let qty = 0;
+    let dataArray: Array<any>=[];
+    let updatedDataArray: Array<any> = [];
+    let count = 0;
+    console.log(compare);
+
+    let compareId: string;
+    console.log("ID product: " + idP);
+    console.log("ID User: " + user?.uid);
+    try{
+      compare.filter(compare => compare.userId === user?.uid).map(compare => {
+        compareId = compare.id;
+        dataArray = (compare.items);
+        console.log("data array 1 : " + dataArray);
+        console.log(dataArray.length);
+        if(dataArray.length==0){
+          console.log("ID product: " + idP);
+          product.filter(product => product.id === idP).map(product =>{
+            var obj = {
+              idP: idP,
+              name: product.name,
+              effectiveSpeed: product.effectiveSpeed,
+              lighting: product.lighting,
+              reflection: product.reflection,
+              mrender: product.mrender,
+              gravity: product.gravity,
+              image: product.image
+            }
+            dataArray.push(obj);
+            console.log("data array:");
+            console.log(dataArray);
+            updateCompare(dataArray, user?.uid, compareId);
+          })
+          console.log("Product added to compare slot 1");
+          
+          //carts.updateData(dataArray, user?.uid, cartId);
+          //count=2; 
+          
+        } else if (dataArray.length == 1){
+          console.log("ID product: " + idP);
+          product.filter(product => product.id === idP).map(product =>{
+            var obj = {
+              idP: idP,
+              name: product.name,
+              effectiveSpeed: product.effectiveSpeed,
+              lighting: product.lighting,
+              reflection: product.reflection,
+              mrender: product.mrender,
+              gravity: product.gravity,
+              image: product.image
+            }
+            dataArray.push(obj);
+            console.log("data array:");
+            console.log(dataArray);
+            updateCompare(dataArray, user?.uid, compareId);
+          })
+          console.log("Product added to compare slot 2");
+        } else {
+          console.log("Slot compare sudah penuh");
+        }
+      })
+  
+      // cart.filter(cart => cart.userId === user?.uid).map(cart => {
+      //   cartId = cart.id;
+      //   dataArray = (cart.items);
+      //   dataArray.forEach((e: any) => {
+      //     if (count == 1) {
+      //       if (e.idP === idP) {
+      //         qty = e.qty;
+      //         qty++;
+      //         var obj = {
+      //           idP: e.idP,
+      //           name: e.name,
+      //           image: e.image,
+      //           price: e.price,
+      //           qty: qty
+      //         }
+      //         updatedDataArray.push(obj);
+      //       }
+      //       else {
+      //         qty = e.qty;
+      //         obj = {
+      //           idP: e.idP,
+      //           name: e.name,
+      //           image: e.image,
+      //           price: e.price,
+      //           qty: qty
+      //         }
+      //         updatedDataArray.push(obj);
+      //       }
+      //       console.log(updatedDataArray);
+      //       carts.updateData(updatedDataArray, user?.uid, cartId);
+      //     }
+      //     else if(count == 0) {
+      //        obj = {
+      //         idP: idP,
+      //         name: name,
+      //         image: image,
+      //         price: price,
+      //         qty: 1
+      //       }
+      //       dataArray.push(obj);
+      //       console.log(dataArray);
+      //       carts.updateData(dataArray, user?.uid, cartId);
+      //       count = 3;
+      //     }
+      //   });
+      // })
+      getData();
+    } 
+    catch(e:any){
+      toast(e);
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -271,6 +405,9 @@ const Home: React.FC = () => {
                     <IonCard key={product.id} className='categoryCard filter-options'>
                       <IonFabButton color="danger" onClick={isSignedIn ? () => addToWishlist(product.id, product.image, product.name, product.price) : signedOut} size="small" className="wishlist-button">
                         <IonIcon className="wishlist-icon" icon={heartOutline} ></IonIcon>
+                      </IonFabButton>
+                      <IonFabButton onClick={isSignedIn ? () => addToCompare(product.id) : signedOut} size="small" className="compare-button">
+                        <IonIcon className="compare-icon" icon={gitCompareOutline} ></IonIcon>
                       </IonFabButton>
                       <img className='cardImages' src={product.image} />
                       <IonCardContent>
@@ -336,6 +473,9 @@ const Home: React.FC = () => {
                       <IonFabButton color="danger" onClick={isSignedIn ? () => addToWishlist(product.id, product.image, product.name, product.price) : signedOut} size="small" className="wishlist-button">
                         <IonIcon className="wishlist-icon" icon={heartOutline} ></IonIcon>
                       </IonFabButton>
+                      <IonFabButton onClick={isSignedIn ? () => addToCompare(product.id) : signedOut} size="small" className="compare-button">
+                        <IonIcon className="compare-icon" icon={gitCompareOutline} ></IonIcon>
+                      </IonFabButton>
                       <img className='cardImages' src={product.image} />
                       <IonCardContent>
                         <IonText className="ion-margin">{product.name}</IonText> <br />
@@ -351,6 +491,7 @@ const Home: React.FC = () => {
                     </IonCard>
                   ))}
                 </div>
+                
               </IonRow>
             </IonGrid>
           </IonCardContent>

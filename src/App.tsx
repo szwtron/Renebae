@@ -40,6 +40,7 @@ import EditCategory from './pages/Admin/UpdateCategories';
 import AddCategory from './pages/Admin/AddCategories';
 import CRUDOrders from './pages/Admin/CRUDOrders';
 import ViewOrder from './pages/Admin/ViewOrder';
+import Compare from './pages/Compare';
 import UpdateProduct from './pages/Admin/UpdateProduct';
 import AddProduct from './pages/Admin/AddProduct';
 import Wishlist from './pages/Wishlist';
@@ -84,6 +85,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Cart" exact={true}>
               <Cart />
+            </Route>
+            <Route path="/page/Compare" exact={true}>
+              <Compare />
             </Route>
             <Route path="/page/Cart/Checkout" exact={true}>
               <Checkout />
