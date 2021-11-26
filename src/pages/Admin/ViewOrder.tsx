@@ -151,6 +151,9 @@ const ViewOrder: React.FC = () => {
                                 <IonRow>
                                     <IonTitle>Total Price</IonTitle>
                                 </IonRow>
+                                <IonRow>
+                                    <IonTitle>Order Status</IonTitle>
+                                </IonRow>
                             </IonCol>
                             {orders.filter(order => order.id === idOrder).map((order, index) => {
                                 return (
@@ -185,6 +188,13 @@ const ViewOrder: React.FC = () => {
                                                     type="text"
                                                     allowNegative={true} />
                                             </IonTitle>
+                                        </IonRow>
+                                        <IonRow>
+                                            <IonTitle>{order.status === 2 ?
+                                                    <IonText color="warning">Processing</IonText>
+                                                    : order.status === 1 ? <IonText color="primary">Delivering</IonText>
+                                                        : order.status === 0 ? <IonText color="success">Done</IonText>
+                                                            : <IonText color="danger">Canceled</IonText>}</IonTitle>
                                         </IonRow>
                                     </IonCol>
                                 )

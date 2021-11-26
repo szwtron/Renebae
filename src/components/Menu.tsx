@@ -11,7 +11,7 @@ import {
 } from '@ionic/react';
 
 import { useLocation } from 'react-router-dom';
-import { archiveOutline, archiveSharp, bookmarkOutline, cartOutline, cartSharp, cashOutline, cashSharp, closeOutline, closeSharp, cubeOutline, cubeSharp, heartOutline, heartSharp, homeOutline, homeSharp, logInOutline, logInSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, personOutline, personSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
+import { archiveOutline, archiveSharp, bagOutline, bagSharp, bookmarkOutline, cartOutline, cartSharp, cashOutline, cashSharp, closeOutline, closeSharp, cubeOutline, cubeSharp, heartOutline, heartSharp, homeOutline, homeSharp, logInOutline, logInSharp, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, personOutline, personSharp, trashOutline, trashSharp, warningOutline, warningSharp } from 'ionicons/icons';
 import './Menu.css';
 import { getAuth } from 'firebase/auth';
 import firebaseInit from '../firebase_config';
@@ -123,6 +123,12 @@ const Menu: React.FC = () => {
         url: '/page/Profile',
         iosIcon: personOutline,
         mdIcon: personSharp
+      },
+      {
+        title: 'Orders',
+        url: '/page/Orders',
+        iosIcon: bagOutline,
+        mdIcon: bagSharp
       },
       {
         title: 'Category',
