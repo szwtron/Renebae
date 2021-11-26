@@ -39,6 +39,7 @@ import CRUDProducts from './pages/Admin/CRUDProducts';
 import EditCategory from './pages/Admin/UpdateCategories';
 import AddCategory from './pages/Admin/AddCategories';
 import CRUDOrders from './pages/Admin/CRUDOrders';
+import ViewOrder from './pages/Admin/ViewOrder';
 
 const App: React.FC = () => {
   return (
@@ -91,6 +92,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/editcategory/:id" exact={true}>
               <EditCategory />
+            </Route>
+            <Route path="/page/vieworder/:id" exact={true}>
+              <ViewOrder />
             </Route>
             <Route path="/page/addcategory" exact={true}>
               <AddCategory />

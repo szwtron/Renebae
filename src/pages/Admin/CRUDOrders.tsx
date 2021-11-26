@@ -102,7 +102,7 @@ const CRUDOrders: React.FC = () => {
                                     <th>
                                         <IonText>Order Date</IonText>
                                     </th>
-                                    <th>
+                                    <th className="ion-hide-md-down">
                                         <IonText>Name</IonText>
                                     </th>
                                     <th>
@@ -129,7 +129,7 @@ const CRUDOrders: React.FC = () => {
                                             <td>
                                                 <IonText>{order.timestamp.toDate().toDateString()}</IonText>
                                             </td>
-                                            <td>
+                                            <td className="ion-hide-md-down">
                                                 <IonText>{order.users.name}</IonText>
                                             </td>
                                             <td>
