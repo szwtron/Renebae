@@ -1,7 +1,7 @@
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSlide, IonSlides, IonText, IonTitle, IonToast, IonToolbar } from '@ionic/react';
-import { cartOutline } from 'ionicons/icons';
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSlide, IonSlides, IonText, IonTitle, IonToast, IonToolbar, useIonViewWillEnter } from '@ionic/react';
+import { cartOutline, gitCompareOutline, heartOutline } from 'ionicons/icons';
 import { useEffect, useRef, useState } from 'react';
-import './Page.css';
+import './Home.css';
 import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
@@ -17,11 +17,11 @@ const Home: React.FC = () => {
   const storage = getStorage(firebaseInit);
   const firebase = new firebaseFunction();
   const carts = new cartFunction();
+  const [busy, setBusy] = useState<Boolean>(false);
+  const [wish, setWish] = useState<Array<any>>([]);
   const [product, setProduct] = useState<Array<any>>([]);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<any>>([]);
-  const [showToast1, setShowToast1] = useState(false);
-  const [showToast2, setShowToast2] = useState(false);
   const history = useHistory();
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
@@ -37,21 +37,26 @@ const Home: React.FC = () => {
       } else {
         setIsSignedIn(false);
       }
-      getData()
     });
-  },[]);
+  }, []);
+
+  useIonViewWillEnter(() => {
+    getData();
+  })
 
   async function getData() {
-    try{
+    try {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
       const cartFirebase = firebase.getData("cart");
       setCart(await cartFirebase);
+      const wishFirebase = firebase.getData("wishlists");
+      setWish(await wishFirebase);
     }
-    catch(e:any){
+    catch (e: any) {
       toast(e.message);
     }
-    
+
   }
 
   const json = [
@@ -68,18 +73,18 @@ const Home: React.FC = () => {
   async function addToCart(idP: string, image: string, name: string, price: string) {
     let i = 1;
     let qty = 0;
-    let dataArray: Array<any>=[];
+    let dataArray: Array<any> = [];
     let updatedDataArray: Array<any> = [];
     let count = 0;
     console.log(cart);
 
     let cartId: string;
-    try{
+    try {
       cart.filter(cart => cart.userId === user?.uid).map(cart => {
         cartId = cart.id;
         dataArray = (cart.items);
         console.log(dataArray);
-        if(dataArray.length==0){
+        if (dataArray.length == 0) {
           var obj = {
             idP: idP,
             name: name,
@@ -89,11 +94,11 @@ const Home: React.FC = () => {
           }
           dataArray.push(obj);
           console.log(dataArray);
-          carts.updateData(dataArray, user?.uid, cartId);
-          count=2; 
+          carts.updateData(dataArray, user?.uid, cartId, "cart");
+          count = 2;
           console.log("succes");
         }
-        else{
+        else {
           dataArray.forEach((e: any) => {
             if (e.idP === idP) {
               count = 1;
@@ -101,7 +106,7 @@ const Home: React.FC = () => {
           });
         }
       })
-  
+
       cart.filter(cart => cart.userId === user?.uid).map(cart => {
         cartId = cart.id;
         dataArray = (cart.items);
@@ -131,10 +136,10 @@ const Home: React.FC = () => {
               updatedDataArray.push(obj);
             }
             console.log(updatedDataArray);
-            carts.updateData(updatedDataArray, user?.uid, cartId);
+            carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
           }
-          else if(count == 0) {
-             obj = {
+          else if (count == 0) {
+            obj = {
               idP: idP,
               name: name,
               image: image,
@@ -143,16 +148,79 @@ const Home: React.FC = () => {
             }
             dataArray.push(obj);
             console.log(dataArray);
-            carts.updateData(dataArray, user?.uid, cartId);
+            carts.updateData(dataArray, user?.uid, cartId, "cart");
             count = 3;
           }
         });
       })
       getData();
-    } 
-    catch(e:any){
+    }
+    catch (e: any) {
       toast(e);
     }
+  }
+  async function addToWishlist(idP: string, image: string, name: string, price: number) {
+    let i = 1;
+    let qty = 0;
+    let wishArray: Array<any> = [];
+    let updatedWishArray: Array<any> = [];
+    let wishId = '';
+    let count = 0;
+    console.log(cart);
+    setBusy(true);
+    let cartId: string;
+    try {
+      wish.filter(wish => wish.userId === user?.uid).map(wish => {
+        wishId = wish.id;
+        wishArray = (wish.items);
+        console.log(wishArray);
+        if (wishArray.length == 0) {
+          var obj = {
+            idP: idP,
+            name: name,
+            image: image,
+            price: price,
+          }
+          wishArray.push(obj);
+          console.log(wishArray);
+          console.log("asd111");
+
+          carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+          count = 1;
+          console.log("succes");
+        }
+        else {
+          wishArray.forEach((e: any) => {
+            if (e.idP === idP) {
+              count = 1;
+              toast("Item already listed");
+            }
+          });
+        }
+      })
+
+      wish.filter(wish => wish.userId === user?.uid).map(wish => {
+        console.log(count)
+        wishArray = (wish.items);
+        if (count !== 1) {
+          var obj = {
+            idP: idP,
+            name: name,
+            image: image,
+            price: price,
+          }
+          console.log("asd111");
+          wishArray.push(obj);
+          console.log(wishArray);
+          carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+        }
+      })
+      setBusy(false);
+    }
+    catch (e: any) {
+      toast(e);
+    }
+    getData();
   }
 
   return (
@@ -201,6 +269,9 @@ const Home: React.FC = () => {
                 <div className="filter">
                   {product.filter(product => product.category === 'gaming').map(product => (
                     <IonCard key={product.id} className='categoryCard filter-options'>
+                      <IonFabButton color="danger" onClick={isSignedIn ? () => addToWishlist(product.id, product.image, product.name, product.price) : signedOut} size="small" className="wishlist-button">
+                        <IonIcon className="wishlist-icon" icon={heartOutline} ></IonIcon>
+                      </IonFabButton>
                       <img className='cardImages' src={product.image} />
                       <IonCardContent>
                         <IonText className="ion-margin">{product.name}</IonText> <br />
@@ -262,6 +333,9 @@ const Home: React.FC = () => {
                 <div className="filter">
                   {product.filter(product => product.category === 'electronic').map(product => (
                     <IonCard key={product.id} className='categoryCard filter-options'>
+                      <IonFabButton color="danger" onClick={isSignedIn ? () => addToWishlist(product.id, product.image, product.name, product.price) : signedOut} size="small" className="wishlist-button">
+                        <IonIcon className="wishlist-icon" icon={heartOutline} ></IonIcon>
+                      </IonFabButton>
                       <img className='cardImages' src={product.image} />
                       <IonCardContent>
                         <IonText className="ion-margin">{product.name}</IonText> <br />

@@ -7,8 +7,8 @@ export class cartFunction {
     db = getFirestore(firebaseInit);
     storage = getStorage(firebaseInit);
     
-      public async updateData (items: Array<any>, userId:any,  idC: string) {
-        const docRef = doc(this.db, "cart", idC);
+      public async updateData (items: Array<any>, userId:any,  id: string, collectionName:string) {
+        const docRef = doc(this.db, collectionName, id);
         try {
           await updateDoc(docRef, {items, userId});
           console.log("Document updated successfully, ", docRef.id);
@@ -17,17 +17,17 @@ export class cartFunction {
         }
       }
 
-      public async updateQty (i:number ,idP: string, idC:string, index:number) {
-        const docRef = doc(this.db, "cart", idC);
-        try {
-          await updateDoc(docRef, {
-            "items[index].qty": i
-          });
-          console.log("Document updated successfully, ", docRef.id);
-        } catch (e) {
-          console.error("Error updating document: ", e)
-        }
-      }
+      // public async updateQty (i:number ,idP: string, idC:string, index:number) {
+      //   const docRef = doc(this.db, "cart", idC);
+      //   try {
+      //     await updateDoc(docRef, {
+      //       "items[index].qty": i
+      //     });
+      //     console.log("Document updated successfully, ", docRef.id);
+      //   } catch (e) {
+      //     console.error("Error updating document: ", e)
+      //   }
+      // }
     
       public async  addData (myJSON: string) {
         try {

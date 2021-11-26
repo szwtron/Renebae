@@ -3,7 +3,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { car, cartOutline, heartOutline, logoWindows, trashBinOutline } from 'ionicons/icons';
 import { JSXElementConstructor, Key, ReactChild, ReactElement, ReactFragment, ReactNodeArray, ReactPortal, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, serverTimestamp } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 import './Checkout.css';
@@ -35,11 +35,12 @@ const Checkout: React.FC = () => {
     const user = auth.currentUser;
     let cartArray: Array<any> = [];
     let dataArray: Array<any> = [];
+    var clearCart: Array<any> = [];
     let cartId = '';
     let subTotal = 0;
 
     // useEffect(()=>{
-        
+
     // },[])
 
     useIonViewWillEnter(() => {
@@ -48,18 +49,35 @@ const Checkout: React.FC = () => {
     })
 
     async function getData() {
-        const productFirebase = firebase.getData("cart");
-        setCart(await productFirebase);
+        try {
+            const productFirebase = firebase.getData("cart");
+            setCart(await productFirebase);
+        }
+        catch (e: any) {
+            toast(e);
+        }
     }
+
+    async function updateData() {
+        try {
+            const productFirebase = carts.updateData(clearCart,user?.uid,cartId, "cart");
+            await productFirebase;
+        }
+        catch (e: any) {
+            toast(e);
+        }
+    }
+
 
     async function addData(data: object) {
         //data: any, collectionName: string
-        try{
+        try {
             await firebase.addData(data, "orders");
             toast("Order successfuly added");
+            updateData();
             history.push('/Home');
         }
-        catch(e:any){
+        catch (e: any) {
             toast(e.message);
         }
     }
@@ -90,9 +108,9 @@ const Checkout: React.FC = () => {
         setLng(coordinates.coords.longitude);
     };
 
-    function selectPos( e:google.maps.MapMouseEvent){
-        if(e.latLng?.lat()){setLat(e.latLng.lat())};
-        if(e.latLng?.lng()){setLat(e.latLng.lng())};
+    function selectPos(e: google.maps.MapMouseEvent) {
+        if (e.latLng?.lat()) { setLat(e.latLng.lat()) };
+        if (e.latLng?.lng()) { setLat(e.latLng.lng()) };
         console.log(lng)
         console.log(lat)
     }
@@ -100,7 +118,7 @@ const Checkout: React.FC = () => {
     function addtoOrder() {
         if (name === '' || email === '' || address === '' || city === '' || country === '' || postalCode === '') {
             toast("Input field must be filled")
-        }else{
+        } else {
             console.log(busy);
             var users = {
                 name: name,
@@ -109,7 +127,7 @@ const Checkout: React.FC = () => {
                 city: city,
                 country: country,
                 postalCode: postalCode,
-                lat :lat,
+                lat: lat,
                 lng: lng
             }
             var data = {
@@ -117,8 +135,10 @@ const Checkout: React.FC = () => {
                 users: users,
                 items: dataArray,
                 status: 2,
+                timestamp: serverTimestamp(),
                 userId: user?.uid
             }
+           
             console.log(user?.uid);
             addData(data);
         }
@@ -197,17 +217,17 @@ const Checkout: React.FC = () => {
                 </IonGrid>
                 Map:
                 <LoadScript googleMapsApiKey="AIzaSyAlLM8KDJySDya6H2ErQ5ZPB07CzpnMutA">
-                                <GoogleMap
-                                    mapContainerStyle={containerStyle}
-                                    center={{ lat: lat, lng: lng }}
-                                    //onClick={selectPos}
-                                    zoom={18}
-                                    >
-                                    { /* Child components, such as markers, info windows, etc. */}
-                                    <></>
-                                    <Marker position={{ lat: lat, lng: lng }} />
-                                </GoogleMap>
-                            </LoadScript>
+                    <GoogleMap
+                        mapContainerStyle={containerStyle}
+                        center={{ lat: lat, lng: lng }}
+                        //onClick={selectPos}
+                        zoom={18}
+                    >
+                        { /* Child components, such as markers, info windows, etc. */}
+                        <></>
+                        <Marker position={{ lat: lat, lng: lng }} />
+                    </GoogleMap>
+                </LoadScript>
                 <IonGrid>
                     <IonRow>
                         <h5>Cart Summary</h5>

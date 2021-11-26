@@ -15,14 +15,22 @@ const CRUDCategories : React.FC = () => {
     });
 
     async function getData() {
-        const categoriesFirebase = firebase.getData("categories");
-        setCategories(await categoriesFirebase);
+        try{
+            const categoriesFirebase = firebase.getData("categories");
+            setCategories(await categoriesFirebase);
+        }catch(e){
+            console.log(e);
+        }
     }
 
     const deleteCat = async (id: any) => {
         console.log(id + " Dihapus");
-        await firebase.deleteData("categories", id);
-        getData();
+        try{
+            await firebase.deleteData("categories", id);
+            getData();
+        }catch(e){
+            console.log(e);
+        }
         history.push('/page/Admin/Categories');
     }
 
