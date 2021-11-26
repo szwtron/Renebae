@@ -1,0 +1,9 @@
+.image-size{
+    aspect-ratio: 1 / 1;
+    object-fit: scale-down;
+}
+
+.txt-center{
+    vertical-align: middle !important;
+    text-align: center;
+}

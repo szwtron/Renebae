@@ -1,9 +1,6 @@
 import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSlide, IonSlides, IonText, IonTitle, IonToast, IonToolbar, useIonViewWillEnter } from '@ionic/react';
 import { cartOutline, gitCompareOutline, heartOutline } from 'ionicons/icons';
-import { IonAvatar, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonMenuButton, IonPage, IonRow, IonSearchbar, IonSlide, IonSlides, IonText, IonTitle, IonToast, IonToolbar, useIonViewDidEnter } from '@ionic/react';
-import { cartOutline, gitCompareOutline } from 'ionicons/icons';
 import { useEffect, useRef, useState } from 'react';
-import './Home.css';
 import './Home.css';
 import './Page.css';
 import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
