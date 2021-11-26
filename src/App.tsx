@@ -43,6 +43,7 @@ import ViewOrder from './pages/Admin/ViewOrder';
 import UpdateProduct from './pages/Admin/UpdateProduct';
 import AddProduct from './pages/Admin/AddProduct';
 import Wishlist from './pages/Wishlist';
+import Orders from './pages/Orders';
 
 const App: React.FC = () => {
   return (
@@ -68,6 +69,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Profile" exact={true}>
               <Profile />
+            </Route>
+            <Route path="/page/Orders" exact={true}>
+              <Orders />
             </Route>
             <Route path="/page/Wishlist" exact={true}>
               <Wishlist />
