@@ -1,5 +1,7 @@
 .image-size{
     aspect-ratio: 1 / 1;
+    width:  600px;
+    height: 600px;
     object-fit: scale-down;
 }
 

@@ -76,7 +76,7 @@ const Compare: React.FC = () => {
                             </IonCol>
                         </IonRow>
                 ) : 
-                <table className="table table-light table-hover table-borderless">
+                <table className="table table-light table-borderless">
                     <tbody>
                     <tr>
                         <td></td>
