@@ -83,7 +83,7 @@ const CRUDProducts: React.FC = () => {
           <IonGrid>
             <IonRow>
               <IonCol>
-                <IonTitle>Categories</IonTitle>
+                <IonTitle>Products</IonTitle>
               </IonCol>
               <IonCol>
                 <IonButton
@@ -97,99 +97,101 @@ const CRUDProducts: React.FC = () => {
               </IonCol>
             </IonRow>
           </IonGrid>
-          <table className="table table-light table-striped table-hover table-responsive">
-            <thead>
-              <tr>
-                <th>
-                  <IonText>#</IonText>
-                </th>
-                <th>
-                  <IonText>Name</IonText>
-                </th>
-                <th>
-                  <IonText>Image</IonText>
-                </th>
-                <th>
-                  <IonText>Release</IonText>
-                </th>
-                <th>
-                  <IonText>Price</IonText>
-                </th>
-                <th>
-                  <IonText>Action</IonText>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product, index) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <IonText>{index + 1}</IonText>
-                    </td>
-                    <td>
-                      <IonText>{product.name}</IonText>
-                    </td>
-                    <td>
-                      <IonImg className="itemImg" src={product.image} />
-                    </td>
-                    <td>
-                      <IonText>{product.release}</IonText>
-                    </td>
-                    <td>
-                      <IonText>Rp {product.price}</IonText>
-                    </td>
-                    <td>
-                      <IonRow>
-                        <IonCol>
-                          {window.innerWidth < 500 ? (
-                            <IonButton
-                              color="warning"
-                              routerLink={`/page/updateproduct/${product.id}`}
-                            >
-                              <IonIcon slot="icon-only" icon={pencilOutline} />
-                            </IonButton>
-                          ) : (
-                            <IonButton
-                              color="warning"
-                              routerLink={`/page/updateproduct/${product.id}`}
-                            >
-                              <IonIcon slot="icon-only" icon={pencilOutline} />
-                              Edit
-                            </IonButton>
-                          )}
-                        </IonCol>
-                        <IonCol>
-                          {window.innerWidth < 500 ? (
-                            <IonButton
-                              color="danger"
-                              onClick={() => deleteProd(product.id)}
-                            >
-                              <IonIcon
-                                slot="icon-only"
-                                icon={trashBinOutline}
-                              />
-                            </IonButton>
-                          ) : (
-                            <IonButton
-                              color="danger"
-                              onClick={() => deleteProd(product.id)}
-                            >
-                              <IonIcon
-                                slot="icon-only"
-                                icon={trashBinOutline}
-                              />
-                              Delete
-                            </IonButton>
-                          )}
-                        </IonCol>
-                      </IonRow>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="table table-light table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>
+                    <IonText>#</IonText>
+                  </th>
+                  <th>
+                    <IonText>Name</IonText>
+                  </th>
+                  <th>
+                    <IonText>Image</IonText>
+                  </th>
+                  <th>
+                    <IonText>Release</IonText>
+                  </th>
+                  <th>
+                    <IonText>Price</IonText>
+                  </th>
+                  <th>
+                    <IonText>Action</IonText>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <IonText>{index + 1}</IonText>
+                      </td>
+                      <td>
+                        <IonText>{product.name}</IonText>
+                      </td>
+                      <td>
+                        <IonImg className="itemImg" src={product.image} />
+                      </td>
+                      <td>
+                        <IonText>{product.release}</IonText>
+                      </td>
+                      <td>
+                        <IonText>Rp {product.price}</IonText>
+                      </td>
+                      <td>
+                        <IonRow>
+                          <IonCol>
+                            {window.innerWidth < 500 ? (
+                              <IonButton
+                                color="warning"
+                                routerLink={`/page/updateproduct/${product.id}`}
+                              >
+                                <IonIcon slot="icon-only" icon={pencilOutline} />
+                              </IonButton>
+                            ) : (
+                              <IonButton
+                                color="warning"
+                                routerLink={`/page/updateproduct/${product.id}`}
+                              >
+                                <IonIcon slot="icon-only" icon={pencilOutline} />
+                                Edit
+                              </IonButton>
+                            )}
+                          </IonCol>
+                          <IonCol>
+                            {window.innerWidth < 500 ? (
+                              <IonButton
+                                color="danger"
+                                onClick={() => deleteProd(product.id)}
+                              >
+                                <IonIcon
+                                  slot="icon-only"
+                                  icon={trashBinOutline}
+                                />
+                              </IonButton>
+                            ) : (
+                              <IonButton
+                                color="danger"
+                                onClick={() => deleteProd(product.id)}
+                              >
+                                <IonIcon
+                                  slot="icon-only"
+                                  icon={trashBinOutline}
+                                />
+                                Delete
+                              </IonButton>
+                            )}
+                          </IonCol>
+                        </IonRow>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </IonCard>
       </IonContent>
     </IonPage>

@@ -9,6 +9,7 @@ import {
   IonInput,
   IonItem,
   IonLabel,
+  IonLoading,
   IonMenuButton,
   IonPage,
   IonRow,
@@ -41,6 +42,7 @@ const AddProduct: React.FC = () => {
   const [fileName, setFileName] = useState("");
   const [newName, setName] = useState(null);
   const [categoryName, setCategory] = useState<Array<any>>([]);
+  const [busy, setBusy] = useState<boolean>(false);
 
   const nameRef = useRef<HTMLIonInputElement>(null);
   const categoryRef = useRef<HTMLIonSelectElement>(null);
@@ -86,8 +88,13 @@ const AddProduct: React.FC = () => {
   });
 
   async function getData() {
-    const categoryFirebase = firebase.getData("categories");
-    setCategory(await categoryFirebase);
+    setBusy(true);
+    try {
+      const categoryFirebase = firebase.getData("categories");
+      setCategory(await categoryFirebase);
+    } catch (error: any) {
+      toast(error.message);
+    }
   }
 
   async function resetForm() {
@@ -95,6 +102,7 @@ const AddProduct: React.FC = () => {
   }
 
   const addDataProduct = async (url: string) => {
+    setBusy(true);
     const field = {
       name: nameRef.current?.value,
       category: categoryRef.current?.value,
@@ -114,6 +122,7 @@ const AddProduct: React.FC = () => {
       toast(error.message);
     }
     resetForm();
+    setBusy(false);
     history.push("/page/Admin/Products");
   };
 
@@ -132,6 +141,7 @@ const AddProduct: React.FC = () => {
           <IonTitle>Add Product</IonTitle>
         </IonToolbar>
       </IonHeader>
+      <IonLoading message="Please wait..." duration={0} isOpen={busy} />
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>

@@ -127,6 +127,7 @@ const Home: React.FC = () => {
             dataArray.push(obj);
             carts.updateData(dataArray, user?.uid, cartId, "cart");
             count = 2;
+            toast("Added to cart");
           } else {
             dataArray.forEach((e: any) => {
               if (e.idP === idP) {
@@ -166,6 +167,7 @@ const Home: React.FC = () => {
                 updatedDataArray.push(obj);
               }
               carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
+              toast("Added to cart");
             } else if (count == 0) {
               obj = {
                 idP: idP,
@@ -177,6 +179,7 @@ const Home: React.FC = () => {
               dataArray.push(obj);
               carts.updateData(dataArray, user?.uid, cartId, "cart");
               count = 3;
+              toast("Added to cart");
             }
           });
         });
@@ -259,7 +262,6 @@ const Home: React.FC = () => {
     const docRef = doc(db, "compare", compareId);
     try {
       await updateDoc(docRef, { items, userId });
-      toast("Item added to compare");
     } catch (e: any) {
       toast(e);
     }
