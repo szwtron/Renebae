@@ -1,11 +1,23 @@
 .image-size{
     aspect-ratio: 1 / 1;
-    width:  600px;
-    height: 600px;
+    /* max-width:  600px;
+    max-height: 600px; */
     object-fit: scale-down;
+}
+
+.compareImageContainer{
+    width: 300px;
+    height: 300px;
 }
 
 .txt-center{
     vertical-align: middle !important;
     text-align: center;
+}
+
+@media (max-width: 768px) {
+    .compareImageContainer{
+        width: 200px;
+        height: 200px;
+    }
 }
