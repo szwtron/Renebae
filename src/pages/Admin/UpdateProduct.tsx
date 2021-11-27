@@ -1,5 +1,5 @@
 import { getAuth } from '@firebase/auth';
-import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonMenuButton, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonLoading, IonMenuButton, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
 import { doc, getFirestore, writeBatch } from 'firebase/firestore';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
@@ -10,13 +10,14 @@ import './../Page.css';
 import { onAuthStateChanged } from 'firebase/auth';
 import { uploadBytes, getDownloadURL, ref, getStorage } from '@firebase/storage';
 import { prettyDOM } from '@testing-library/dom';
+import { toast } from '../../toast';
 
 const UpdateProduct: React.FC = () => {
     let [takenPhoto, setTakenPhoto] = useState<{
         preview: string;
-      }>();
+    }>();
 
-    const idprod = useParams<{ id: string; }>().id;
+    let idprod = useParams<{ id: string; }>().id;
     const db = getFirestore(firebaseInit);
     const batch = writeBatch(db);
     const auth = getAuth(firebaseInit);
@@ -27,6 +28,7 @@ const UpdateProduct: React.FC = () => {
     const [fileName, setFileName] = useState('');
     const [product, setProduct] = useState<Array<any>>([]);
     const [categoryName, setCategory] = useState<Array<any>>([]);
+    const [busy, setBusy] = useState<boolean>(false);
     const storage = getStorage();
 
     const nameRef = useRef<HTMLIonInputElement>(null);
@@ -39,21 +41,34 @@ const UpdateProduct: React.FC = () => {
     const reflectionRef = useRef<HTMLIonInputElement>(null);
     const releaseRef = useRef<HTMLIonInputElement>(null);
 
+    useIonViewWillEnter(() => {
+        getData();
+        console.log(takenPhoto?.preview);
+    });
+
     useEffect(() => {
-        async function getData() {
+        product.filter(product=>product.id === idprod).map(product => {
+            setTakenPhoto({
+                preview: product.image
+            });
+            console.log('get data image: ' + product.image);
+        });
+    }, [product]);
+
+    async function getData() {
+        setBusy(true);
+        try {
             const categoryFirebase = firebase.getData("categories");
             setCategory(await categoryFirebase);
-    
-            const productFirebase = await firebase.getData("product");
-            setProduct(productFirebase);
-            productFirebase.filter(product => product.id == idprod).map(product => {
-                setTakenPhoto({
-                    preview: product.image
-                });
-            });
+
+            const productFirebase = firebase.getData("product");
+            setProduct(await productFirebase);
+        } catch (e: any) {
+            toast(e.message);
         }
-        getData();
-    }, []);
+        setBusy(false);
+        console.log('id product param:' + idprod);
+    }
 
     const createUrl = async () => {
         console.log(fileName);
@@ -70,7 +85,7 @@ const UpdateProduct: React.FC = () => {
                 }).catch(error => {
                     console.log(error);
                 });
-            }  
+            }
         }catch(e){
             console.log(e);
         }
@@ -93,7 +108,7 @@ const UpdateProduct: React.FC = () => {
             await firebase.updateData("product", idprod, field);
         }catch(e){
             console.log(e);
-        } 
+        }
         history.push('/page/Admin/Products');
     }
 
@@ -112,7 +127,7 @@ const UpdateProduct: React.FC = () => {
             <IonTitle>Category</IonTitle>
             </IonToolbar>
         </IonHeader>
-
+        <IonLoading message="Please wait..." duration={0} isOpen={busy} />
         <IonContent fullscreen>
             <IonHeader collapse="condense">
             <IonToolbar>
