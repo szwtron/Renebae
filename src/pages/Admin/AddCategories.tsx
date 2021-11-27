@@ -9,6 +9,7 @@ import {
   IonInput,
   IonItem,
   IonLabel,
+  IonLoading,
   IonMenuButton,
   IonPage,
   IonRow,
@@ -31,18 +32,21 @@ const AddCategory: React.FC = () => {
   const firebase = new firebaseFunction();
   const history = useHistory();
   const [newName, setName] = useState(null);
+  const [busy, setBusy] = useState<boolean>(false);
 
   useIonViewWillEnter(() => {
     getData();
   });
 
   async function getData() {
+    setBusy(true);
     try {
       const categoryFirebase = firebase.getData("categories");
       setCategory(await categoryFirebase);
     } catch (e: any) {
       toast(e.message);
     }
+    setBusy(false);
   }
 
   const resetForm = () => {
@@ -50,6 +54,7 @@ const AddCategory: React.FC = () => {
   };
 
   const addDataToCat = async () => {
+    setBusy(true);
     if (newName === null) {
       return toast("All field must be filled");
     }
@@ -63,6 +68,7 @@ const AddCategory: React.FC = () => {
       toast(e.message);
     }
     resetForm();
+    setBusy(false);
     history.push("/page/Admin/Categories");
   };
 
@@ -76,6 +82,7 @@ const AddCategory: React.FC = () => {
           <IonTitle>Add Category</IonTitle>
         </IonToolbar>
       </IonHeader>
+      <IonLoading message="Please wait..." duration={0} isOpen={busy} />
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>

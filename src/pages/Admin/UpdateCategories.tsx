@@ -9,6 +9,7 @@ import {
   IonInput,
   IonItem,
   IonLabel,
+  IonLoading,
   IonMenuButton,
   IonPage,
   IonRow,
@@ -36,6 +37,7 @@ const UpdateCategory: React.FC = () => {
   const firebase = new firebaseFunction();
   const history = useHistory();
   const [product, setProduct] = useState<Array<any>>([]);
+  const [busy, setBusy] = useState<boolean>(false);
 
   const nameRef = useRef<HTMLIonInputElement>(null);
 
@@ -92,7 +94,7 @@ const UpdateCategory: React.FC = () => {
           <IonTitle>Category</IonTitle>
         </IonToolbar>
       </IonHeader>
-
+      <IonLoading message="Please wait..." duration={0} isOpen={busy} />
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>

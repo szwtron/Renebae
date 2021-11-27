@@ -9,6 +9,7 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
+  IonLoading,
   IonMenuButton,
   IonPage,
   IonRow,
@@ -27,6 +28,7 @@ import { toast } from "../../toast";
 const CRUDCategories: React.FC = () => {
   const firebase = new firebaseFunction();
   const [categories, setCategories] = useState<Array<any>>([]);
+  const [busy, setBusy] = useState<boolean>(false);
   const history = useHistory();
 
   useIonViewWillEnter(() => {
@@ -34,21 +36,25 @@ const CRUDCategories: React.FC = () => {
   });
 
   async function getData() {
+    setBusy(true);
     try {
       const categoriesFirebase = firebase.getData("categories");
       setCategories(await categoriesFirebase);
     } catch (e: any) {
       toast(e.message);
     }
+    setBusy(false);
   }
 
   const deleteCat = async (id: any) => {
+    setBusy(true);
     try {
       await firebase.deleteData("categories", id);
       getData();
     } catch (e: any) {
       toast(e.message);
     }
+    setBusy(false);
     history.push("/page/Admin/Categories");
   };
 
@@ -65,7 +71,7 @@ const CRUDCategories: React.FC = () => {
           </IonAvatar>
         </IonToolbar>
       </IonHeader>
-
+      <IonLoading message="Please wait..." duration={0} isOpen={busy} />
       <IonContent>
         <IonHeader collapse="condense">
           <IonToolbar>
@@ -90,81 +96,83 @@ const CRUDCategories: React.FC = () => {
               </IonCol>
             </IonRow>
           </IonGrid>
-          <table className="table table-light table-striped table-hover table-responsive">
-            <thead>
-              <tr>
-                <th>
-                  <IonText>#</IonText>
-                </th>
-                <th>
-                  <IonText>Name</IonText>
-                </th>
-                <th>
-                  <IonText>Action</IonText>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((category, index) => {
-                return (
-                  <tr>
-                    <td>
-                      <IonText>{index + 1}</IonText>
-                    </td>
-                    <td>
-                      <IonText>{category.name}</IonText>
-                    </td>
-                    <td>
-                      <IonRow>
-                        <IonCol>
-                          {window.innerWidth < 500 ? (
-                            <IonButton
-                              color="warning"
-                              routerLink={`/page/editcategory/${category.id}`}
-                            >
-                              <IonIcon slot="icon-only" icon={pencilOutline} />
-                            </IonButton>
-                          ) : (
-                            <IonButton
-                              color="warning"
-                              routerLink={`/page/editcategory/${category.id}`}
-                            >
-                              <IonIcon slot="icon-only" icon={pencilOutline} />
-                              Edit
-                            </IonButton>
-                          )}
-                        </IonCol>
-                        <IonCol>
-                          {window.innerWidth < 500 ? (
-                            <IonButton
-                              color="danger"
-                              onClick={() => deleteCat(category.id)}
-                            >
-                              <IonIcon
-                                slot="icon-only"
-                                icon={trashBinOutline}
-                              />
-                            </IonButton>
-                          ) : (
-                            <IonButton
-                              color="danger"
-                              onClick={() => deleteCat(category.id)}
-                            >
-                              <IonIcon
-                                slot="icon-only"
-                                icon={trashBinOutline}
-                              />
-                              Delete
-                            </IonButton>
-                          )}
-                        </IonCol>
-                      </IonRow>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="table table-light table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>
+                    <IonText>#</IonText>
+                  </th>
+                  <th>
+                    <IonText>Name</IonText>
+                  </th>
+                  <th>
+                    <IonText>Action</IonText>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories.map((category, index) => {
+                  return (
+                    <tr>
+                      <td>
+                        <IonText>{index + 1}</IonText>
+                      </td>
+                      <td>
+                        <IonText>{category.name}</IonText>
+                      </td>
+                      <td>
+                        <IonRow>
+                          <IonCol>
+                            {window.innerWidth < 500 ? (
+                              <IonButton
+                                color="warning"
+                                routerLink={`/page/editcategory/${category.id}`}
+                              >
+                                <IonIcon slot="icon-only" icon={pencilOutline} />
+                              </IonButton>
+                            ) : (
+                              <IonButton
+                                color="warning"
+                                routerLink={`/page/editcategory/${category.id}`}
+                              >
+                                <IonIcon slot="icon-only" icon={pencilOutline} />
+                                Edit
+                              </IonButton>
+                            )}
+                          </IonCol>
+                          <IonCol>
+                            {window.innerWidth < 500 ? (
+                              <IonButton
+                                color="danger"
+                                onClick={() => deleteCat(category.id)}
+                              >
+                                <IonIcon
+                                  slot="icon-only"
+                                  icon={trashBinOutline}
+                                />
+                              </IonButton>
+                            ) : (
+                              <IonButton
+                                color="danger"
+                                onClick={() => deleteCat(category.id)}
+                              >
+                                <IonIcon
+                                  slot="icon-only"
+                                  icon={trashBinOutline}
+                                />
+                                Delete
+                              </IonButton>
+                            )}
+                          </IonCol>
+                        </IonRow>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </IonCard>
       </IonContent>
     </IonPage>
