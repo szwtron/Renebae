@@ -95,6 +95,7 @@ const AddProduct: React.FC = () => {
     } catch (error: any) {
       toast(error.message);
     }
+    setBusy(false);
   }
 
   async function resetForm() {
