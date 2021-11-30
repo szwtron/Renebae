@@ -46,6 +46,7 @@ const UpdateCategory: React.FC = () => {
   });
 
   async function getData() {
+    setBusy(true);
     const categoryFirebase = firebase.getData("categories");
     const productFirebase = firebase.getData("product");
     try {
@@ -54,9 +55,11 @@ const UpdateCategory: React.FC = () => {
     } catch (e: any) {
       toast(e.message);
     }
+    setBusy(false);
   }
 
   const updateData = async (oldName: string) => {
+    setBusy(true);
     const field = {
       name: nameRef.current?.value,
     };
@@ -81,6 +84,7 @@ const UpdateCategory: React.FC = () => {
     } catch (e: any) {
       toast(e.message);
     }
+    setBusy(false);
     history.push("/page/Admin/Categories");
   };
 

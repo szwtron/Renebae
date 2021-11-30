@@ -16,6 +16,7 @@ import {
   IonText,
   IonImg,
   useIonViewWillEnter,
+  IonLoading,
 } from "@ionic/react";
 import { addOutline, pencilOutline, trashBinOutline } from "ionicons/icons";
 import { useState, useEffect } from "react";
@@ -28,34 +29,34 @@ import { toast } from "../../toast";
 
 const CRUDProducts: React.FC = () => {
   const [products, setProducts] = useState<Array<any>>([]);
+  const [busy, setBusy] = useState<boolean>(false);
   const firebase = new firebaseFunction();
   const history = useHistory();
-  const [file, setFile] = useState<File>();
-  const [fileName, setFileName] = useState("");
-  const [product, setProduct] = useState<Array<any>>([]);
-  const [categoryName, setCategory] = useState<Array<any>>([]);
-  const storage = getStorage();
 
   useIonViewWillEnter(() => {
     getData();
   });
 
   async function getData() {
+    setBusy(true);
     try {
       const productsFirebase = firebase.getData("product");
       setProducts(await productsFirebase);
     } catch (e: any) {
       toast(e.message);
     }
+    setBusy(false);
   }
 
   const deleteProd = async (id: any) => {
+    setBusy(true);
     try {
       await firebase.deleteData("product", id);
       getData();
     } catch (e: any) {
       toast(e.message);
     }
+    setBusy(false);
     history.push("/page/Admin/Products");
   };
 
@@ -72,7 +73,7 @@ const CRUDProducts: React.FC = () => {
           </IonAvatar>
         </IonToolbar>
       </IonHeader>
-
+      <IonLoading message="Please wait..." duration={0} isOpen={busy} />
       <IonContent>
         <IonHeader collapse="condense">
           <IonToolbar>
