@@ -31,6 +31,7 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
+  useIonViewDidEnter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { cartOutline, closeCircleOutline, gitCompareOutline, heartOutline } from "ionicons/icons";
@@ -38,7 +39,7 @@ import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from "fireb
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 import "./Categories.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { firebaseFunction } from "../services/firebase";
 import { cartFunction } from "../services/cart";
 import { useHistory } from "react-router";
@@ -51,16 +52,26 @@ const Categories: React.FC = () => {
   const carts = new cartFunction();
   const [busy, setBusy] = useState<boolean>(false);
   const [wish, setWish] = useState<Array<any>>([]);
-  const [product, setProduct] = useState<Array<any>>([]);
+  let [product, setProduct] = useState<Array<any>>([]);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<any>>([]);
   const [compare, setCompare] = useState<Array<any>>([]);
   const history = useHistory();
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
+  const [search, setSearch] = useState<string>("");
+  let [displayproduct, setDisplayProduct] = useState<Array<any>>([]);
+  let displayWish: any[] = [];
+  const searchbar = useRef<HTMLIonSearchbarElement>(null);
 
   useIonViewWillEnter(() => {
     getData();
+  });
+
+  useIonViewDidEnter(() => {
+    setTimeout(() => {
+      searchbar.current?.setFocus();
+    }, 500);
   });
 
   async function getData() {
@@ -73,6 +84,7 @@ const Categories: React.FC = () => {
     try {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
+      setDisplayProduct(await productFirebase);
       const cartFirebase = firebase.getData("cart");
       setCart(await cartFirebase);
       const wishFirebase = firebase.getData("wishlists");
@@ -322,6 +334,20 @@ const Categories: React.FC = () => {
     }
     setBusy(false);
   }
+
+  const setSearchValue = (e: any) => {
+    setSearch(e.target.value!);
+  };
+
+  useEffect(() => {
+    setDisplayProduct(product);
+    if (search && search.trim() !== '') {
+      setDisplayProduct(product.filter((product) => {
+        return product.name.toLowerCase().includes(search.toLowerCase());
+      }));
+    }
+    console.log(displayproduct);
+  }, [search, product]);
   return (
     <IonPage>
       <IonHeader>
@@ -338,13 +364,13 @@ const Categories: React.FC = () => {
       <IonLoading message="Please wait..." duration={0} isOpen={busy} />
       <IonContent fullscreen className="ion-padding">
         <IonGrid>
-          <IonSearchbar placeholder="Contoh: PS5, PS6, PS7"></IonSearchbar>
+          <IonSearchbar ref={searchbar} debounce={100} placeholder="Search your dream items" onIonChange={setSearchValue}></IonSearchbar>
           <IonSelect placeholder="Select One">
             <IonSelectOption value="technology">Technology</IonSelectOption>
             <IonSelectOption value="outfit">Outfit</IonSelectOption>
           </IonSelect>
           <IonRow>
-            {product.map((product) => (
+            {displayproduct && displayproduct.map((product) => (
               <IonCol size-sm="2" sizeMd="3" sizeLg="4">
                 <IonCard className="categoryCard">
                   <IonFabButton
