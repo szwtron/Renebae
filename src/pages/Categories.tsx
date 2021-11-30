@@ -16,6 +16,7 @@ import {
   IonInput,
   IonItem,
   IonLabel,
+  IonLoading,
   IonMenuButton,
   IonPage,
   IonRow,
@@ -30,14 +31,15 @@ import {
   IonTextarea,
   IonTitle,
   IonToolbar,
+  useIonViewDidEnter,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { cartOutline, closeCircleOutline, heartOutline } from "ionicons/icons";
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import { cartOutline, closeCircleOutline, gitCompareOutline, heartOutline } from "ionicons/icons";
+import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebaseInit from "../firebase_config";
 import "./Categories.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { firebaseFunction } from "../services/firebase";
 import { cartFunction } from "../services/cart";
 import { useHistory } from "react-router";
@@ -45,33 +47,59 @@ import { getAuth } from "firebase/auth";
 import { toast } from "../toast";
 
 const Categories: React.FC = () => {
+  const db = getFirestore(firebaseInit);
   const firebase = new firebaseFunction();
   const carts = new cartFunction();
-  const [busy, setBusy] = useState<Boolean>(false);
+  const [busy, setBusy] = useState<boolean>(false);
   const [wish, setWish] = useState<Array<any>>([]);
-  const [product, setProduct] = useState<Array<any>>([]);
+  let [product, setProduct] = useState<Array<any>>([]);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<any>>([]);
+  const [compare, setCompare] = useState<Array<any>>([]);
   const history = useHistory();
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
+  const [search, setSearch] = useState<string>("");
+  let [displayproduct, setDisplayProduct] = useState<Array<any>>([]);
+  let displayWish: any[] = [];
+  const searchbar = useRef<HTMLIonSearchbarElement>(null);
 
   useIonViewWillEnter(() => {
     getData();
   });
 
+  useIonViewDidEnter(() => {
+    setTimeout(() => {
+      searchbar.current?.setFocus();
+    }, 500);
+  });
+
   async function getData() {
+    setBusy(true);
+    if (user) {
+      setIsSignedIn(true);
+    } else {
+      setIsSignedIn(false);
+    }
     try {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
+      setDisplayProduct(await productFirebase);
       const cartFirebase = firebase.getData("cart");
       setCart(await cartFirebase);
       const wishFirebase = firebase.getData("wishlists");
       setWish(await wishFirebase);
+      const compareFirebase = firebase.getData("compare");
+      setCompare(await compareFirebase);
     } catch (e: any) {
       toast(e.message);
     }
+    setBusy(false);
   }
+
+  const signedOut = () => {
+    history.push("/page/Login");
+  };
 
   async function addToWishlist(
     idP: string,
@@ -79,13 +107,13 @@ const Categories: React.FC = () => {
     name: string,
     price: number
   ) {
+    setBusy(true);
     let i = 1;
     let qty = 0;
     let wishArray: Array<any> = [];
     let updatedWishArray: Array<any> = [];
     let wishId = "";
     let count = 0;
-    setBusy(true);
     let cartId: string;
     try {
       wish
@@ -104,6 +132,7 @@ const Categories: React.FC = () => {
 
             carts.updateData(wishArray, user?.uid, wishId, "wishlists");
             count = 1;
+            toast("Item added to wishlist");
           } else {
             wishArray.forEach((e: any) => {
               if (e.idP === idP) {
@@ -127,6 +156,7 @@ const Categories: React.FC = () => {
             };
             wishArray.push(obj);
             carts.updateData(wishArray, user?.uid, wishId, "wishlists");
+            toast("Item added to wishlist");
           }
         });
       setBusy(false);
@@ -141,6 +171,7 @@ const Categories: React.FC = () => {
     name: string,
     price: string
   ) {
+    setBusy(true);
     let i = 1;
     let qty = 0;
     let dataArray: Array<any> = [];
@@ -165,6 +196,7 @@ const Categories: React.FC = () => {
             dataArray.push(obj);
             carts.updateData(dataArray, user?.uid, cartId, "cart");
             count = 2;
+            toast("Added to cart");
           } else {
             dataArray.forEach((e: any) => {
               if (e.idP === idP) {
@@ -204,6 +236,7 @@ const Categories: React.FC = () => {
                 updatedDataArray.push(obj);
               }
               carts.updateData(updatedDataArray, user?.uid, cartId, "cart");
+              toast("Added to cart");
             } else if (count == 0) {
               obj = {
                 idP: idP,
@@ -215,6 +248,7 @@ const Categories: React.FC = () => {
               dataArray.push(obj);
               carts.updateData(dataArray, user?.uid, cartId, "cart");
               count = 3;
+              toast("Added to cart");
             }
           });
         });
@@ -223,6 +257,97 @@ const Categories: React.FC = () => {
       toast(e);
     }
   }
+
+  async function addToCompare(idP: string) {
+    setBusy(true);
+    let i = 1;
+    let qty = 0;
+    let dataArray: Array<any> = [];
+    let updatedDataArray: Array<any> = [];
+    let count = 0;
+
+    let compareId: string;
+    try {
+      console.log(user?.uid);
+      compare
+        .filter((compare) => compare.userId === user?.uid)
+        .map((compare) => {
+          compareId = compare.id;
+          dataArray = compare.items;
+          if (dataArray.length == 0) {
+            product
+              .filter((product) => product.id === idP)
+              .map((product) => {
+                var obj = {
+                  idP: idP,
+                  name: product.name,
+                  effectiveSpeed: product.effectiveSpeed,
+                  lighting: product.lighting,
+                  reflection: product.reflection,
+                  mrender: product.mrender,
+                  gravity: product.gravity,
+                  image: product.image,
+                };
+                dataArray.push(obj);
+                updateCompare(dataArray, user?.uid, compareId);
+                toast("Item added to compare slot 1");
+              });
+          } else if (dataArray.length == 1) {
+            product
+              .filter((product) => product.id === idP)
+              .map((product) => {
+                var obj = {
+                  idP: idP,
+                  name: product.name,
+                  effectiveSpeed: product.effectiveSpeed,
+                  lighting: product.lighting,
+                  reflection: product.reflection,
+                  mrender: product.mrender,
+                  gravity: product.gravity,
+                  image: product.image,
+                };
+                dataArray.push(obj);
+                updateCompare(dataArray, user?.uid, compareId);
+              });
+            toast("Item added to compare slot 2");
+          } else {
+            toast("Compare slot is full");
+          }
+        });
+      getData();
+    } catch (e: any) {
+      toast(e);
+    }
+  }
+
+  async function updateCompare(
+    items: Array<any>,
+    userId: any,
+    compareId: string
+  ) {
+    setBusy(true);
+    const docRef = doc(db, "compare", compareId);
+    try {
+      await updateDoc(docRef, { items, userId });
+    } catch (e: any) {
+      toast(e);
+    }
+    setBusy(false);
+  }
+
+  const setSearchValue = (e: any) => {
+    setSearch(e.target.value!);
+  };
+
+  useEffect(() => {
+    setDisplayProduct(product);
+    if (search && search.trim() !== '') {
+      setDisplayProduct(product.filter((product) => {
+        return product.name.toLowerCase().includes(search.toLowerCase());
+      }));
+    }
+    console.log(displayproduct);
+  }, [search, product]);
   return (
     <IonPage>
       <IonHeader>
@@ -236,27 +361,30 @@ const Categories: React.FC = () => {
           </IonAvatar>
         </IonToolbar>
       </IonHeader>
-
+      <IonLoading message="Please wait..." duration={0} isOpen={busy} />
       <IonContent fullscreen className="ion-padding">
         <IonGrid>
-          <IonSearchbar placeholder="Contoh: PS5, PS6, PS7"></IonSearchbar>
+          <IonSearchbar ref={searchbar} debounce={100} placeholder="Search your dream items" onIonChange={setSearchValue}></IonSearchbar>
           <IonSelect placeholder="Select One">
             <IonSelectOption value="technology">Technology</IonSelectOption>
             <IonSelectOption value="outfit">Outfit</IonSelectOption>
           </IonSelect>
           <IonRow>
-            {product.map((product) => (
-              <IonCol size="6">
-                <IonCard>
+            {displayproduct && displayproduct.map((product) => (
+              <IonCol size-sm="2" sizeMd="3" sizeLg="4">
+                <IonCard className="categoryCard">
                   <IonFabButton
                     color="danger"
-                    onClick={() =>
-                      addToWishlist(
-                        product.id,
-                        product.image,
-                        product.name,
-                        product.price
-                      )
+                    onClick={
+                      isSignedIn
+                        ? () =>
+                            addToWishlist(
+                              product.id,
+                              product.image,
+                              product.name,
+                              product.price
+                            )
+                        : signedOut
                     }
                     size="small"
                     className="wishlist-button"
@@ -266,7 +394,21 @@ const Categories: React.FC = () => {
                       icon={heartOutline}
                     ></IonIcon>
                   </IonFabButton>
-                  <img className="img-item" src={product.image} />
+                  <IonFabButton
+                          onClick={
+                            isSignedIn
+                              ? () => addToCompare(product.id)
+                              : signedOut
+                          }
+                          size="small"
+                          className="compare-button"
+                        >
+                          <IonIcon
+                            className="compare-icon"
+                            icon={gitCompareOutline}
+                          ></IonIcon>
+                  </IonFabButton>
+                  <img className="cardImages" src={product.image} />
                   <IonCardTitle className="center-txt">
                     {product.name}
                   </IonCardTitle>
@@ -286,7 +428,18 @@ const Categories: React.FC = () => {
                           Rp {product.price}
                         </IonText>
                         <br />
-                        <IonButton className="center-txt">
+                        <IonButton className="center-txt"
+                        onClick={
+                          isSignedIn
+                            ? () =>
+                                addToCart(
+                                  product.id,
+                                  product.image,
+                                  product.name,
+                                  product.price
+                                )
+                            : signedOut
+                        }>
                           <IonIcon icon={cartOutline} />
                           Add to Cart
                         </IonButton>

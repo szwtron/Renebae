@@ -15,3 +15,13 @@
 .halfWidth{
     width: 50%;
 }
+
+.categoryCard {
+    width: 200px;
+    height: 250px;
+}
+
+.cardImages {
+    width: 200px;
+    height: 115px;
+}

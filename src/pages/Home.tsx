@@ -60,23 +60,17 @@ const Home: React.FC = () => {
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        setIsSignedIn(true);
-      } else {
-        setIsSignedIn(false);
-      }
-    });
-  }, []);
-
   useIonViewWillEnter(() => {
     getData();
   });
 
   async function getData() {
     setBusy(true);
+    if (user) {
+      setIsSignedIn(true);
+    } else {
+      setIsSignedIn(false);
+    }
     try {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
