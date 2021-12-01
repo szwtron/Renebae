@@ -15,6 +15,7 @@ import {
   IonLoading,
   IonMenuButton,
   IonPage,
+  IonRouterLink,
   IonRow,
   IonSearchbar,
   IonSlide,
@@ -45,6 +46,9 @@ import { userInfo } from "os";
 import { firebaseFunction } from "../services/firebase";
 import { cartFunction } from "../services/cart";
 import { toast } from "../toast";
+import { render } from "react-dom";
+import Categories from "./Categories";
+import { Router } from "workbox-routing";
 
 const Home: React.FC = () => {
   const db = getFirestore(firebaseInit);
@@ -56,6 +60,10 @@ const Home: React.FC = () => {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<any>>([]);
   const [compare, setCompare] = useState<Array<any>>([]);
+  const [search, setSearch] = useState<string>("");
+  let [displayproduct, setDisplayProduct] = useState<Array<any>>([]);
+  const searchbar = useRef<HTMLIonSearchbarElement>(null);
+
   const history = useHistory();
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
@@ -323,6 +331,31 @@ const Home: React.FC = () => {
     }
   }
 
+  const setSearchValue = (e: any) => {
+    setSearch(e.target.value!);
+  };
+
+  useEffect(() => {
+    setDisplayProduct(product);
+    if (search && search.trim() !== '') {
+      setDisplayProduct(product.filter((product) => {
+        return product.name.toLowerCase().includes(search.toLowerCase());
+      }));
+    }
+    console.log(displayproduct);
+  }, [search, product]);
+
+  const Search = (key: any) => {
+    if(key == "Enter"){
+      console.log("Enter key pressed");
+      //window.location.href = `/page/Categories`;
+      window.location.href = `/page/Categories/${search}`;
+      //history.push(`/page/Categories/${search}`);
+      //SomeCode
+      }
+    //render(<Categories />, document.getElementById('root'));
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -355,7 +388,7 @@ const Home: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        <IonSearchbar></IonSearchbar>
+        <IonSearchbar ref={searchbar} debounce={100} placeholder="Search your dream items" onKeyPress={e=> Search(e.key)} onIonInput={setSearchValue}></IonSearchbar>
 
         <IonCard>
           <IonCardContent>
