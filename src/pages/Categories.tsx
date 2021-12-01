@@ -387,7 +387,7 @@ const Categories: React.FC = () => {
           </IonSelect>
           <IonRow>
             {displayproduct && displayproduct.map((product) => (
-              <IonCol key={product.id} size-sm="2" sizeMd="3" sizeLg="4">
+              <IonCol size-sm="6" sizeMd="4" sizeLg="4">
                 <IonCard className="categoryCard">
                   <IonFabButton
                     color="danger"
