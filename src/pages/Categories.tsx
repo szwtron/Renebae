@@ -63,6 +63,7 @@ const Categories: React.FC = () => {
   const [catSearch, setcatSearch] = useState<string>("");
   let [displayproduct, setDisplayProduct] = useState<Array<any>>([]);
   let [displayproductDefault, setDisplayProductDefault] = useState<Array<any>>([]);
+  let [allproduct, setAllProduct] = useState<Array<any>>([]);
   let displayWish: any[] = [];
   const searchbar = useRef<HTMLIonSearchbarElement>(null);
   const searchVal = useParams<{ search: string }>().search;
@@ -95,6 +96,7 @@ const Categories: React.FC = () => {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
       setDisplayProduct(await productFirebase);
+      setAllProduct(await productFirebase);
       const cartFirebase = firebase.getData("cart");
       setCart(await cartFirebase);
       const wishFirebase = firebase.getData("wishlists");
@@ -351,54 +353,48 @@ const Categories: React.FC = () => {
 
   const setCat = (e: any) => {
     setcatSearch(e.target.value!);
-    console.log(catSearch);
   };
 
   useEffect(() => {
-    setDisplayProduct(product);
-    if(search == "all"){
+    //setDisplayProduct(product);
+    if(search == ''){
       if(catSearch == "all"){
         //no search no categories
-        setDisplayProductDefault(product);
-        setDisplayProduct(displayproductDefault);
+        setDisplayProductDefault(allproduct);
+        setDisplayProduct(allproduct);
       } else {
         //no search but yes categories
-        setDisplayProduct(displayproductDefault.filter((product) => {
-          return product.category.toLowerCase().includes(catSearch.toLowerCase());
+
+        setDisplayProduct(allproduct.filter((allproduct) => {
+          return allproduct.category.includes(catSearch);
         }));
       }
     } else {
       if (search && search.trim() !== '') {
         if(catSearch == "all"){
           //search but no categories
-          setDisplayProduct(product.filter((product) => {
-            return product.name.toLowerCase().includes(search.toLowerCase());
+          setDisplayProduct(allproduct.filter((allproduct) => {
+            return allproduct.name.toLowerCase().includes(search.toLowerCase());
           }));
         } else {
           //search and categories
-          //hanya bisa change category 1 kali
           try{
-            setDisplayProductDefault(product.filter((product) => product.category == catSearch).map((product)=>{
-              return product.name.toLowerCase().includes(search.toLowerCase());
+            setDisplayProductDefault(allproduct.filter((allproduct) => {
+              return allproduct.name.toLowerCase().includes(search.toLowerCase());
             }));
 
-            setDisplayProduct(displayproductDefault.filter((product) => {
-              return product.category.includes(catSearch);
+            setDisplayProduct(displayproductDefault.filter((displayproductDefault) => {
+              return displayproductDefault.category.includes(catSearch);
             }));
           } catch ( e: any ){
             toast(e);
           }
-
         }
       }
     }
     console.log(displayproduct);
-  }, [search, product, catSearch]);
+  }, [search, catSearch, product]);
 
-  const resetSearch = (e: any) => {
-    setcatSearch(e.target.value!);
-    console.log(catSearch);
-  };
 
   return (
     <IonPage>
