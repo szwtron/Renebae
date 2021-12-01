@@ -62,6 +62,7 @@ const Categories: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [catSearch, setcatSearch] = useState<string>("");
   let [displayproduct, setDisplayProduct] = useState<Array<any>>([]);
+  let [displayproductDefault, setDisplayProductDefault] = useState<Array<any>>([]);
   let displayWish: any[] = [];
   const searchbar = useRef<HTMLIonSearchbarElement>(null);
   const searchVal = useParams<{ search: string }>().search;
@@ -74,6 +75,7 @@ const Categories: React.FC = () => {
     if(searchVal == "all"){
       setSearch(searchVal);
     }
+    setcatSearch("all");
   });
 
   useIonViewDidEnter(() => {
@@ -349,21 +351,55 @@ const Categories: React.FC = () => {
 
   const setCat = (e: any) => {
     setcatSearch(e.target.value!);
+    console.log(catSearch);
   };
 
   useEffect(() => {
     setDisplayProduct(product);
     if(search == "all"){
-      setDisplayProduct(product);
+      if(catSearch == "all"){
+        //no search no categories
+        setDisplayProductDefault(product);
+        setDisplayProduct(displayproductDefault);
+      } else {
+        //no search but yes categories
+        setDisplayProduct(displayproductDefault.filter((product) => {
+          return product.category.toLowerCase().includes(catSearch.toLowerCase());
+        }));
+      }
     } else {
       if (search && search.trim() !== '') {
-        setDisplayProduct(product.filter((product) =>  {
-          return product.name.toLowerCase().includes(search.toLowerCase());
-        }));
+        if(catSearch == "all"){
+          //search but no categories
+          setDisplayProduct(product.filter((product) => {
+            return product.name.toLowerCase().includes(search.toLowerCase());
+          }));
+        } else {
+          //search and categories
+          //hanya bisa change category 1 kali
+          try{
+            setDisplayProductDefault(product.filter((product) => product.category == catSearch).map((product)=>{
+              return product.name.toLowerCase().includes(search.toLowerCase());
+            }));
+
+            setDisplayProduct(displayproductDefault.filter((product) => {
+              return product.category.includes(catSearch);
+            }));
+          } catch ( e: any ){
+            toast(e);
+          }
+
+        }
       }
     }
     console.log(displayproduct);
-  }, [search, product]);
+  }, [search, product, catSearch]);
+
+  const resetSearch = (e: any) => {
+    setcatSearch(e.target.value!);
+    console.log(catSearch);
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -382,8 +418,10 @@ const Categories: React.FC = () => {
         <IonGrid>
           <IonSearchbar ref={searchbar} debounce={100} placeholder="Search your dream items" onIonChange={setSearchValue}></IonSearchbar>
           <IonSelect onIonChange={setCat} placeholder="Select One">
-            <IonSelectOption value="electronic">Electronic</IonSelectOption>
+          <IonSelectOption value="all">All</IonSelectOption>
             <IonSelectOption value="gaming">Gaming</IonSelectOption>
+            <IonSelectOption value="electronic">Electronic</IonSelectOption>
+            <IonSelectOption value="multimedia">Multimedia</IonSelectOption>
           </IonSelect>
           <IonRow>
             {displayproduct && displayproduct.map((product) => (
