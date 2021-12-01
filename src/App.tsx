@@ -45,6 +45,7 @@ import UpdateProduct from './pages/Admin/UpdateProduct';
 import AddProduct from './pages/Admin/AddProduct';
 import Wishlist from './pages/Wishlist';
 import Orders from './pages/Orders';
+import Featured from './pages/Admin/Featured';
 
 const App: React.FC = () => {
   return (
@@ -67,6 +68,9 @@ const App: React.FC = () => {
             </Route>
             <Route path="/page/Admin/Orders" exact={true}>
               <CRUDOrders />
+            </Route>
+            <Route path="/page/Admin/featured" exact={true}>
+              <Featured />
             </Route>
             <Route path="/page/Profile" exact={true}>
               <Profile />

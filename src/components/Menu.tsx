@@ -39,6 +39,8 @@ import {
   paperPlaneSharp,
   personOutline,
   personSharp,
+  starOutline,
+  starSharp,
   trashOutline,
   trashSharp,
   warningOutline,
@@ -122,6 +124,12 @@ const Menu: React.FC = () => {
         url: "/page/Admin",
         iosIcon: homeOutline,
         mdIcon: homeSharp,
+      },
+      {
+        title: "featured & ads",
+        url: "/page/Admin/featured",
+        iosIcon: starOutline,
+        mdIcon: starSharp,
       },
       {
         title: "Orders",
