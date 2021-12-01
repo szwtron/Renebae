@@ -17,6 +17,7 @@ import {
   IonImg,
   useIonViewWillEnter,
   IonLoading,
+  useIonAlert,
 } from "@ionic/react";
 import { addOutline, pencilOutline, trashBinOutline } from "ionicons/icons";
 import { useState, useEffect } from "react";
@@ -32,6 +33,7 @@ const CRUDProducts: React.FC = () => {
   const [busy, setBusy] = useState<boolean>(false);
   const firebase = new firebaseFunction();
   const history = useHistory();
+  const [present] = useIonAlert();
 
   useIonViewWillEnter(() => {
     getData();
@@ -165,7 +167,18 @@ const CRUDProducts: React.FC = () => {
                             {window.innerWidth < 500 ? (
                               <IonButton
                                 color="danger"
-                                onClick={() => deleteProd(product.id)}
+                                onClick={() =>
+                                  present({
+                                    cssClass: 'my-css',
+                                    header: 'Are you sure you want to delete this product?',
+                                    message: 'this action cannot be undone!',
+                                    buttons: [
+                                      'Cancel',
+                                      { text: 'Yes', handler: (d) => deleteProd(product.id) },
+                                    ],
+                                    onDidDismiss: (e) => console.log('cancel'),
+                                  })
+                                }
                               >
                                 <IonIcon
                                   slot="icon-only"
@@ -175,7 +188,18 @@ const CRUDProducts: React.FC = () => {
                             ) : (
                               <IonButton
                                 color="danger"
-                                onClick={() => deleteProd(product.id)}
+                                onClick={() =>
+                                  present({
+                                    cssClass: 'my-css',
+                                    header: 'Are you sure you want to delete this product?',
+                                    message: 'this action cannot be undone!',
+                                    buttons: [
+                                      'Cancel',
+                                      { text: 'Yes', handler: (d) => deleteProd(product.id) },
+                                    ],
+                                    onDidDismiss: (e) => console.log('cancel'),
+                                  })
+                                }
                               >
                                 <IonIcon
                                   slot="icon-only"

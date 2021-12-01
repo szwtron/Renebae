@@ -16,6 +16,7 @@ import {
   IonText,
   IonTitle,
   IonToolbar,
+  useIonAlert,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { addOutline, pencilOutline, trashBinOutline } from "ionicons/icons";
@@ -30,6 +31,7 @@ const CRUDCategories: React.FC = () => {
   const [categories, setCategories] = useState<Array<any>>([]);
   const [busy, setBusy] = useState<boolean>(false);
   const history = useHistory();
+  const [present] = useIonAlert();
 
   useIonViewWillEnter(() => {
     getData();
@@ -122,7 +124,7 @@ const CRUDCategories: React.FC = () => {
                         <IonText>{category.name}</IonText>
                       </td>
                       <td>
-                        <IonRow>
+                        <IonRow key={category.id}>
                           <IonCol>
                             {window.innerWidth < 500 ? (
                               <IonButton
@@ -145,7 +147,18 @@ const CRUDCategories: React.FC = () => {
                             {window.innerWidth < 500 ? (
                               <IonButton
                                 color="danger"
-                                onClick={() => deleteCat(category.id)}
+                                onClick={() =>
+                                  present({
+                                    cssClass: 'my-css',
+                                    header: 'Are you sure you want to delete this category?',
+                                    message: 'this action cannot be undone!',
+                                    buttons: [
+                                      'Cancel',
+                                      { text: 'Yes', handler: (d) => deleteCat(category.id) },
+                                    ],
+                                    onDidDismiss: (e) => console.log('did dismiss'),
+                                  })
+                                }
                               >
                                 <IonIcon
                                   slot="icon-only"
@@ -155,7 +168,18 @@ const CRUDCategories: React.FC = () => {
                             ) : (
                               <IonButton
                                 color="danger"
-                                onClick={() => deleteCat(category.id)}
+                                onClick={() =>
+                                  present({
+                                    cssClass: 'my-css',
+                                    header: 'Are you sure you want to delete this category?',
+                                    message: 'this action cannot be undone!',
+                                    buttons: [
+                                      'Cancel',
+                                      { text: 'Yes', handler: (d) => deleteCat(category.id) },
+                                    ],
+                                    onDidDismiss: (e) => console.log('did dismiss'),
+                                  })
+                                }
                               >
                                 <IonIcon
                                   slot="icon-only"
