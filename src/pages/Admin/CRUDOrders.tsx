@@ -17,6 +17,7 @@ import {
   IonImg,
   useIonViewWillEnter,
   IonLoading,
+  useIonAlert,
 } from "@ionic/react";
 import {
   addOutline,
@@ -36,6 +37,7 @@ const CRUDOrders: React.FC = () => {
   const firebase = new firebaseFunction();
   const [orders, setOrders] = useState<Array<any>>([]);
   const [busy, setBusy] = useState<boolean>(false);
+  const [present] = useIonAlert();
 
   useIonViewWillEnter(() => {
     getData();
@@ -209,7 +211,16 @@ const CRUDOrders: React.FC = () => {
                                     : true
                                 }
                                 onClick={() => {
-                                  updateOrderStatus(order.id, order.status);
+                                  present({
+                                    cssClass: 'my-css',
+                                    header: 'Are you sure?',
+                                    message: 'This action cannot be undone!',
+                                    buttons: [
+                                      'Cancel',
+                                      { text: 'Yes', handler: (d) => updateOrderStatus(order.id, order.status) },
+                                    ],
+                                    onDidDismiss: (e) => console.log('did dismiss'),
+                                  })
                                 }}
                               >
                                 <IonIcon
@@ -235,7 +246,16 @@ const CRUDOrders: React.FC = () => {
                                     : true
                                 }
                                 onClick={() => {
-                                  updateOrderStatus(order.id, order.status);
+                                  present({
+                                    cssClass: 'my-css',
+                                    header: 'Are you sure?',
+                                    message: 'This action cannot be undone!',
+                                    buttons: [
+                                      'Cancel',
+                                      { text: 'Yes', handler: (d) => updateOrderStatus(order.id, order.status) },
+                                    ],
+                                    onDidDismiss: (e) => console.log('did dismiss'),
+                                  })
                                 }}
                               >
                                 <IonIcon
@@ -282,7 +302,16 @@ const CRUDOrders: React.FC = () => {
                                     : true
                                 }
                                 onClick={() => {
-                                  cancelOrder(order.id);
+                                  present({
+                                    cssClass: 'my-css',
+                                    header: 'Are you sure you want to cancel this order?',
+                                    message: 'This action cannot be undone!',
+                                    buttons: [
+                                      'Cancel',
+                                      { text: 'Yes', handler: (d) => cancelOrder(order.id) },
+                                    ],
+                                    onDidDismiss: (e) => console.log('did dismiss'),
+                                  })
                                 }}
                               >
                                 <IonIcon slot="icon-only" icon={closeOutline} />
@@ -296,7 +325,16 @@ const CRUDOrders: React.FC = () => {
                                     : true
                                 }
                                 onClick={() => {
-                                  cancelOrder(order.id);
+                                  present({
+                                    cssClass: 'my-css',
+                                    header: 'Are you sure you want to cancel this order?',
+                                    message: 'This action cannot be undone!',
+                                    buttons: [
+                                      'Cancel',
+                                      { text: 'Yes', handler: (d) => cancelOrder(order.id) },
+                                    ],
+                                    onDidDismiss: (e) => console.log('did dismiss'),
+                                  })
                                 }}
                               >
                                 <IonIcon slot="icon-only" icon={closeOutline} />
