@@ -1,8 +1,26 @@
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonLoading, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonAvatar, IonLoading, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, useIonViewWillEnter } from "@ionic/react";
 import { useState } from "react";
+import { firebaseFunction } from "../../services/firebase";
+import { toast } from "../../toast";
 
 const Featured: React.FC = () => {
     const [busy, setBusy] = useState<boolean>(false);
+    const [featured, setFeatured] = useState<Array<any>>([]);
+    const firebase = new firebaseFunction();
+    useIonViewWillEnter(() => {
+        getData();
+    });
+
+    async function getData() {
+        setBusy(true);
+        try {
+            const featuredFirebase = firebase.getData("featured");
+            setFeatured(await featuredFirebase);
+        } catch (e: any) {
+            toast(e.message);
+        }
+        setBusy(false);
+    }
 
     return (
         <IonPage>
