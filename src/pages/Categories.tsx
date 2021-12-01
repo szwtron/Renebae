@@ -42,7 +42,7 @@ import "./Categories.css";
 import { useState, useEffect, useRef } from "react";
 import { firebaseFunction } from "../services/firebase";
 import { cartFunction } from "../services/cart";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router";
 import { getAuth } from "firebase/auth";
 import { toast } from "../toast";
 
@@ -60,12 +60,20 @@ const Categories: React.FC = () => {
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
   const [search, setSearch] = useState<string>("");
+  const [catSearch, setcatSearch] = useState<string>("");
   let [displayproduct, setDisplayProduct] = useState<Array<any>>([]);
   let displayWish: any[] = [];
   const searchbar = useRef<HTMLIonSearchbarElement>(null);
+  const searchVal = useParams<{ search: string }>().search;
 
   useIonViewWillEnter(() => {
     getData();
+    if(searchVal != null){
+      setSearch(searchVal);
+    }
+    if(searchVal == "all"){
+      setSearch(searchVal);
+    }
   });
 
   useIonViewDidEnter(() => {
@@ -339,12 +347,20 @@ const Categories: React.FC = () => {
     setSearch(e.target.value!);
   };
 
+  const setCat = (e: any) => {
+    setcatSearch(e.target.value!);
+  };
+
   useEffect(() => {
     setDisplayProduct(product);
-    if (search && search.trim() !== '') {
-      setDisplayProduct(product.filter((product) => {
-        return product.name.toLowerCase().includes(search.toLowerCase());
-      }));
+    if(search == "all"){
+      setDisplayProduct(product);
+    } else {
+      if (search && search.trim() !== '') {
+        setDisplayProduct(product.filter((product) =>  {
+          return product.name.toLowerCase().includes(search.toLowerCase());
+        }));
+      }
     }
     console.log(displayproduct);
   }, [search, product]);
@@ -365,13 +381,13 @@ const Categories: React.FC = () => {
       <IonContent fullscreen className="ion-padding">
         <IonGrid>
           <IonSearchbar ref={searchbar} debounce={100} placeholder="Search your dream items" onIonChange={setSearchValue}></IonSearchbar>
-          <IonSelect placeholder="Select One">
-            <IonSelectOption value="technology">Technology</IonSelectOption>
-            <IonSelectOption value="outfit">Outfit</IonSelectOption>
+          <IonSelect onIonChange={setCat} placeholder="Select One">
+            <IonSelectOption value="electronic">Electronic</IonSelectOption>
+            <IonSelectOption value="gaming">Gaming</IonSelectOption>
           </IonSelect>
           <IonRow>
             {displayproduct && displayproduct.map((product) => (
-              <IonCol size-sm="2" sizeMd="3" sizeLg="4">
+              <IonCol key={product.id} size-sm="2" sizeMd="3" sizeLg="4">
                 <IonCard className="categoryCard">
                   <IonFabButton
                     color="danger"

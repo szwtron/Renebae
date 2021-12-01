@@ -76,7 +76,7 @@ let appPages: AppPage[] = [
   },
   {
     title: "Category",
-    url: "/page/Categories",
+    url: "/page/Categories/all",
     iosIcon: paperPlaneOutline,
     mdIcon: paperPlaneSharp,
   },
@@ -170,7 +170,7 @@ const Menu: React.FC = () => {
       },
       {
         title: "Category",
-        url: "/page/Categories",
+        url: "/page/Categories/all",
         iosIcon: paperPlaneOutline,
         mdIcon: paperPlaneSharp,
       },
@@ -215,7 +215,7 @@ const Menu: React.FC = () => {
       },
       {
         title: "Category",
-        url: "/page/Categories",
+        url: "/page/Categories/all",
         iosIcon: paperPlaneOutline,
         mdIcon: paperPlaneSharp,
       },

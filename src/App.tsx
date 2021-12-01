@@ -92,7 +92,7 @@ const App: React.FC = () => {
             <Route path="/page/Cart/Checkout" exact={true}>
               <Checkout />
             </Route>
-            <Route path="/page/Categories" exact={true}>
+            <Route path="/page/Categories/:search" exact={true}>
               <Categories />
             </Route>
             <Route path="/page/Login" exact={true}>
