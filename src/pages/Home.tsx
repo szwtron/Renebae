@@ -11,6 +11,7 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
+  IonImg,
   IonItem,
   IonLoading,
   IonMenuButton,
@@ -60,10 +61,10 @@ const Home: React.FC = () => {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [cart, setCart] = useState<Array<any>>([]);
   const [compare, setCompare] = useState<Array<any>>([]);
+  const [ads, setAds] = useState<Array<any>>([]);
   const [search, setSearch] = useState<string>("");
   let [displayproduct, setDisplayProduct] = useState<Array<any>>([]);
   const searchbar = useRef<HTMLIonSearchbarElement>(null);
-
   const history = useHistory();
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
@@ -88,6 +89,8 @@ const Home: React.FC = () => {
       setWish(await wishFirebase);
       const compareFirebase = firebase.getData("compare");
       setCompare(await compareFirebase);
+      const adsFirebase = firebase.getData("ads");
+      setAds(await adsFirebase);
     } catch (e: any) {
       toast(e.message);
     }
@@ -378,13 +381,18 @@ const Home: React.FC = () => {
         </IonHeader>
         <IonCard color="secondary">
           <IonCardContent>
-            <IonText color="light">
               <div className="center-text">
-                <h1>Banner Ads</h1>
-                <br />
-                <h1>728 X 90</h1>
+              {ads.filter((ads)=> ads.id == "#1Ads728x80").map((adsPrev)=>{
+                if(adsPrev.image.toString() != ""){
+                  console.log(adsPrev.image);
+                  <img src={adsPrev.image} />
+                }else {
+                  <><h1>Banner Ads</h1><br /><h1>350 X 90</h1></>
+                }
+              })}
+              <><h1>Banner Ads</h1><br /><h1>728 X 80</h1></>
               </div>
-            </IonText>
+
           </IonCardContent>
         </IonCard>
 
@@ -488,9 +496,14 @@ const Home: React.FC = () => {
           <IonCardContent>
             <IonText color="light">
               <div className="center-text">
-                <h1>Banner Ads</h1>
-                <br />
-                <h1>728 X 90</h1>
+                {ads.filter((ads)=> ads.id == "#2Ads728x80").map((adsPrev)=>{
+                  if(adsPrev.image == ""){
+                    <img src={adsPrev.image} />
+                  } else {
+                    <><h1>Banner Ads</h1><br /><h1>728 X 80</h1></>
+                  }
+                })}
+                <><h1>Banner Ads</h1><br /><h1>728 X 80</h1></>
               </div>
             </IonText>
           </IonCardContent>
@@ -503,6 +516,13 @@ const Home: React.FC = () => {
                 <IonCardContent>
                   <IonText color="light">
                     <div className="center-text">
+                      {ads.filter((ads)=> ads.id == "#2Ads728x80").map((adsPrev)=>{
+                        if(adsPrev.image == ""){
+                          <img src={adsPrev.image} />
+                        } else {
+                          <><h1>Banner Ads</h1><br /><h1>728 X 80</h1></>
+                        }
+                      })}
                       <h1>Banner Ads</h1>
                       <br />
                       <h1>350 X 90</h1>
