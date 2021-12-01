@@ -396,9 +396,6 @@ const Home: React.FC = () => {
               <div className="alignleft">
                 <IonText>Gaming</IonText>
               </div>
-              <div className="alignright">
-                <IonText>View All</IonText>
-              </div>
             </div>
             <br />
 
@@ -535,9 +532,6 @@ const Home: React.FC = () => {
             <div className="categoryTitle">
               <div className="alignleft">
                 <IonText>Electronic</IonText>
-              </div>
-              <div className="alignright">
-                <IonText>View All</IonText>
               </div>
             </div>
             <br />
