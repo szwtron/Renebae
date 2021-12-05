@@ -1,5 +1,6 @@
 import { getAuth } from "@firebase/auth";
 import {
+  IonAvatar,
   IonButton,
   IonButtons,
   IonCol,
@@ -7,6 +8,7 @@ import {
   IonGrid,
   IonHeader,
   IonIcon,
+  IonImg,
   IonInput,
   IonItem,
   IonLabel,
@@ -154,7 +156,9 @@ const EditProfile: React.FC = () => {
                       <h3>Silahkan tambah profile picture.</h3>
                     )}
                     {takenPhoto && (
-                      <img src={takenPhoto?.preview} alt="Preview" />
+                      <IonAvatar className="profilePicture">
+                        <IonImg src={takenPhoto?.preview} />
+                      </IonAvatar>
                     )}
                   </div>
                   <IonButton fill="clear" onClick={takePhotoHandler}>
