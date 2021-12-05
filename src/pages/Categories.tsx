@@ -397,6 +397,11 @@ const Categories: React.FC = () => {
     }
   }, [search, catSearch, product]);
 
+  const numberFormat = (value:number) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR'
+  }).format(value);
 
   return (
     <IonPage>
@@ -476,7 +481,7 @@ const Categories: React.FC = () => {
                     ) : (
                       <div>
                         <IonText className="ion-margin">
-                          Rp {product.price}
+                          {numberFormat(parseInt(product.price))}
                         </IonText>
                         <br />
                         <IonButton className="center-txt"
