@@ -100,15 +100,6 @@ let appPages: AppPage[] = [
   },
 ];
 
-const labels = [
-  "NVidia",
-  "AMD Radeon",
-  "GeForce",
-  "Vega",
-  "MX Series",
-  "RX Series",
-];
-
 const Menu: React.FC = () => {
   const location = useLocation();
 
@@ -250,16 +241,6 @@ const Menu: React.FC = () => {
               </IonMenuToggle>
             );
           })}
-        </IonList>
-
-        <IonList id="labels-list">
-          <IonListHeader>Labels</IonListHeader>
-          {labels.map((label, index) => (
-            <IonItem lines="none" key={index}>
-              <IonIcon slot="start" icon={bookmarkOutline} />
-              <IonLabel>{label}</IonLabel>
-            </IonItem>
-          ))}
         </IonList>
       </IonContent>
     </IonMenu>
