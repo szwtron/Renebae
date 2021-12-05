@@ -13,6 +13,11 @@
 .txt-center{
     vertical-align: middle !important;
     text-align: center;
+    vertical-align: center;
+}
+
+.green{
+    color: rgb(0, 255, 75)!important;
 }
 
 @media (max-width: 768px) {
