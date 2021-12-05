@@ -68,6 +68,9 @@ const Home: React.FC = () => {
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
 
+  const [userInfo, setUser] = useState<Array<any>>([]);
+  let [profilePhoto, setProfilePhoto] = useState<string>();
+
   const numberFormat = (value:number) =>
   new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -349,7 +352,7 @@ const Home: React.FC = () => {
       }));
     }
     console.log(displayproduct);
-  }, [search, product]);
+  }, [search, product, userInfo]);
 
   const Search = (key: any) => {
     if(key == "Enter"){
@@ -370,9 +373,6 @@ const Home: React.FC = () => {
             <IonMenuButton />
           </IonButtons>
           <IonTitle>Renebae</IonTitle>
-          <IonAvatar className="avatarImage" slot="end">
-            <img src="https://avatars3.githubusercontent.com/u/52709818?s=460&u=f9f8b8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8&v=4" />
-          </IonAvatar>
         </IonToolbar>
       </IonHeader>
       <IonLoading message="Please wait..." duration={0} isOpen={busy} />

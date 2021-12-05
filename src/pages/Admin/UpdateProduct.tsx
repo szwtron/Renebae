@@ -87,6 +87,7 @@ const UpdateProduct: React.FC = () => {
 
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
+
     } catch (e: any) {
       toast(e.message);
     }
