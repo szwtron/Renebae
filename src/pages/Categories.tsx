@@ -167,11 +167,11 @@ const Categories: React.FC = () => {
             toast("Item added to wishlist");
           }
         });
-      setBusy(false);
     } catch (e: any) {
       toast(e);
     }
     getData();
+    setBusy(false);
   }
   async function addToCart(
     idP: string,
@@ -264,6 +264,7 @@ const Categories: React.FC = () => {
     } catch (e: any) {
       toast(e);
     }
+    setBusy(false);
   }
 
   async function addToCompare(idP: string) {
@@ -326,6 +327,7 @@ const Categories: React.FC = () => {
     } catch (e: any) {
       toast(e);
     }
+    setBusy(false);
   }
 
   async function updateCompare(
