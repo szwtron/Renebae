@@ -67,6 +67,7 @@ const Categories: React.FC = () => {
   let displayWish: any[] = [];
   const searchbar = useRef<HTMLIonSearchbarElement>(null);
   const searchVal = useParams<{ search: string }>().search;
+  const [categoryName, setCategory] = useState<Array<any>>([]);
 
   useIonViewWillEnter(() => {
     getData();
@@ -86,7 +87,6 @@ const Categories: React.FC = () => {
   });
 
   async function getData() {
-    setBusy(true);
     if (user) {
       setIsSignedIn(true);
     } else {
@@ -103,10 +103,11 @@ const Categories: React.FC = () => {
       setWish(await wishFirebase);
       const compareFirebase = firebase.getData("compare");
       setCompare(await compareFirebase);
+      const categoryFirebase = firebase.getData("categories");
+      setCategory(await categoryFirebase);
     } catch (e: any) {
       toast(e.message);
     }
-    setBusy(false);
   }
 
   const signedOut = () => {
@@ -413,11 +414,10 @@ const Categories: React.FC = () => {
       <IonContent fullscreen className="ion-padding">
         <IonGrid>
           <IonSearchbar ref={searchbar} debounce={100} placeholder="Search your dream items" onIonChange={setSearchValue}></IonSearchbar>
-          <IonSelect onIonChange={setCat} placeholder="Select One">
-          <IonSelectOption value="all">All</IonSelectOption>
-            <IonSelectOption value="gaming">Gaming</IonSelectOption>
-            <IonSelectOption value="electronic">Electronic</IonSelectOption>
-            <IonSelectOption value="multimedia">Multimedia</IonSelectOption>
+          <IonSelect onIonChange={setCat} placeholder="Select One" >
+            {categoryName.map((cat) => (
+              <IonSelectOption key={cat.id} value={cat.name}>{cat.name}</IonSelectOption>
+            ))}
           </IonSelect>
           <IonRow>
             {displayproduct && displayproduct.map((product) => (
