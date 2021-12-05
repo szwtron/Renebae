@@ -220,6 +220,12 @@ const Wishlist: React.FC = () => {
     }
   }
 
+  const numberFormat = (value:number) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR'
+  }).format(value);
+
   return (
     <IonPage>
       <IonHeader>
@@ -273,7 +279,7 @@ const Wishlist: React.FC = () => {
                     </IonRow>
                     <IonRow>
                       <IonCol className="ion-text-center">
-                        Rp. {dataArray.price}
+                        {numberFormat(parseInt(dataArray.price))}
                       </IonCol>
                     </IonRow>
                     <IonRow>
