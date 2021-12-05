@@ -12,14 +12,11 @@ const Logout: React.FC = () => {
         if (user) {
             auth.signOut().then(() => {
                 toast('Sign Out Successfull');
-                console.log('Sign Out Successfull');
             }).catch(() => {
                 toast('Sign Out Failed');
-                console.log('Sign Out Failed');
             });
         } else {
             toast('No User Logged In');
-            console.log('User is not signed in');
         }
     }, []);
     window.location.href = '/Home';
