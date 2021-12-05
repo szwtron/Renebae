@@ -370,7 +370,7 @@ const Cart: React.FC = () => {
                           expand="block"
                         >
                           <IonIcon icon={heartOutline} slot="start" />
-                          Move to Wishlist
+                          Add to Wishlist
                         </IonButton>
                       </IonCol>
                     </IonRow>
