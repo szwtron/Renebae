@@ -87,11 +87,6 @@ const Categories: React.FC = () => {
   });
 
   async function getData() {
-    if (user) {
-      setIsSignedIn(true);
-    } else {
-      setIsSignedIn(false);
-    }
     try {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
@@ -394,6 +389,12 @@ const Categories: React.FC = () => {
       }
     }
     console.log(displayproduct);
+
+    if (user) {
+      setIsSignedIn(true);
+    } else {
+      setIsSignedIn(false);
+    }
   }, [search, catSearch, product]);
 
 
