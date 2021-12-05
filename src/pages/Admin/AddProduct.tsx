@@ -202,19 +202,6 @@ const AddProduct: React.FC = () => {
             <IonRow>
               <IonCol>
                 <IonItem>
-                  <IonLabel position="stacked">Gravity</IonLabel>
-                  <IonInput
-                    value={newName}
-                    type="number"
-                    ref={gravityRef}
-                    required
-                  ></IonInput>
-                </IonItem>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonItem>
                   <IonLabel position="stacked">Effective Speed</IonLabel>
                   <IonInput
                     value={newName}
@@ -241,6 +228,19 @@ const AddProduct: React.FC = () => {
             <IonRow>
               <IonCol>
                 <IonItem>
+                  <IonLabel position="stacked">Reflection</IonLabel>
+                  <IonInput
+                    value={newName}
+                    type="number"
+                    ref={reflectionRef}
+                    required
+                  ></IonInput>
+                </IonItem>
+              </IonCol>
+            </IonRow>
+            <IonRow>
+              <IonCol>
+                <IonItem>
                   <IonLabel position="stacked">mRender</IonLabel>
                   <IonInput
                     value={newName}
@@ -254,11 +254,11 @@ const AddProduct: React.FC = () => {
             <IonRow>
               <IonCol>
                 <IonItem>
-                  <IonLabel position="stacked">Reflection</IonLabel>
+                  <IonLabel position="stacked">Gravity</IonLabel>
                   <IonInput
                     value={newName}
                     type="number"
-                    ref={reflectionRef}
+                    ref={gravityRef}
                     required
                   ></IonInput>
                 </IonItem>
