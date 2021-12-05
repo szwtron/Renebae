@@ -23,10 +23,11 @@ import {
   IonText,
   IonTitle,
   IonToast,
+  IonToggle,
   IonToolbar,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { cartOutline, gitCompareOutline, heartOutline } from "ionicons/icons";
+import { cartOutline, gitCompareOutline, heartOutline, moon } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import "./Home.css";
 import "./Page.css";
@@ -68,8 +69,7 @@ const Home: React.FC = () => {
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
 
-  const [userInfo, setUser] = useState<Array<any>>([]);
-  let [profilePhoto, setProfilePhoto] = useState<string>();
+  const [checked, setChecked] = useState(false);
 
   const numberFormat = (value:number) =>
   new Intl.NumberFormat('id-ID', {
@@ -352,7 +352,14 @@ const Home: React.FC = () => {
       }));
     }
     console.log(displayproduct);
-  }, [search, product, userInfo]);
+    console.log(checked);
+    if(checked){
+      document.body.setAttribute('color-theme', 'dark')
+    } else {
+      document.body.setAttribute('color-theme', 'light')
+    }
+
+  }, [search, product, checked]);
 
   const Search = (key: any) => {
     if(key == "Enter"){
@@ -373,6 +380,7 @@ const Home: React.FC = () => {
             <IonMenuButton />
           </IonButtons>
           <IonTitle>Renebae</IonTitle>
+          <IonIcon slot="end" icon={moon}></IonIcon> <IonToggle slot="end" checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
         </IonToolbar>
       </IonHeader>
       <IonLoading message="Please wait..." duration={0} isOpen={busy} />
