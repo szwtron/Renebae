@@ -191,6 +191,7 @@ const Home: React.FC = () => {
     } catch (e: any) {
       toast(e);
     }
+    setBusy(false);
   }
 
   async function addToWishlist(
