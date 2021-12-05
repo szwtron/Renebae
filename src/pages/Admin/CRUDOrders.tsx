@@ -19,6 +19,7 @@ import {
   IonLoading,
   useIonAlert,
 } from "@ionic/react";
+import { ReactComponentOrElement } from "@ionic/react/dist/types/hooks/useOverlay";
 import {
   addOutline,
   checkmarkOutline,
@@ -27,7 +28,7 @@ import {
   pencilOutline,
   trashBinOutline,
 } from "ionicons/icons";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import NumberFormat from "react-number-format";
 import { firebaseFunction } from "../../services/firebase";
 import { toast } from "../../toast";
@@ -38,6 +39,9 @@ const CRUDOrders: React.FC = () => {
   const [orders, setOrders] = useState<Array<any>>([]);
   const [busy, setBusy] = useState<boolean>(false);
   const [present] = useIonAlert();
+  const [orderId, setorderId] = useState("");
+  const [orderStatus, setorderStatus] = useState<any>();
+  const [statusFlag, setStatusFlag] = useState<string>();
 
   useIonViewWillEnter(() => {
     getData();

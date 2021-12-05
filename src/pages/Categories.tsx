@@ -357,8 +357,8 @@ const Categories: React.FC = () => {
   };
 
   useEffect(() => {
-    //setDisplayProduct(product);
-    if(search == ''){
+    setDisplayProduct(product);
+    if(search == 'all' || search == ''){
       if(catSearch == "all"){
         //no search no categories
         setDisplayProductDefault(allproduct);
