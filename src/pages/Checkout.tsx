@@ -159,6 +159,12 @@ const Checkout: React.FC = () => {
       enableHighAccuracy: true,
     });
 
+    const numberFormat = (value:number) =>
+    new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR'
+    }).format(value);
+
     setLat(coordinates.coords.latitude);
     setLng(coordinates.coords.longitude);
   };

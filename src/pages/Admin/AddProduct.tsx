@@ -103,7 +103,7 @@ const AddProduct: React.FC = () => {
   }
 
   const addDataProduct = async (url: string) => {
-    setBusy(true);
+    toast("Please Wait", 5000)
     const field = {
       name: nameRef.current?.value,
       category: categoryRef.current?.value,
@@ -123,7 +123,6 @@ const AddProduct: React.FC = () => {
       toast(error.message);
     }
     resetForm();
-    setBusy(false);
     history.push("/page/Admin/Products");
   };
 
@@ -151,6 +150,14 @@ const AddProduct: React.FC = () => {
         </IonHeader>
         <IonGrid className="ion-padding">
           <form>
+            <IonRow>
+              <IonCol>
+                <IonItem>
+                  <IonLabel>Image</IonLabel>
+                  <input type="file" onChange={fileChangeHandler} required />
+                </IonItem>
+              </IonCol>
+            </IonRow>
             <IonRow>
               <IonCol>
                 <IonItem>
@@ -196,19 +203,6 @@ const AddProduct: React.FC = () => {
             <IonRow>
               <IonCol>
                 <IonItem>
-                  <IonLabel position="stacked">Gravity</IonLabel>
-                  <IonInput
-                    value={newName}
-                    type="number"
-                    ref={gravityRef}
-                    required
-                  ></IonInput>
-                </IonItem>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonItem>
                   <IonLabel position="stacked">Effective Speed</IonLabel>
                   <IonInput
                     value={newName}
@@ -235,6 +229,19 @@ const AddProduct: React.FC = () => {
             <IonRow>
               <IonCol>
                 <IonItem>
+                  <IonLabel position="stacked">Reflection</IonLabel>
+                  <IonInput
+                    value={newName}
+                    type="number"
+                    ref={reflectionRef}
+                    required
+                  ></IonInput>
+                </IonItem>
+              </IonCol>
+            </IonRow>
+            <IonRow>
+              <IonCol>
+                <IonItem>
                   <IonLabel position="stacked">mRender</IonLabel>
                   <IonInput
                     value={newName}
@@ -248,11 +255,11 @@ const AddProduct: React.FC = () => {
             <IonRow>
               <IonCol>
                 <IonItem>
-                  <IonLabel position="stacked">Reflection</IonLabel>
+                  <IonLabel position="stacked">Gravity</IonLabel>
                   <IonInput
                     value={newName}
                     type="number"
-                    ref={reflectionRef}
+                    ref={gravityRef}
                     required
                   ></IonInput>
                 </IonItem>
@@ -268,14 +275,6 @@ const AddProduct: React.FC = () => {
                     ref={releaseRef}
                     required
                   ></IonInput>
-                </IonItem>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonItem>
-                  <IonLabel>Image</IonLabel>
-                  <input type="file" onChange={fileChangeHandler} required />
                 </IonItem>
               </IonCol>
             </IonRow>

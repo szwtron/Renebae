@@ -80,6 +80,12 @@ const Cart: React.FC = () => {
   let cartId = "";
   let subTotal = 0;
 
+  const numberFormat = (value:number) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR'
+  }).format(value);
+
   useIonViewWillEnter(() => {
     getData();
   });
@@ -318,7 +324,7 @@ const Cart: React.FC = () => {
                     </IonRow>
                     <IonRow>
                       <IonCol className="ion-text-center">
-                        Rp. {dataArray.price}
+                        {numberFormat(dataArray.price)}
                       </IonCol>
                     </IonRow>
                   </IonCol>
@@ -370,7 +376,7 @@ const Cart: React.FC = () => {
                           expand="block"
                         >
                           <IonIcon icon={heartOutline} slot="start" />
-                          Move to Wishlist
+                          Add to Wishlist
                         </IonButton>
                       </IonCol>
                     </IonRow>
