@@ -82,12 +82,6 @@ const Home: React.FC = () => {
   });
 
   async function getData() {
-    setBusy(true);
-    if (user) {
-      setIsSignedIn(true);
-    } else {
-      setIsSignedIn(false);
-    }
     try {
       const productFirebase = firebase.getData("product");
       setProduct(await productFirebase);
@@ -100,7 +94,6 @@ const Home: React.FC = () => {
     } catch (e: any) {
       toast(e.message);
     }
-    setBusy(false);
   }
 
   const signedOut = () => {
@@ -262,6 +255,7 @@ const Home: React.FC = () => {
       toast(e);
     }
     getData();
+    setBusy(false);
   }
 
   async function updateCompare(
@@ -338,6 +332,7 @@ const Home: React.FC = () => {
     } catch (e: any) {
       toast(e);
     }
+    setBusy(false);
   }
 
   const setSearchValue = (e: any) => {
@@ -351,25 +346,26 @@ const Home: React.FC = () => {
         return product.name.toLowerCase().includes(search.toLowerCase());
       }));
     }
-    console.log(displayproduct);
-    console.log(checked);
+
     if(checked){
       document.body.setAttribute('color-theme', 'dark')
     } else {
       document.body.setAttribute('color-theme', 'light')
     }
 
-  }, [search, product, checked]);
+    if (user) {
+      setIsSignedIn(true);
+    } else {
+      setIsSignedIn(false);
+    }
+
+  }, [search, product, checked, user]);
 
   const Search = (key: any) => {
     if(key == "Enter"){
       console.log("Enter key pressed");
-      //window.location.href = `/page/Categories`;
       window.location.href = `/page/Categories/${search}`;
-      //history.push(`/page/Categories/${search}`);
-      //SomeCode
       }
-    //render(<Categories />, document.getElementById('root'));
   };
 
   return (

@@ -16,6 +16,7 @@ import {
   IonButton,
   useIonViewWillEnter,
   IonLoading,
+  IonProgressBar,
 } from "@ionic/react";
 import { idCard } from "ionicons/icons";
 import { userInfo } from "os";
@@ -38,6 +39,7 @@ const Compare: React.FC = () => {
   let compareArray: Array<any> = [];
   let dataArray: Array<any> = [];
   let compareId = "";
+  let averageScore! :any;
 
   useIonViewWillEnter(() => {
     getData();
@@ -105,10 +107,12 @@ const Compare: React.FC = () => {
                   <td></td>
                   <td>
                     <div className="compareImageContainer">
-                      <img
+                      {dataArray[0].image != null}{
+                        <img
                         className="image-size"
                         src={dataArray[0].image}
                       ></img>
+                      }
                     </div>
                   </td>
                   <td className="txt-center">
@@ -116,10 +120,12 @@ const Compare: React.FC = () => {
                   </td>
                   <td>
                     <div className="compareImageContainer">
-                      <img
+                      {dataArray[1].image != null}{
+                        <img
                         className="image-size"
                         src={dataArray[1].image}
                       ></img>
+                      }
                     </div>
                   </td>
                   <td className="ion-align-self-center txt-center">
@@ -137,9 +143,25 @@ const Compare: React.FC = () => {
                 </tr>
                 <tr className="table-secondary">
                   <td>Effective Speed</td>
+
+                  {dataArray[0].effectiveSpeed > dataArray[1].effectiveSpeed ?
+                      <td className="txt-center green">
+                      {"+" + Number(((dataArray[0].effectiveSpeed - dataArray[1].effectiveSpeed) / dataArray[1].effectiveSpeed) * 100).toFixed(0) + "%"}
+                    </td>
+                  :
+                   <td></td>
+                  }
+
                   <td></td>
-                  <td></td>
-                  <td></td>
+                    {dataArray[1].effectiveSpeed > dataArray[0].effectiveSpeed ?
+
+                    <td className="txt-center green">
+                      {"+" + Number(((dataArray[1].effectiveSpeed - dataArray[0].effectiveSpeed) / dataArray[0].effectiveSpeed) * 100).toFixed(0) + "%"}
+                    </td>
+                    :
+                      <td></td>
+                    }
+
                   <td></td>
                 </tr>
                 <tr>
@@ -157,31 +179,87 @@ const Compare: React.FC = () => {
                   <td></td>
                 </tr>
                 <tr>
-                  <td>Lighting</td>
-                  <td className="txt-center">{dataArray[0].lighting}</td>
+                  <td className="txt-center">Lighting</td>
+                  <td className="txt-center">{dataArray[0].lighting}
+                  {
+                    dataArray[0].lighting > dataArray[1].lighting ?
+                      <p className="txt-center green">{"+" + Number(((dataArray[0].lighting - dataArray[1].lighting) / dataArray[1].lighting) * 100).toFixed(0) + "%"}</p>
+                    :
+                    ""
+                  }
+                  </td>
                   <td></td>
-                  <td className="txt-center">{dataArray[1].lighting}</td>
+                  <td className="txt-center">{dataArray[1].lighting + " "}
+                  {
+                    dataArray[1].lighting > dataArray[0].lighting ?
+                      <p className="txt-center green">{"+" + Number(((dataArray[1].lighting - dataArray[0].lighting) / dataArray[0].lighting) * 100).toFixed(0) + "%"}</p>
+                    :
+                    ""
+                  }
+                  </td>
                   <td></td>
                 </tr>
                 <tr>
                   <td>Reflection</td>
-                  <td className="txt-center">{dataArray[0].reflection}</td>
+                  <td className="txt-center">{dataArray[0].reflection}
+                  {
+                    dataArray[0].reflection > dataArray[1].reflection ?
+                      <p className="txt-center green">{"+" + Number(((dataArray[0].reflection - dataArray[1].reflection) / dataArray[1].reflection) * 100).toFixed(0) + "%"}</p>
+                    :
+                    ""
+                  }
+                  </td>
                   <td></td>
-                  <td className="txt-center">{dataArray[1].reflection}</td>
+                  <td className="txt-center">{dataArray[1].reflection}
+                  {
+                    dataArray[1].reflection > dataArray[0].reflection ?
+                      <p className="txt-center green">{"+" + Number(((dataArray[1].reflection - dataArray[0].reflection) / dataArray[0].reflection) * 100).toFixed(0) + "%"}</p>
+                    :
+                    ""
+                  }
+                  </td>
                   <td></td>
                 </tr>
                 <tr>
                   <td>MRender</td>
-                  <td className="txt-center">{dataArray[0].mrender}</td>
+                  <td className="txt-center">{dataArray[0].mrender}
+                  {
+                    dataArray[0].mrender > dataArray[1].mrender ?
+                      <p className="txt-center green">{"+" + Number(((dataArray[0].mrender - dataArray[1].mrender) / dataArray[1].mrender) * 100).toFixed(0) + "%"}</p>
+                    :
+                    ""
+                  }
+                  </td>
                   <td></td>
-                  <td className="txt-center">{dataArray[1].mrender}</td>
+                  <td className="txt-center">{dataArray[1].mrender}
+                  {
+                    dataArray[1].mrender > dataArray[0].mrender ?
+                      <p className="txt-center green">{"+" + Number(((dataArray[1].mrender - dataArray[0].mrender) / dataArray[0].mrender) * 100).toFixed(0) + "%"}</p>
+                    :
+                    ""
+                  }
+                  </td>
                   <td></td>
                 </tr>
                 <tr>
                   <td>Gravity</td>
-                  <td className="txt-center">{dataArray[0].gravity}</td>
+                  <td className="txt-center">{dataArray[0].gravity}
+                  {
+                    dataArray[0].gravity > dataArray[1].gravity ?
+                      <p className="txt-center green">{"+" + Number(((dataArray[0].gravity - dataArray[1].gravity) / dataArray[1].gravity) * 100).toFixed(0) + "%"}</p>
+                    :
+                    ""
+                  }
+                  </td>
                   <td></td>
-                  <td className="txt-center">{dataArray[1].gravity}</td>
+                  <td className="txt-center">{dataArray[1].gravity}
+                  {
+                    dataArray[1].gravity > dataArray[0].gravity ?
+                      <p className="txt-center green">{"+" + Number(((dataArray[1].gravity - dataArray[0].gravity) / dataArray[0].gravity) * 100).toFixed(0) + "%"}</p>
+                    :
+                    ""
+                  }
+                  </td>
                   <td></td>
                 </tr>
               </tbody>
@@ -194,3 +272,5 @@ const Compare: React.FC = () => {
 };
 
 export default Compare;
+
+
