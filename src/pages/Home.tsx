@@ -68,6 +68,12 @@ const Home: React.FC = () => {
   const auth = getAuth(firebaseInit);
   const user = auth.currentUser;
 
+  const numberFormat = (value:number) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR'
+  }).format(value);
+
   useIonViewWillEnter(() => {
     getData();
   });
@@ -376,25 +382,24 @@ const Home: React.FC = () => {
             <IonTitle size="large">Renebae</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonCard color="secondary">
-          <IonCardContent>
+
+        <IonSearchbar ref={searchbar} debounce={100} placeholder="Search your dream items" onKeyPress={e=> Search(e.key)} onIonInput={setSearchValue}></IonSearchbar>
+
+        <IonCard color="clear">
+          <IonCardContent className="ion-no-padding">
             <IonText color="light">
               <div className="center-text">
-                <h1>Banner Ads</h1>
-                <br />
-                <h1>728 X 90</h1>
+              <img src="https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/ads%20NVidia%20728x80.jpg?alt=media&token=bec8188f-2f08-4984-a902-845c6d940a1d"/>
               </div>
             </IonText>
           </IonCardContent>
         </IonCard>
 
-        <IonSearchbar ref={searchbar} debounce={100} placeholder="Search your dream items" onKeyPress={e=> Search(e.key)} onIonInput={setSearchValue}></IonSearchbar>
-
         <IonCard>
           <IonCardContent>
             <div className="categoryTitle">
               <div className="alignleft">
-                <IonText>Gaming</IonText>
+                <IonText>NVidia</IonText>
               </div>
               <div className="alignright">
                 <IonText>View All</IonText>
@@ -406,7 +411,7 @@ const Home: React.FC = () => {
               <IonRow>
                 <div className="filter">
                   {product
-                    .filter((product) => product.category === "gaming")
+                    .filter((product) => product.category === "NVidia")
                     .map((product) => (
                       <IonCard
                         key={product.id}
@@ -457,7 +462,7 @@ const Home: React.FC = () => {
                             <IonText className="ion-margin"></IonText>
                           ) : (
                             <IonText className="ion-margin">
-                              Rp {product.price}
+                              {numberFormat(parseInt(product.price))}
                             </IonText>
                           )}
                           <br />
@@ -487,13 +492,11 @@ const Home: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        <IonCard color="secondary">
-          <IonCardContent>
+        <IonCard color="clear">
+          <IonCardContent className="ion-no-padding">
             <IonText color="light">
               <div className="center-text">
-                <h1>Banner Ads</h1>
-                <br />
-                <h1>728 X 90</h1>
+                <img src="https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/ads%20AMD%20728x80.jpg?alt=media&token=b8712168-0238-4659-9754-96a83e1bc170"/>
               </div>
             </IonText>
           </IonCardContent>
@@ -502,26 +505,22 @@ const Home: React.FC = () => {
         <IonGrid className="ion-no-padding">
           <IonRow>
             <IonCol>
-              <IonCard color="secondary">
-                <IonCardContent>
+              <IonCard color="clear" className="ion-no-padding">
+                <IonCardContent className="ion-no-padding">
                   <IonText color="light">
                     <div className="center-text">
-                      <h1>Banner Ads</h1>
-                      <br />
-                      <h1>350 X 90</h1>
+                      <img src="https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/ads%20amd%20350x90.jpg?alt=media&token=9fbf5530-d9d7-4992-b6cb-e32e5a072745"/>
                     </div>
                   </IonText>
                 </IonCardContent>
               </IonCard>
             </IonCol>
             <IonCol>
-              <IonCard color="secondary">
-                <IonCardContent>
+              <IonCard color="clear">
+                <IonCardContent className="ion-no-padding">
                   <IonText color="light">
                     <div className="center-text">
-                      <h1>Banner Ads</h1>
-                      <br />
-                      <h1>350 X 90</h1>
+                      <img src="https://firebasestorage.googleapis.com/v0/b/renebae-f7b76.appspot.com/o/ads%20amd%20350x90%202.jpg?alt=media&token=e1b8d0ec-36be-4cb4-9ef6-ddf73f114ebf"/>
                     </div>
                   </IonText>
                 </IonCardContent>
@@ -534,7 +533,7 @@ const Home: React.FC = () => {
           <IonCardContent>
             <div className="categoryTitle">
               <div className="alignleft">
-                <IonText>Electronic</IonText>
+                <IonText>AMD Radeon</IonText>
               </div>
               <div className="alignright">
                 <IonText>View All</IonText>
@@ -545,7 +544,7 @@ const Home: React.FC = () => {
               <IonRow>
                 <div className="filter">
                   {product
-                    .filter((product) => product.category === "electronic")
+                    .filter((product) => product.category === "AMD Radeon")
                     .map((product) => (
                       <IonCard
                         key={product.id}
@@ -596,7 +595,7 @@ const Home: React.FC = () => {
                             <IonText className="ion-margin"></IonText>
                           ) : (
                             <IonText className="ion-margin">
-                              Rp {product.price}
+                              {numberFormat(parseInt(product.price))}
                             </IonText>
                           )}
                           <br />

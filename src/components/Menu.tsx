@@ -253,7 +253,7 @@ const Menu: React.FC = () => {
         </IonList>
 
         <IonList id="labels-list">
-          <IonListHeader>Labels</IonListHeader>
+          <IonListHeader>Categories</IonListHeader>
           {labels.map((label, index) => (
             <IonItem lines="none" key={index}>
               <IonIcon slot="start" icon={bookmarkOutline} />

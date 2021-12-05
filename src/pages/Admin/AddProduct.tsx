@@ -103,6 +103,7 @@ const AddProduct: React.FC = () => {
   }
 
   const addDataProduct = async (url: string) => {
+    toast("Please Wait", 5000)
     const field = {
       name: nameRef.current?.value,
       category: categoryRef.current?.value,
